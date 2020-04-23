@@ -4,23 +4,23 @@ import networkx as nx
 
 
 class PartialSolution:
-    HC: list
-    Graph: nx.Graph = None
-    n: int = 0
+    _HC: list
+    _Graph: nx.Graph = None
+    _n: int = 0
 
     @staticmethod
     def set_graph(g):
         """
         :type g: nx.Graph
         """
-        PartialSolution.Graph = g
-        PartialSolution.n = len(list(g.nodes))
+        PartialSolution._Graph = g
+        PartialSolution._n = len(list(g.nodes))
 
     def __init__(self, hc: list):
         """
         :type hc: list
         """
-        self.HC = hc
+        self._HC = hc
 
     @property
     def cost(self):
@@ -28,8 +28,10 @@ class PartialSolution:
         Returns cost of partial solution.
         """
         c: int = 0
-        for i in range(len(self.HC) - 1):
-            c = c + PartialSolution.Graph.get_edge_data(self.HC[i], self.HC[i + 1])['weight']
+        for i in range(len(self._HC) - 1):
+            c = c + PartialSolution._Graph.get_edge_data(self._HC[i], self._HC[i + 1])['weight']
+        if len(self._HC) == PartialSolution._n:
+            c = c + PartialSolution._Graph.get_edge_data(self._HC[len(self._HC) - 1], self._HC[0])['weight']
         return c
 
 
@@ -41,61 +43,61 @@ class ValidSolution(PartialSolution):
         Return cost of solution.
         """
         c: int = 0
-        for i in range(len(self.HC) - 1):
-            c = c + PartialSolution.Graph.get_edge_data(self.HC[i], self.HC[i + 1])['weight']
-        c = c + PartialSolution.Graph.get_edge_data(self.HC[len(self.HC) - 1], self.HC[0])['weight']
+        for i in range(len(self._HC) - 1):
+            c = c + PartialSolution._Graph.get_edge_data(self._HC[i], self._HC[i + 1])['weight']
+        c = c + PartialSolution._Graph.get_edge_data(self._HC[len(self._HC) - 1], self._HC[0])['weight']
         return c
 
-    def gain(self, i, j):
+    def _gain(self, i, j):
         """
         Return gain/loss after changing places of i-th ang j-th vertices in solution.
         """
         if i == j:
             return 0
-        if i % PartialSolution.n == (j + 1) % PartialSolution.n:
+        if i % PartialSolution._n == (j + 1) % PartialSolution._n:
             return \
-                PartialSolution.Graph.get_edge_data(self.HC[i % PartialSolution.n],
-                                                    self.HC[(i + 1) % PartialSolution.n])[
+                PartialSolution._Graph.get_edge_data(self._HC[i % PartialSolution._n],
+                                                     self._HC[(i + 1) % PartialSolution._n])[
                     'weight'] + \
-                PartialSolution.Graph.get_edge_data(self.HC[j % PartialSolution.n],
-                                                    self.HC[(j - 1) % PartialSolution.n])[
+                PartialSolution._Graph.get_edge_data(self._HC[j % PartialSolution._n],
+                                                     self._HC[(j - 1) % PartialSolution._n])[
                     'weight'] - \
-                PartialSolution.Graph.get_edge_data(self.HC[i % PartialSolution.n],
-                                                    self.HC[(j - 1) % PartialSolution.n])[
+                PartialSolution._Graph.get_edge_data(self._HC[i % PartialSolution._n],
+                                                     self._HC[(j - 1) % PartialSolution._n])[
                     'weight'] - \
-                PartialSolution.Graph.get_edge_data(self.HC[j % PartialSolution.n],
-                                                    self.HC[(i + 1) % PartialSolution.n])[
+                PartialSolution._Graph.get_edge_data(self._HC[j % PartialSolution._n],
+                                                     self._HC[(i + 1) % PartialSolution._n])[
                     'weight']
-        if i % PartialSolution.n == (j - 1) % PartialSolution.n:
+        if i % PartialSolution._n == (j - 1) % PartialSolution._n:
             return \
-                PartialSolution.Graph.get_edge_data(self.HC[i % PartialSolution.n],
-                                                    self.HC[(i - 1) % PartialSolution.n])[
+                PartialSolution._Graph.get_edge_data(self._HC[i % PartialSolution._n],
+                                                     self._HC[(i - 1) % PartialSolution._n])[
                     'weight'] + \
-                PartialSolution.Graph.get_edge_data(self.HC[j % PartialSolution.n],
-                                                    self.HC[(j + 1) % PartialSolution.n])[
+                PartialSolution._Graph.get_edge_data(self._HC[j % PartialSolution._n],
+                                                     self._HC[(j + 1) % PartialSolution._n])[
                     'weight'] - \
-                PartialSolution.Graph.get_edge_data(self.HC[i % PartialSolution.n],
-                                                    self.HC[(j + 1) % PartialSolution.n])[
+                PartialSolution._Graph.get_edge_data(self._HC[i % PartialSolution._n],
+                                                     self._HC[(j + 1) % PartialSolution._n])[
                     'weight'] - \
-                PartialSolution.Graph.get_edge_data(self.HC[j % PartialSolution.n],
-                                                    self.HC[(i - 1) % PartialSolution.n])[
+                PartialSolution._Graph.get_edge_data(self._HC[j % PartialSolution._n],
+                                                     self._HC[(i - 1) % PartialSolution._n])[
                     'weight']
 
-        c = PartialSolution.Graph.get_edge_data(self.HC[i % PartialSolution.n], self.HC[(i + 1) % PartialSolution.n])[
+        c = PartialSolution._Graph.get_edge_data(self._HC[i % PartialSolution._n], self._HC[(i + 1) % PartialSolution._n])[
                 'weight'] + \
-            PartialSolution.Graph.get_edge_data(self.HC[i % PartialSolution.n], self.HC[(i - 1) % PartialSolution.n])[
+            PartialSolution._Graph.get_edge_data(self._HC[i % PartialSolution._n], self._HC[(i - 1) % PartialSolution._n])[
                 'weight'] + \
-            PartialSolution.Graph.get_edge_data(self.HC[j % PartialSolution.n], self.HC[(j + 1) % PartialSolution.n])[
+            PartialSolution._Graph.get_edge_data(self._HC[j % PartialSolution._n], self._HC[(j + 1) % PartialSolution._n])[
                 'weight'] + \
-            PartialSolution.Graph.get_edge_data(self.HC[j % PartialSolution.n], self.HC[(j - 1) % PartialSolution.n])[
+            PartialSolution._Graph.get_edge_data(self._HC[j % PartialSolution._n], self._HC[(j - 1) % PartialSolution._n])[
                 'weight'] - \
-            PartialSolution.Graph.get_edge_data(self.HC[(i - 1) % PartialSolution.n], self.HC[j] % PartialSolution.n)[
+            PartialSolution._Graph.get_edge_data(self._HC[(i - 1) % PartialSolution._n], self._HC[j] % PartialSolution._n)[
                 'weight'] - \
-            PartialSolution.Graph.get_edge_data(self.HC[j % PartialSolution.n], self.HC[(i + 1) % PartialSolution.n])[
+            PartialSolution._Graph.get_edge_data(self._HC[j % PartialSolution._n], self._HC[(i + 1) % PartialSolution._n])[
                 'weight'] - \
-            PartialSolution.Graph.get_edge_data(self.HC[i % PartialSolution.n], self.HC[(j + 1) % PartialSolution.n])[
+            PartialSolution._Graph.get_edge_data(self._HC[i % PartialSolution._n], self._HC[(j + 1) % PartialSolution._n])[
                 'weight'] - \
-            PartialSolution.Graph.get_edge_data(self.HC[i % PartialSolution.n], self.HC[(j - 1) % PartialSolution.n])[
+            PartialSolution._Graph.get_edge_data(self._HC[i % PartialSolution._n], self._HC[(j - 1) % PartialSolution._n])[
                 'weight']
         return c
 
@@ -105,7 +107,7 @@ class ValidSolution(PartialSolution):
         """
         start: float = time.time()
         local_max: ValidSolution = copy.deepcopy(self)
-        x: list = local_max.HC
+        x: list = local_max._HC
         done = False
         while not done:
             done = True
@@ -114,7 +116,7 @@ class ValidSolution(PartialSolution):
             j0 = 0
             for i in range(len(x)):
                 for j in range(len(x)):
-                    g = local_max.gain(i, j)
+                    g = local_max._gain(i, j)
                     if g > g0:
                         g0 = g
                         i0 = i
@@ -128,3 +130,9 @@ class ValidSolution(PartialSolution):
             if end - start > max_time - 0.001:
                 break
         return local_max
+
+    def validate(self):
+        if len(self._HC) == PartialSolution._n:
+            if set(self._HC) == set(PartialSolution._Graph.nodes):
+                return True
+        return False
