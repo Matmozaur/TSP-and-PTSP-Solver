@@ -24,15 +24,17 @@ class GeneticSolver:
         else:
             self.population = GeneticSolver.initialize_random_population(size, g)
 
-    def crossover(self, x, y, h=None):
+    @staticmethod
+    def crossover(x, y, h=None):
         """
         :type x: ValidSolution
         :type y: ValidSolution
         :type h: int
         """
+        g = x.Graph
         x = x.HC
         y = y.HC
-        n = len(list(self.Graph.nodes))
+        n = len(list(g.nodes))
         if h is None:
             h = random.randrange(int(n * 0.25), int(n * 0.75))
         j = random.randrange(n)
@@ -46,7 +48,7 @@ class GeneticSolver:
             if x[j] not in T:
                 d[i] = x[j]
                 i = i + 1
-        j = random.randrange(self.size)
+        j = random.randrange(n)
         T = set()
         c = [0] * n
         for i in range(h):

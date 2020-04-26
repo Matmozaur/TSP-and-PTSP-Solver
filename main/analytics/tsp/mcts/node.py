@@ -42,6 +42,15 @@ class Node:
         if lottery == 'random':
             nodes_left = set(PartialSolution.Graph.nodes).difference(set(self.partial.HC))
             return Node(self, random.sample(nodes_left, 1)[0])
+        elif lottery == 'nearest':
+            nodes_left = set(PartialSolution.Graph.nodes).difference(set(self.partial.HC))
+            return Node(self, min(nodes_left, key=lambda x: self.partial.Graph.get_edge_data(self.partial.HC[-1], x)['weight']))
+        elif lottery == 'nearest lottery':
+            nodes_left = list(set(PartialSolution.Graph.nodes).difference(set(self.partial.HC)))
+            p = [self.partial.Graph.get_edge_data(self.partial.HC[-1], x)['weight'] for x in nodes_left]
+            s = sum(p)
+            p = [x/s for x in p]
+            return Node(self, random.sample(nodes_left, 1, p=p)[0])
         else:
             raise ValueError
 
