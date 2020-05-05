@@ -8,9 +8,9 @@ class Map:
         self.height = height
         self.ncities = ncities
         self.cities = []
+        self.visited = [False for _ in range(ncities)]
         self.radius = 1
         self.randomise()
-        self.visited = [False for _ in range(ncities)]
 
     def try_visit(self, x, y, r):
         for i in range(self.ncities):
@@ -41,6 +41,5 @@ class Map:
         while cur < self.ncities:
             x = random.randint(0, self.width)
             y = random.randint(0, self.height)
-            if not self.check_visit(x, y, self.radius):
-                self.cities.append((x, y))
-                cur += 1
+            self.cities.append((x, y))
+            cur += 1
