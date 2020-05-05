@@ -50,18 +50,31 @@ all([True,False])
 def greedy(agent, m, i):
     x = agent.location[0]
     y = agent.location[1]
+    v = agent.v
     a = m.cities[i][0]-x
     b = m.cities[i][1]-y
-    if abs(a)>abs(b):
-        if a>0:
-            return (1,0)
-        else:
-            return (-1,0)
-    else:
-        if b>0:
-            return (0,1)
-        else:
-            return (0,-1)
+    b=b/abs(a)
+    a=a/abs(a)
+    f_min = 999999999999
+    m_best = None
+    for m in [(1,0),(-1,0),(0,1),(0,-1)]:
+        v1 = v[0] + m[0]
+        v2 = v[1] + m[1]
+        f = (a-v1)*(a-v1)+(b-v2)*(b-v2)
+        if f<f_min:
+            f_min=f
+            m_best=m
+    return m_best
+#     if abs(a)>abs(b):
+#         if a>0:
+#             return (1,0)
+#         else:
+#             return (-1,0)
+#     else:
+#         if b>0:
+#             return (0,1)
+#         else:
+#             return (0,-1)
 ```
 
 ```{python}
@@ -72,7 +85,7 @@ while 1:
     move = greedy(a,m,i)
     a.update(move)
     m.try_visit(a.location[0],a.location[1],0)
-    print(a.location)
+#    print(a.location)
     if m.visited[i]:
         print(i,'city checked')
         i+=1
