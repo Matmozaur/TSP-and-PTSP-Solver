@@ -1,3 +1,4 @@
+import pickle
 import random
 
 
@@ -43,3 +44,13 @@ class Map:
             y = random.randint(0, self.height)
             self.cities.append((x, y))
             cur += 1
+
+    def save(self, path):
+        with open(path, 'wb') as handle:
+            pickle.dump(self, handle)
+
+    @staticmethod
+    def load(path):
+        with open(path, 'rb') as handle:
+            m = pickle.load(handle)
+        return m

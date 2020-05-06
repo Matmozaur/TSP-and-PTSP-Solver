@@ -19,7 +19,7 @@ from ptsp_config import *
 ```
 
 ```{python}
-m = Map(3,100,100,5)
+m = Map(3,320,240,5)
 ```
 
 ```{python}
@@ -27,7 +27,7 @@ config = PTSPConfiguration()
 ```
 
 ```{python}
-a = Agent(m, 1, config)
+a = Agent(m, config)
 ```
 
 ```{python}
@@ -91,11 +91,77 @@ while 1:
         i+=1
         if all(m.visited):
             print('End',j)
+            m.reset()
             break
 ```
 
 ```{python}
-(0,1)
+m.save('m.sav')
+```
+
+```{python}
+m=Map.load('m.sav')
+```
+
+```{python}
+import sys
+```
+
+```{python}
+sys.path.append('/home/matmozaur/Desktop/mgr/TSP-and-PTSP-Solver')
+```
+
+```{python}
+from solution import *
+```
+
+```{python}
+a = Agent(m, config)
+i = 0
+j = 0
+solution = Solution([],m,config)
+while 1:
+    j+=1
+    move = greedy(a,m,i)
+    a.update(move)
+    solution.moves.append(move)
+    m.try_visit(a.location[0],a.location[1],0)
+#    print(a.location)
+    if m.visited[i]:
+        print(i,'city checked')
+        i+=1
+        if all(m.visited):
+            print('End',j)
+            m.reset()
+            break
+```
+
+```{python}
+solution.check_solution()
+```
+
+```{python}
+m2 = Map(3,320,240,5)
+```
+
+```{python}
+solution.check_solution(map_ptsp=m2)
+```
+
+```{python}
+solution.save('s.sav')
+```
+
+```{python}
+solution=Solution.load('s.sav')
+```
+
+```{python}
+solution.check_solution(map_ptsp=m2)
+```
+
+```{python}
+solution.check_solution(map_ptsp=m)
 ```
 
 ```{python}

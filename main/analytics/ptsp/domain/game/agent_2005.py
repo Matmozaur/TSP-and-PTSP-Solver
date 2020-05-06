@@ -3,12 +3,12 @@ import numpy as np
 
 class Agent:
 
-    def __init__(self, map_ptsp, r, config):
+    def __init__(self, map_ptsp, config):
         self.previous_location = np.array([map_ptsp.width/2, map_ptsp.height/2])
         self.location = np.array([map_ptsp.width/2, map_ptsp.height/2])
         self.v = np.array([0.0, 0.0])
         self.a = np.array([0.0, 0.0])
-        self.radious = r
+        self.radious = config.r
         self.config = config
 
     def update(self, move):

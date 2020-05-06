@@ -2,12 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c75520c-4bf3-4b82-9a1c-dd57d151cad5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2012.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/TSP-and-PTSP-Solver.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/TSP-and-PTSP-Solver.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2005.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/.ipynb_checkpoints/Untitled-checkpoint.Rmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2005.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2005.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2012.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2012.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/solution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/map.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/map.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/ptsp_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/ptsp_config.py" afterDir="false" />
     </list>
