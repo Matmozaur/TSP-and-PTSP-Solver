@@ -2,14 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c75520c-4bf3-4b82-9a1c-dd57d151cad5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/basic_order_solvers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/basic_steering_solvers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/metrics.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/genetic/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/genetic/genetic_order.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/.ipynb_checkpoints/Untitled-checkpoint.Rmd" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2005.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2005.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2012.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2012.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/solution.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/map.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/map.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/ptsp_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/ptsp_config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,14 +37,15 @@
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/main/analytics/ptsp/domain/game" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005" />
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\ptsp\domain" />
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\tsp\domain" />
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\test\unit_tests\analytics" />
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\tsp" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/main/analytics/ptsp/domain/game" />
     </key>
   </component>
   <component name="RunManager">
