@@ -10,7 +10,7 @@ class Map:
         self.ncities = ncities
         self.cities = []
         self.visited = [False for _ in range(ncities)]
-        self.radius = 1
+        self.radius = 5
         self.randomise()
 
     def try_visit(self, x, y, r):

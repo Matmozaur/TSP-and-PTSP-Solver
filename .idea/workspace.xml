@@ -2,14 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c75520c-4bf3-4b82-9a1c-dd57d151cad5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/basic_order_solvers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/basic_steering_solvers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/metrics.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/genetic/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/genetic/genetic_order.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/genetic/genetic_trajectory.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/basic_steering_solvers.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/basic_steering_solvers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2005.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2005.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/map.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/map.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/ptsp_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/ptsp_config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,7 +32,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../PTSP" />
+    <property name="last_opened_file_path" value="$USER_HOME$/PycharmProjects/rsims_analytics" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RecentsManager">
@@ -97,10 +96,10 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="468" y="269" width="424" height="484" key="FileChooserDialogImpl" timestamp="1588613155058">
-      <screen x="67" y="27" width="1213" height="997" />
+    <state x="423" y="269" width="424" height="484" key="FileChooserDialogImpl" timestamp="1589712505826">
+      <screen x="0" y="27" width="1280" height="997" />
     </state>
-    <state x="423" y="269" width="424" height="484" key="FileChooserDialogImpl/1280.0.1280.1024/0.27.1280.997@0.27.1280.997" timestamp="1588531465591" />
+    <state x="423" y="269" width="424" height="484" key="FileChooserDialogImpl/1280.0.1280.1024/0.27.1280.997@0.27.1280.997" timestamp="1589712505826" />
     <state x="468" y="269" width="424" height="484" key="FileChooserDialogImpl/67.27.1213.997@67.27.1213.997" timestamp="1588613155058" />
     <state x="129" y="146" key="SettingsEditor" timestamp="1588533159380">
       <screen x="0" y="27" width="1280" height="997" />
