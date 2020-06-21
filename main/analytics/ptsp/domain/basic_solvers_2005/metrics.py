@@ -1,6 +1,7 @@
 import math
 
-from main.analytics.ptsp.domain.basic_solvers_2005.basic_steering_solvers import greedy_solution
+from main.analytics.ptsp.domain.basic_solvers_2005.basic_steering_solvers import greedy_solution,\
+    local_solution
 
 
 class MetricOrder:
@@ -14,6 +15,8 @@ class MetricOrder:
             self.metric = self.greedy_metric
         elif name == 'angle':
             self.metric = self.angle_fitness_metric
+        elif name == 'local':
+            self.metric = self.local_metric
 
     def dist_metric(self, solution):
         sum_final = 0
@@ -26,6 +29,10 @@ class MetricOrder:
 
     def greedy_metric(self, solution):
         g_s = greedy_solution(self.ptsp_map, self.config, solution)
+        return len(g_s.moves)
+
+    def local_metric(self, solution):
+        g_s = local_solution(self.ptsp_map, self.config, solution)
         return len(g_s.moves)
 
     def angle_fitness_metric(self, solution):

@@ -37,70 +37,7 @@ a = Agent(m, config)
 ```
 
 ```{python}
-o = hill_climbing_ptsp(m, 1, config, 'greedy')
-```
-
-```{python}
-# def greedy_move(agent, pstp_map, next_point):
-#     x = agent.location[0]
-#     y = agent.location[1]
-#     v = agent.v
-#     a = pstp_map.cities[next_point][0] - x
-#     b = pstp_map.cities[next_point][1] - y
-#     b = b / abs(a)
-#     a = a / abs(a)
-#     f_min = float("inf")
-#     m_best = None
-#     for pstp_map in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-#         v1 = v[0] + pstp_map[0]
-#         v2 = v[1] + pstp_map[1]
-#         f = (a - v1) * (a - v1) + (b - v2) * (b - v2)
-#         if f < f_min:
-#             f_min = f
-#             m_best = pstp_map
-#     return m_best
-# def greedy_move(agent, pstp_map, next_point):
-#     v = agent.v
-#     f_min = float("inf")
-#     m_best = None
-#     for move in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-#         a = copy.deepcopy(agent)
-#         a.update(move)
-#         x = a.location[0]
-#         y = a.location[1]
-#         b = pstp_map.cities[next_point][0] - x
-#         c = pstp_map.cities[next_point][1] - y
-#         f = c**2 + b**2
-#         if f < f_min:
-#             f_min = f
-#             m_best = move
-#     return m_best
-```
-
-```{python}
-a = Agent(m, config)
-```
-
-```{python}
-# solution = Solution([],m,config)
-# i = 0
-# while 1:
-#     move = greedy_move(a, m, o[i])
-#     a.update(move)
-#     print(a.v)
-#     print(a.location)
-#     print(m.cities[o[i]])
-#     solution.moves.append(move)
-#     m.try_visit(a.location[0], a.location[1], 0)
-#     if m.visited[o[i]]:
-#         i += 1
-#         if all(m.visited):
-#             m.reset()
-#             break
-```
-
-```{python}
-# len(solution.moves)
+o = hill_climbing_ptsp(m, 120, config, 'local')
 ```
 
 ```{python}
@@ -109,99 +46,36 @@ a = Agent(m, config)
 
 ```{python}
 solution = local_solution(m, config,o)
-```
 
-```{python}
 len(solution.moves)
 ```
 
 ```{python}
-def check_n(start, v, dest, r, t, n):
-    g = (math.pow(n, 2) * math.pow(t, 2)) / 2
-    base_loc = (start[0] + n * t * v[0], start[1] + n * t * v[1])
-    dist = abs(dest[0] - base_loc[0]) + abs(dest[1] - base_loc[1])
-    return g >= dist - r
-```
+# loc = (160,120)
+# v = np.array([0.0, 0.0])
+# dest = [200,200]
 
-```{python}
-# math.pow(7, 2)/20
+# n = number_of_moves(loc, v, dest, 5, math.sqrt(0.1), upper=10000, lower=0)
 
+# n
 
-# math.pow(9, 2)/20 - math.pow(6, 2)/20
+# moves = local_next_city(loc, v, dest, 5, math.sqrt(0.1), n)
 
-# 5*(math.sqrt(2) - 1)
-```
-
-```{python}
-check_n((160.0, 120.0), (0,0), (307, 218), 0, math.sqrt(0.1), 150)
-```
-
-```{python}
-def number_of_moves(start, v, dest, r, t, upper=10000, lower=0):
-    if lower == upper:
-        return upper
-    elif check_n(start, v, dest, r, t, int((upper + lower) / 2)):
-        upper = int((upper + lower) / 2)
-        return number_of_moves(start, v, dest, r, t, upper, lower)
-    else:
-        lower = int((upper + lower + 1) / 2)
-        return number_of_moves(start, v, dest, r, t, upper, lower)
-```
-
-```{python}
-number_of_moves((160.0, 120.0), (0,0), (307, 218), 0, 0.1, upper=10000, lower=0)
+# a = Agent(m, config)
+# a.v=v
+# for move in moves:
+#     a.update(move)
+#     print(a.location,a.v)
 ```
 
 ```{python}
 
 ```
 
-```{python}
-
-```
+greedy
 
 ```{python}
-
-```
-
-```{python}
-a = Agent(m, config)
-a.location
-```
-
-```{python}
-a.update((1,0))
-for i in range(48):
-    a.update((0,0))
-a.location
-```
-
-```{python}
-a.v
-```
-
-```{python}
-check_n((160,120), (0,0), (80,70), 0, 0.1, 49)
-```
-
-```{python}
-
-```
-
-```{python}
-
-```
-
-```{python}
-solution = greedy_solution(m, config)
-```
-
-```{python}
-len(solution.moves)
-```
-
-```{python}
-o = hill_climbing_ptsp(m, 30, config, 'greedy')
+o = hill_climbing_ptsp(m, 10, config, 'greedy')
 ```
 
 ```{python}
@@ -210,6 +84,10 @@ solution = greedy_solution(m, config, o)
 
 ```{python}
 len(solution.moves)
+```
+
+```{python}
+
 ```
 
 ```{python}
@@ -226,6 +104,125 @@ solution = greedy_solution(m, config, o)
 
 ```{python}
 len(solution.moves)
+```
+
+```{python}
+
+```
+
+local
+
+```{python}
+o = hill_climbing_ptsp(m, 30, config, 'local')
+```
+
+```{python}
+solution = local_solution(m, config, o)
+```
+
+```{python}
+len(solution.moves)
+```
+
+```{python}
+
+```
+
+```{python}
+gs = GeneticOrderSolver(32,m,config)
+```
+
+```{python}
+o = gs.solve('local',120)
+```
+
+```{python}
+solution = local_solution(m, config, o)
+```
+
+```{python}
+len(solution.moves)
+```
+
+```{python}
+
+```
+
+```{python}
+gs = GeneticOrderSolver(32,m,config)
+```
+
+```{python}
+o = gs.solve('angle',120)
+```
+
+```{python}
+solution = local_solution(m, config, o)
+```
+
+```{python}
+len(solution.moves)
+```
+
+```{python}
+
+```
+
+```{python}
+gs = GeneticOrderSolver(32,m,config)
+```
+
+```{python}
+o = gs.solve('dist',120)
+```
+
+```{python}
+solution = local_solution(m, config, o)
+```
+
+```{python}
+len(solution.moves)
+```
+
+```{python}
+
+```
+
+```{python}
+
+```
+
+```{python}
+t = [True,True,True]
+```
+
+```{python}
+i = 0
+while t[i]:
+    i += 1
+    if i >= len(t):
+        break
+ 
+```
+
+```{python}
+o = gs.solve('local',240)
+```
+
+```{python}
+solution = local_solution(m, config, o)
+```
+
+```{python}
+len(solution.moves)
+```
+
+```{python}
+
+```
+
+```{python}
+
 ```
 
 ```{python}
