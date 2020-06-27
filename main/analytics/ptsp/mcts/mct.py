@@ -1,13 +1,17 @@
 import random
 import time
 
-from .node import Node
+from main.analytics.ptsp.domain.game.agent_2005 import Agent
+from main.analytics.ptsp.domain.game.map import Map
+from main.analytics.ptsp.domain.game.ptsp_config import PTSPConfiguration
+from main.analytics.ptsp.domain.game.solution import Solution
+from main.analytics.ptsp.mcts.node import Node
 
 
 class MCT:
 
-    def __init__(self, state, metric='UTC', lottery='random', save_sol=True, explore_scale=2):
-        self.root = Node(parent=state, root=True)
+    def __init__(self, agent, solution, metric='UTC', lottery='random', save_sol=True, explore_scale=2):
+        self.root = Node(agent=agent, solution=solution, root=True)
         self.metric = metric
         self.lottery = lottery
         self.save_sol = save_sol
@@ -22,13 +26,11 @@ class MCT:
             self.iteration += 1
             leaf = self._traverse(self.root)
             if leaf.is_terminal:
-                self._backpropagate(leaf, leaf.partial.cost)
+                self._backpropagate(leaf, leaf.fitness)
                 continue
             else:
-                if leaf.visited:
-                    leaf = self._rollout(leaf)
-                else:
-                    leaf.visited = True
+                # if leaf.visits:
+                leaf = self._rollout(leaf)
                 cost = self._simulate(leaf)
                 self._backpropagate(leaf, cost)
 
@@ -41,7 +43,7 @@ class MCT:
 
     def _backpropagate(self, node, cost):
         if node == self.root:
-            return
+            self.root.visits += 1
         else:
             node.update(cost)
             self._backpropagate(node.parent, cost)
@@ -52,16 +54,19 @@ class MCT:
         return random.sample(leaf.children, 1)[0]
 
     def _simulate(self, leaf):
-        if leaf.is_terminal:
-            c = leaf.partial.cost
-            if c < self.best_cost:
-                self.best_cost = c
-                self.best_sol = leaf.partial
-            return c
-        else:
-            return self._simulate(leaf.random_child(self.lottery))
+        return leaf.fitness
+        # if leaf.is_terminal:
+        #     c = leaf.partial.cost
+        #     if c < self.best_cost:
+        #         self.best_cost = c
+        #         self.best_sol = leaf.partial
+        #     return c
+        # else:
+        #     return self._simulate(leaf.random_child(self.lottery))
 
     def choose_next(self):
+        for c in self.root.children:
+            print(c.partial.moves[0], c.mean)
         child = min(self.root.children, key=lambda x: x.mean)
         return child.partial
 
@@ -71,6 +76,18 @@ class MCT:
     def _choose_child(self, node):
         # check
         if self.metric == 'UTC':
-            return min(node.children, key=lambda x: x.utc(self.iteration, self.explore_scale))
+            # return min(node.children, key=lambda x: x.utc(self.iteration, self.explore_scale)*random.randint(1, 10)))
+            # return min(node.children, key=lambda x: x.utc(self.iteration, self.explore_scale))
+            return min(node.children, key=lambda x: x.mean)
         else:
             raise ValueError
+
+
+# m = Map(1, 320, 240, 5)
+# config = PTSPConfiguration()
+# a = Agent(m, config)
+# s = Solution([], m, config)
+# mct = MCT(a, s)
+# mct.build_tree(max_time=10)
+# print(mct.root.children)
+# print(mct.best_sol)

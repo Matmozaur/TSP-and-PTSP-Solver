@@ -7,28 +7,40 @@ from main.analytics.ptsp.domain.game.solution import Solution
 from main.analytics.tsp.domain.solutions import PartialSolution
 
 
-def fitness(min_dists, partial, agent, f_max):
+def fitness(min_dists, partial, agent, f_max, K1=0, K2=0):
     f = 0
     for i in range(len(partial.map_ptsp.cities)):
-        if partial.map_ptsp.visited[i]:
-            f += f_max - f_max/(min_dists[i]-partial.map_ptsp.radius+2)
+        if not partial.map_ptsp.visited[i]:
+            # f += f_max - f_max / (min_dists[i] - partial.map_ptsp.radius + 2)
+            f += min_dists[i]
+    # a1 = agent.location[0] - partial.map_ptsp.width
+    # a2 = agent.location[1] - partial.map_ptsp.height
+    # if a1 <= 0:
+    #     a1 = 0
+    # if a1 < -partial.map_ptsp.width:
+    #     a1 = agent.location[0]
+    # if a2 <= 0:
+    #     a2 = 0
+    # if a2 < -partial.map_ptsp.height:
+    #     a2 = agent.location[1]
+    # d = math.sqrt(math.pow(a1, 2) + math.pow(a2, 2))
+    # f += K1*len(partial.moves) + K2*d
     return f
 
 
 def dist(a, b):
-    return math.sqrt(math.pow(a[0] - b[1], 2) + math.pow(a[1] - b[1], 2))
+    return math.sqrt(math.pow(a[0] - b[0], 2) + math.pow(a[1] - b[1], 2))
 
 
 class Node:
+    max_f = 10000000
 
-    max_f = 1000
-
-    def __init__(self, parent=None, m=None, config=None, root=False):
+    def __init__(self, parent=None, m=None, root=False, agent=None, solution=None):
         self.parent = parent
         self.children = set()
         if root:
-            self.agent = Agent(m, config)
-            self.partial = Solution([], m, config)
+            self.agent = agent
+            self.partial = copy.deepcopy(solution)
             self.min_dists = [dist(self.agent.location, self.partial.map_ptsp.cities[i])
                               for i in range(len(self.partial.map_ptsp.cities))]
             Node.max_f = sum(self.min_dists)
@@ -38,24 +50,25 @@ class Node:
             self.partial = copy.deepcopy(parent.partial)
             self.partial.moves.append(m)
             self.partial.map_ptsp.try_visit(self.agent.location[0], self.agent.location[1], self.agent.config.r)
-            self.min_dists = parent.min_dists
+            self.min_dists = copy.deepcopy(parent.min_dists)
             for i in range(len(self.partial.map_ptsp.cities)):
-                if self.partial.map_ptsp.visited[i]:
+                if not self.partial.map_ptsp.visited[i]:
                     if self.min_dists[i] > dist(self.agent.location, self.partial.map_ptsp.cities[i]):
                         self.min_dists[i] = dist(self.agent.location, self.partial.map_ptsp.cities[i])
-            fitness(self.min_dists, self.partial, self.agent, Node.max_f)
             self.visited = False
-        self.mean = fitness
+        f = fitness(self.min_dists, self.partial, self.agent, Node.max_f, self.agent.config.K1, self.agent.config.K2)
+        self.fitness = f
+        self.mean = f
         self.visits = 0
+        print(len(self.partial.moves))
+        print(self.fitness)
 
-    # HERE
     def find_children(self):
-        nodes_left = set(PartialSolution.Graph.nodes).difference(set(self.partial.HC))
-        return set([Node(self, x) for x in nodes_left])
+        return set([Node(self, x) for x in [(0, 1), (1, 0), (0, -1), (-1, 0), (0, 0)]])
 
     @property
     def is_terminal(self):
-        if self.partial.valid:
+        if all(self.partial.map_ptsp.visited):
             return True
         return False
 
@@ -67,26 +80,14 @@ class Node:
         if self.visited:
             return self.mean - explore_scale * math.sqrt(math.log2(all_visits) / self.visits)
         else:
-            return 0
-
-    def random_child(self, lottery):
-        if lottery == 'random':
-            nodes_left = set(PartialSolution.Graph.nodes).difference(set(self.partial.HC))
-            return Node(self, random.sample(nodes_left, 1)[0])
-        elif lottery == 'nearest':
-            nodes_left = set(PartialSolution.Graph.nodes).difference(set(self.partial.HC))
-            return Node(self, min(nodes_left,
-                                  key=lambda x: self.partial.Graph.get_edge_data(self.partial.HC[-1], x)['weight']))
-        elif lottery == 'nearest lottery':
-            nodes_left = list(set(PartialSolution.Graph.nodes).difference(set(self.partial.HC)))
-            p = [self.partial.Graph.get_edge_data(self.partial.HC[-1], x)['weight'] for x in nodes_left]
-            s = sum(p)
-            p = [x / s for x in p]
-            return Node(self, random.sample(nodes_left, 1, p=p)[0])
-        else:
-            raise ValueError
+            return self.mean - explore_scale * math.sqrt(math.log2(all_visits))
 
     def update(self, cost):
+        # print(self.mean, cost)
         self.mean = self.mean * self.visits
         self.visits += 1
         self.mean = (self.mean + cost) / self.visits
+        # print(self.mean)
+        # if self.mean > cost:
+        #     print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+        # print()
