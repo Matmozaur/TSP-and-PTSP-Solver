@@ -2,12 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c75520c-4bf3-4b82-9a1c-dd57d151cad5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct_order.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node_order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/TSP-and-PTSP-Solver.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/TSP-and-PTSP-Solver.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/ptsp_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/ptsp_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct_steerage.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node_steerage.py" afterDir="false" />
     </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -31,9 +34,13 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/main/analytics/ptsp/mcts" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\ptsp\mcts" />
+      <recent name="$PROJECT_DIR$/main/analytics/ptsp/domain/game" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005" />
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\ptsp\domain" />
@@ -41,12 +48,21 @@
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\test\unit_tests\analytics" />
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\tsp" />
     </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/main/analytics/ptsp/domain/game" />
-    </key>
   </component>
-  <component name="RunManager" selected="Python.mct">
-    <configuration name="mct" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.map">
+    <configuration name="map" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="TSP-and-PTSP-Solver" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -54,11 +70,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/main/analytics/ptsp/mcts" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/main/analytics/ptsp/domain/game" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main/analytics/ptsp/domain/game/map.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -67,7 +83,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="node" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="mct_steerage" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="TSP-and-PTSP-Solver" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -79,7 +95,28 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main/analytics/ptsp/mcts/node.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\ptsp\mcts\mct_steerage.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="node_steerage" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="TSP-and-PTSP-Solver" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/main/analytics/ptsp/mcts" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\ptsp\mcts\node_steerage.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -98,7 +135,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;$PROJECT_DIR$/test/unit_tests/analytics/tsp/domain_tests.py&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
@@ -106,8 +142,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.mct" />
-        <item itemvalue="Python.node" />
+        <item itemvalue="Python.map" />
+        <item itemvalue="Python.mct_steerage" />
+        <item itemvalue="Python.node_steerage" />
         <item itemvalue="Python tests.pytest in domain_tests.py" />
       </list>
     </recent_temporary>
@@ -130,12 +167,13 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="423" y="269" width="424" height="484" key="FileChooserDialogImpl" timestamp="1589712505826">

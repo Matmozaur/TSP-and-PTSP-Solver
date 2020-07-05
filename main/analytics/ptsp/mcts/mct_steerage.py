@@ -5,13 +5,13 @@ from main.analytics.ptsp.domain.game.agent_2005 import Agent
 from main.analytics.ptsp.domain.game.map import Map
 from main.analytics.ptsp.domain.game.ptsp_config import PTSPConfiguration
 from main.analytics.ptsp.domain.game.solution import Solution
-from main.analytics.ptsp.mcts.node import Node
+from main.analytics.ptsp.mcts.node_steerage import NodeSterage
 
 
-class MCT:
+class MCTSterage:
 
     def __init__(self, agent, solution, metric='UTC', lottery='random', save_sol=True, explore_scale=2):
-        self.root = Node(agent=agent, solution=solution, root=True)
+        self.root = NodeSterage(agent=agent, solution=solution, root=True)
         self.metric = metric
         self.lottery = lottery
         self.save_sol = save_sol

@@ -32,7 +32,7 @@ def dist(a, b):
     return math.sqrt(math.pow(a[0] - b[0], 2) + math.pow(a[1] - b[1], 2))
 
 
-class Node:
+class NodeSterage:
     max_f = 10000000
 
     def __init__(self, parent=None, m=None, root=False, agent=None, solution=None):
@@ -43,7 +43,7 @@ class Node:
             self.partial = copy.deepcopy(solution)
             self.min_dists = [dist(self.agent.location, self.partial.map_ptsp.cities[i])
                               for i in range(len(self.partial.map_ptsp.cities))]
-            Node.max_f = sum(self.min_dists)
+            NodeSterage.max_f = sum(self.min_dists)
         else:
             self.agent = copy.deepcopy(parent.agent)
             self.agent.update(m)
@@ -56,7 +56,7 @@ class Node:
                     if self.min_dists[i] > dist(self.agent.location, self.partial.map_ptsp.cities[i]):
                         self.min_dists[i] = dist(self.agent.location, self.partial.map_ptsp.cities[i])
             self.visited = False
-        f = fitness(self.min_dists, self.partial, self.agent, Node.max_f, self.agent.config.K1, self.agent.config.K2)
+        f = fitness(self.min_dists, self.partial, self.agent, NodeSterage.max_f, self.agent.config.K1, self.agent.config.K2)
         self.fitness = f
         self.mean = f
         self.visits = 0
@@ -64,7 +64,7 @@ class Node:
         print(self.fitness)
 
     def find_children(self):
-        return set([Node(self, x) for x in [(0, 1), (1, 0), (0, -1), (-1, 0), (0, 0)]])
+        return set([NodeSterage(self, x) for x in [(0, 1), (1, 0), (0, -1), (-1, 0), (0, 0)]])
 
     @property
     def is_terminal(self):
