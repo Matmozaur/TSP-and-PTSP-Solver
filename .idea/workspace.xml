@@ -2,15 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c75520c-4bf3-4b82-9a1c-dd57d151cad5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct_order.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node_order.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/TSP-and-PTSP-Solver.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/TSP-and-PTSP-Solver.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct_steerage.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node_steerage.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct_order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node_order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/mcts/node.py" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/tsp/mcts/node.py" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -48,18 +47,6 @@
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\test\unit_tests\analytics" />
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\tsp" />
     </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="RunManager" selected="Python.map">
     <configuration name="map" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -135,6 +122,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;$PROJECT_DIR$/test/unit_tests/analytics/tsp/domain_tests.py&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
@@ -167,13 +155,12 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="COLUMN_ORDER" />
-            </State>
+            <State />
           </value>
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="423" y="269" width="424" height="484" key="FileChooserDialogImpl" timestamp="1589712505826">

@@ -22,11 +22,11 @@ from solution import *
 from main.analytics.ptsp.domain.basic_solvers_2005.basic_order_solvers import *
 from main.analytics.ptsp.domain.basic_solvers_2005.basic_steering_solvers import *
 from main.analytics.ptsp.genetic.genetic_order import *
-from main.analytics.ptsp.mcts.mct import *
+from main.analytics.ptsp.mcts.mct_order import *
 ```
 
 ```{python}
-m = Map(1,120,40,5)
+m = Map(30,320,240,5)
 
 config = PTSPConfiguration()
 
@@ -50,41 +50,37 @@ m.cities[0]
 ```
 
 ```{python}
-s = Solution([], m, config)
-solution = []
-mct = MCT(a, s)
-mct.build_tree(max_time=360)
+# s = Solution([], m, config)
+# solution = []
+# mct = MCT(a, s)
+# mct.build_tree(max_time=360)
 ```
 
 ```{python}
-mct.iteration
+# mct.iteration
 ```
 
 ```{python}
-s = Solution([], m, config)
-solution = []
-while not s.check_solution():
-    mct = MCT(a, s)
-    mct.build_tree(max_time=0.2)
-    move = mct.choose_next().moves[0]
-    print()
-    print(move)
-    a.update(move)
-    print(a.location)
-    solution.append(move)
+# s = Solution([], m, config)
+# solution = []
+# while not s.check_solution():
+#     mct = MCT(a, s)
+#     mct.build_tree(max_time=0.2)
+#     move = mct.choose_next().moves[0]
+#     print()
+#     print(move)
+#     a.update(move)
+#     print(a.location)
+#     solution.append(move)
 ```
 
 ```{python}
-for i in range(5):
-    print(list(mct.root.children)[i].fitness)
-    print(list(mct.root.children)[i].mean)
-    print(list(mct.root.children)[i].visits)
-    print(list(mct.root.children)[i].partial.moves)
-    print()
-```
-
-```{python}
-print(mct.best_sol)
+# for i in range(5):
+#     print(list(mct.root.children)[i].fitness)
+#     print(list(mct.root.children)[i].mean)
+#     print(list(mct.root.children)[i].visits)
+#     print(list(mct.root.children)[i].partial.moves)
+#     print()
 ```
 
 ```{python}
@@ -103,6 +99,28 @@ print(mct.best_sol)
 # for move in moves:
 #     a.update(move)
 #     print(a.location,a.v)
+```
+
+mcts
+
+```{python}
+mct = MCTOrder([], m, config)
+```
+
+```{python}
+mct.build_tree(60)
+```
+
+```{python}
+o = mct.best_sol
+```
+
+```{python}
+solution = local_solution(m, config,o)
+```
+
+```{python}
+len(solution.moves)
 ```
 
 ```{python}
@@ -150,7 +168,7 @@ len(solution.moves)
 local
 
 ```{python}
-o = hill_climbing_ptsp(m, 30, config, 'local')
+o = hill_climbing_ptsp(m, 60, config, 'local')
 ```
 
 ```{python}
@@ -227,43 +245,6 @@ len(solution.moves)
 
 ```{python}
 
-```
-
-```{python}
-t = [True,True,True]
-```
-
-```{python}
-i = 0
-while t[i]:
-    i += 1
-    if i >= len(t):
-        break
- 
-```
-
-```{python}
-o = gs.solve('local',240)
-```
-
-```{python}
-solution = local_solution(m, config, o)
-```
-
-```{python}
-len(solution.moves)
-```
-
-```{python}
-
-```
-
-```{python}
-
-```
-
-```{python}
-any([True,False,True])
 ```
 
 ```{python}

@@ -8,6 +8,7 @@ def dist_eu(a, b):
 
 class NodeOrder:
     nodes = []
+    cities = []
 
     def __init__(self, parent=None, v=None, root=False, tree=None):
         self.parent = parent
@@ -50,12 +51,12 @@ class NodeOrder:
         elif lottery == 'nearest':
             nodes_left = set(NodeOrder.nodes).difference(set(self.partial))
             return NodeOrder(self, min(nodes_left,
-                                       key=lambda x: dist_eu(self.partial[-1], x)[
+                                       key=lambda x: dist_eu(self.cities[self.partial[-1]], x)[
                                            'weight']))
         elif lottery == 'nearest lottery':
             pass
             nodes_left = list(set(NodeOrder.nodes).difference(set(self.partial)))
-            p = [dist_eu(self.partial[-1], x)['weight'] for x in nodes_left]
+            p = [dist_eu(self.cities[self.partial[-1]], x)['weight'] for x in nodes_left]
             s = sum(p)
             p = [x / s for x in p]
             return NodeOrder(self, random.sample(nodes_left, 1, p=p)[0])

@@ -1,5 +1,6 @@
 import math
 import random
+from numpy.random import choice
 
 from main.analytics.tsp.domain.solutions import PartialSolution
 
@@ -47,10 +48,10 @@ class Node:
             return Node(self, min(nodes_left, key=lambda x: self.partial.Graph.get_edge_data(self.partial.HC[-1], x)['weight']))
         elif lottery == 'nearest lottery':
             nodes_left = list(set(PartialSolution.Graph.nodes).difference(set(self.partial.HC)))
-            p = [self.partial.Graph.get_edge_data(self.partial.HC[-1], x)['weight'] for x in nodes_left]
+            p = [1/self.partial.Graph.get_edge_data(self.partial.HC[-1], x)['weight'] for x in nodes_left]
             s = sum(p)
             p = [x/s for x in p]
-            return Node(self, random.sample(nodes_left, 1, p=p)[0])
+            return Node(self, choice(nodes_left, 1, p=p)[0])
         else:
             raise ValueError
 

@@ -6,8 +6,8 @@ from main.analytics.ptsp.domain.game.solution import Solution
 from .node_order import NodeOrder
 
 
-def cost(solution, cost_func):
-    m_o = MetricOrder(solution.map_ptsp, cost_func, solution.config)
+def cost(solution, ptsp_map, config, cost_func):
+    m_o = MetricOrder(ptsp_map, cost_func, config)
     return m_o.metric(solution)
 
 
@@ -25,7 +25,8 @@ class MCTOrder:
         self.cost_function = cost_function
         self.map = ptsp_map
         self.config = config
-        NodeOrder.nodes = self.map.cities
+        NodeOrder.cities = self.map.cities
+        NodeOrder.nodes = [i for i in range(len(self.map.cities))]
 
     def build_tree(self, max_time=60):
         start = time.time()
@@ -64,7 +65,7 @@ class MCTOrder:
 
     def _simulate(self, leaf):
         if leaf.is_terminal:
-            c = cost(Solution(leaf.partial, self.map, self.config), self.cost_function)
+            c = cost(leaf.partial, self.map, self.config, self.cost_function)
             if c < self.best_cost:
                 self.best_cost = c
                 self.best_sol = leaf.partial
