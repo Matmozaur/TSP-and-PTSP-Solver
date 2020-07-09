@@ -5,7 +5,7 @@ jupyter:
       extension: .Rmd
       format_name: rmarkdown
       format_version: '1.2'
-      jupytext_version: 1.3.2
+      jupytext_version: 1.3.3
   kernelspec:
     display_name: Python 3
     language: python
@@ -14,14 +14,198 @@ jupyter:
 
 ```{python}
 import sys
+from random import randrange
+import random
+import math
+from matplotlib import pyplot as plt
+import time
 sys.path.append('/home/matmozaur/Desktop/mgr/TSP-and-PTSP-Solver')
-from main.analytics.ptsp.domain.agent_2005 import *
-from main.analytics.ptsp.domain.ptsp_config import *
-from main.analytics.ptsp.domain.solution import *
+from main.analytics.ptsp.domain.game.agent_2005 import *
+from main.analytics.ptsp.domain.game.ptsp_config import *
+from main.analytics.ptsp.domain.game.solution import *
 from main.analytics.ptsp.domain.basic_solvers_2005.basic_order_solvers import *
 from main.analytics.ptsp.domain.basic_solvers_2005.basic_steering_solvers import *
 from main.analytics.ptsp.genetic.genetic_order import *
 from main.analytics.ptsp.mcts.mct_order import *
+from main.analytics.tsp.genetic.genetic_solver import *
+from main.analytics.tsp.mcts.mct import *
+from main.analytics.tsp.domain.solutions import *
+from main.analytics.tsp.domain.basic_solvers import *
+import pickle
+```
+
+```{python}
+
+```
+
+# TSP Tests
+
+
+Generate random graphs
+
+```{python}
+n = 50
+limit = 1000
+samples = 1
+
+G = [[[0 for x in range(n)] for y in range(n)] for _ in range(samples)]
+for s in range(samples):
+    for i in range(n):
+        for j in range(i,n):
+            G[s][i][j] = randrange(1,limit)
+            G[s][j][i] = G[s][i][j]
+            if(i == j):
+                G[s][i][j] = 0
+```
+
+```{python}
+np.array(G[0])
+```
+
+```{python}
+Graph = nx.from_numpy_matrix(np.array(G[0]))
+```
+
+```{python}
+Graph.nodes
+```
+
+## hill climbing
+
+```{python}
+solutions_hc = []
+for s in range(samples):
+    Graph = nx.from_numpy_matrix(np.array(G[s]))
+    PartialSolution.set_graph(Graph)
+    solution = hill_climbing_multiple(Graph, 60)
+    solutions_hc.append(solution)
+```
+
+```{python}
+scores_hc = [sol.cost for sol in solutions_hc]
+```
+
+```{python}
+filename = 'scores_hc.sav'
+pickle.dump(scores_hc, open(filename, 'wb'))
+```
+
+## genetic
+
+
+128
+
+```{python}
+solutions_genetic_128 = []
+for s in range(samples):
+    Graph = nx.from_numpy_matrix(np.array(G[s]))
+    PartialSolution.set_graph(Graph)
+    gs = GeneticSolver(128, Graph)
+    solution = gs.solve(60, mutate=False)
+    solutions_genetic_128.append(solution)
+```
+
+```{python}
+scores_gen_128 = [sol.cost for sol in solutions_genetic_128]
+```
+
+```{python}
+filename = 'scores_gen_128.sav'
+pickle.dump(scores_gen_128, open(filename, 'wb'))
+```
+
+256
+
+```{python}
+solutions_genetic_256 = []
+for s in range(samples):
+    Graph = nx.from_numpy_matrix(np.array(G[s]))
+    PartialSolution.set_graph(Graph)
+    gs = GeneticSolver(256, Graph)
+    solution = gs.solve(60, mutate=False)
+    solutions_genetic_256.append(solution)
+```
+
+```{python}
+scores_gen_256 = [sol.cost for sol in solutions_genetic_256]
+```
+
+```{python}
+filename = 'scores_gen_256.sav'
+pickle.dump(scores_gen_256, open(filename, 'wb'))
+```
+
+## mcts
+
+
+random
+
+```{python}
+solutions_mct_lottery = []
+for s in range(samples):
+    Graph = nx.from_numpy_matrix(np.array(G[s]))
+    PartialSolution.set_graph(Graph)
+    part = PartialSolution([])
+    mct = MCT(part, lottery='nearest lottery')
+    mct.build_tree(60)
+    solution = mct.choose_solution()
+    solutions_mct_lottery.append(solution)
+```
+
+```{python}
+scores_mct_lottery = [sol.cost for sol in solutions_mct_lottery]
+```
+
+```{python}
+filename = 'scores_mct_lottery.sav'
+pickle.dump(scores_mct_lottery, open(filename, 'wb'))
+```
+
+nearest
+
+```{python}
+solutions_mct_near = []
+for s in range(samples):
+    Graph = nx.from_numpy_matrix(np.array(G[s]))
+    PartialSolution.set_graph(Graph)
+    part = PartialSolution([])
+    mct = MCT(part, lottery='nearest')
+    mct.build_tree(60)
+    solution = mct.choose_solution()
+    solutions_mct_near.append(solution)
+```
+
+```{python}
+scores_mct_nearest = [sol.cost for sol in solutions_mct_near]
+```
+
+```{python}
+filename = 'scores_mct_nearest.sav'
+pickle.dump(scores_mct_nearest, open(filename, 'wb'))
+```
+
+## summary 
+
+```{python}
+
+```
+
+```{python}
+
+```
+
+# PTSP Tests
+
+```{python}
+
+```
+
+```{python}
+
+```
+
+```{python}
+
 ```
 
 ```{python}
