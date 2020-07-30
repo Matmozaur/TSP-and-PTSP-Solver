@@ -2,32 +2,87 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c75520c-4bf3-4b82-9a1c-dd57d151cad5" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/TSP-and-PTSP-Solver.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/TSP-and-PTSP-Solver.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TSP_PTSP_solver/settings.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TSP_PTSP_solver/urls.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TSP_PTSP_solver/wsgi.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/manage.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/results/scores_gen_128.sav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/results/scores_gen_256.sav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/results/scores_hc.sav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/results/scores_mct_lottery.sav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/results/scores_mct_nearest.sav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/css/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/css/baseStyle.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/images/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/images/background_graph.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/images/placeholder.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/media/base_video.mkv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/media/init.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/media/temp.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/static" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/admin.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/apps.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/forms.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/migrations/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/base.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/home.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/tests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/tsp_views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/Numeric tests-checkpoint.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/Numeric tests-checkpoint.Rmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/Numeric tests-checkpoint.Rmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/Untitled-checkpoint.Rmd" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Numeric tests.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/Numeric tests.Rmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/TSP_PTSP_solver/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/basic_solvers_2005/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/basic_order_solvers.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/basic_solvers_2005/basic_order_solvers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/basic_steering_solvers.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/basic_solvers_2005/basic_steering_solvers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/basic_solvers_2005/metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/.ipynb_checkpoints/Untitled-checkpoint.Rmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/game/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2005.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/game/agent_2005.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2012.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/game/agent_2012.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/map.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/game/map.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/ptsp_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/game/ptsp_config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/solution.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/game/solution.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/genetic/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/genetic/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/genetic/genetic_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/genetic/genetic_order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/genetic/genetic_trajectory.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/genetic/genetic_trajectory.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/mcts/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/mcts/mct_order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct_steerage.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/mcts/mct_steerage.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/mcts/node_order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node_steerage.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/mcts/node_steerage.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/domain/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/domain/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/domain/basic_solvers.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/domain/basic_solvers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/domain/solutions.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/domain/solutions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/genetic/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/genetic/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/genetic/genetic_solver.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/genetic/genetic_solver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/mcts/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/mcts/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/mcts/mct.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/mcts/mct.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/mcts/node.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/mcts/node.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scores_gen_128.sav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scores_gen_256.sav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scores_gen_ptsp.sav" beforeDir="false" afterPath="$PROJECT_DIR$/results/scores_gen_ptsp.sav" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scores_hc.sav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scores_hc_ptsp.sav" beforeDir="false" afterPath="$PROJECT_DIR$/results/scores_hc_ptsp.sav" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scores_mct_lottery.sav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scores_mct_nearest.sav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scores_mcts_ptsp.sav" beforeDir="false" afterPath="$PROJECT_DIR$/results/scores_mcts_ptsp.sav" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/unit_tests/analytics/tsp/domain_tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/unit_tests/analytics/tsp/domain_tests.py" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/main/analytics/ptsp/domain/game/map.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <folding>
-                <element signature="e#0#13#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -39,72 +94,7 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
-    <option name="x" value="-10" />
-    <option name="y" value="-10" />
-    <option name="width" value="1939" />
-    <option name="height" value="1049" />
-  </component>
   <component name="ProjectId" id="1aiRqfvcrHJaU957j9AfDGcFPB4" />
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="TSP-and-PTSP-Solver" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSP-and-PTSP-Solver" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSP-and-PTSP-Solver" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSP-and-PTSP-Solver" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSP-and-PTSP-Solver" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSP-and-PTSP-Solver" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="analytics" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSP-and-PTSP-Solver" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSP-and-PTSP-Solver" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="analytics" type="462c0819:PsiDirectoryNode" />
-              <item name="ptsp" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSP-and-PTSP-Solver" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSP-and-PTSP-Solver" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="analytics" type="462c0819:PsiDirectoryNode" />
-              <item name="ptsp" type="462c0819:PsiDirectoryNode" />
-              <item name="domain" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSP-and-PTSP-Solver" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSP-and-PTSP-Solver" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="analytics" type="462c0819:PsiDirectoryNode" />
-              <item name="ptsp" type="462c0819:PsiDirectoryNode" />
-              <item name="domain" type="462c0819:PsiDirectoryNode" />
-              <item name="game" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSP-and-PTSP-Solver" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSP-and-PTSP-Solver" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
-  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -115,29 +105,18 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\ptsp\mcts" />
-      <recent name="$PROJECT_DIR$/main/analytics/ptsp/domain/game" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/results" />
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005" />
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\ptsp\domain" />
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\tsp\domain" />
-      <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\test\unit_tests\analytics" />
-      <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\tsp" />
     </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\ptsp\mcts" />
+      <recent name="$PROJECT_DIR$/main/analytics/ptsp/domain/game" />
+    </key>
   </component>
   <component name="RunManager" selected="Python.map">
     <configuration name="map" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -213,6 +192,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;$PROJECT_DIR$/test/unit_tests/analytics/tsp/domain_tests.py&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
@@ -227,6 +207,7 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="project-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -240,44 +221,12 @@
     </task>
     <servers />
   </component>
-  <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="838" extended-state="7" />
-    <editor active="true" />
-    <layout>
-      <window_info id="Favorites" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24966443" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Python Console" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="right" id="R Packages" />
-      <window_info anchor="right" id="R Graphics" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-    </layout>
-  </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="RECENTLY_FILTERED_USER_GROUPS">
-                <collection />
-              </option>
-              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-                <collection />
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
       </map>
@@ -296,12 +245,13 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="423" y="269" width="424" height="484" key="FileChooserDialogImpl" timestamp="1589712505826">
+    <state x="423" y="269" width="424" height="484" key="FileChooserDialogImpl" timestamp="1595839900590">
       <screen x="0" y="27" width="1280" height="997" />
     </state>
-    <state x="423" y="269" width="424" height="484" key="FileChooserDialogImpl/1280.0.1280.1024/0.27.1280.997@0.27.1280.997" timestamp="1589712505826" />
+    <state x="423" y="269" width="424" height="484" key="FileChooserDialogImpl/1280.0.1280.1024/0.27.1280.997@0.27.1280.997" timestamp="1595839900590" />
     <state x="468" y="269" width="424" height="484" key="FileChooserDialogImpl/67.27.1213.997@67.27.1213.997" timestamp="1588613155058" />
     <state width="1190" height="176" key="GridCell.Tab.0.bottom" timestamp="1593027577165">
       <screen x="67" y="27" width="1213" height="997" />
@@ -327,16 +277,9 @@
       <screen x="67" y="27" width="1213" height="997" />
     </state>
     <state x="283" y="138" width="770" height="773" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/67.27.1213.997@67.27.1213.997" timestamp="1593026972263" />
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/main/analytics/ptsp/domain/game/map.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <state x="364" y="263" width="618" height="522" key="find.popup" timestamp="1596053931167">
+      <screen x="67" y="27" width="1213" height="997" />
+    </state>
+    <state x="364" y="263" width="618" height="522" key="find.popup/67.27.1213.997@67.27.1213.997" timestamp="1596053931167" />
   </component>
 </project>

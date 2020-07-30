@@ -5,7 +5,7 @@ jupyter:
       extension: .Rmd
       format_name: rmarkdown
       format_version: '1.2'
-      jupytext_version: 1.3.3
+      jupytext_version: 1.3.2
   kernelspec:
     display_name: Python 3
     language: python
@@ -19,19 +19,20 @@ import random
 import math
 from matplotlib import pyplot as plt
 import time
-from main.analytics.ptsp.domain.game.map import *
-from main.analytics.ptsp.domain.game.agent_2005 import *
-from main.analytics.ptsp.domain.game.ptsp_config import *
-from main.analytics.ptsp.domain.game.solution import *
-from main.analytics.ptsp.domain.basic_solvers_2005.basic_order_solvers import *
-from main.analytics.ptsp.domain.basic_solvers_2005.basic_steering_solvers import *
-from main.analytics.ptsp.genetic.genetic_order import *
-from main.analytics.ptsp.mcts.mct_order import *
-from main.analytics.tsp.genetic.genetic_solver import *
-from main.analytics.tsp.mcts.mct import *
-from main.analytics.tsp.domain.solutions import *
-from main.analytics.tsp.domain.basic_solvers import *
+from analytics.ptsp.domain.game.map import *
+from analytics.ptsp.domain.game.agent_2005 import *
+from analytics.ptsp.domain.game.ptsp_config import *
+from analytics.ptsp.domain.game.solution import *
+from analytics.ptsp.domain.basic_solvers_2005.basic_order_solvers import *
+from analytics.ptsp.domain.basic_solvers_2005.basic_steering_solvers import *
+from analytics.ptsp.genetic.genetic_order import *
+from analytics.ptsp.mcts.mct_order import *
+from analytics.tsp.genetic.genetic_solver import *
+from analytics.tsp.mcts.mct import *
+from analytics.tsp.domain.solutions import *
+from analytics.tsp.domain.basic_solvers import *
 import pickle
+import pandas as pd
 ```
 
 ```{python}
@@ -59,7 +60,7 @@ for s in range(samples):
 ```
 
 ```{python}
-np.array(G[0])
+np.array(G[9]).shape
 ```
 
 ```{python}
@@ -73,16 +74,16 @@ Graph.nodes
 ## hill climbing
 
 ```{python}
-solutions_hc = []
+scores_hc = []
 for s in range(samples):
     Graph = nx.from_numpy_matrix(np.array(G[s]))
     PartialSolution.set_graph(Graph)
     solution = hill_climbing_multiple(Graph, 60)
-    solutions_hc.append(solution)
+    scores_hc.append(solution.cost)
 ```
 
 ```{python}
-scores_hc = [sol.cost for sol in solutions_hc]
+# scores_hc = [sol.cost for sol in solutions_hc]
 ```
 
 ```{python}
@@ -96,17 +97,17 @@ pickle.dump(scores_hc, open(filename, 'wb'))
 128
 
 ```{python}
-solutions_genetic_128 = []
+scores_gen_128 = []
 for s in range(samples):
     Graph = nx.from_numpy_matrix(np.array(G[s]))
     PartialSolution.set_graph(Graph)
     gs = GeneticSolver(128, Graph)
     solution = gs.solve(60, mutate=False)
-    solutions_genetic_128.append(solution)
+    scores_gen_128.append(solution.cost)
 ```
 
 ```{python}
-scores_gen_128 = [sol.cost for sol in solutions_genetic_128]
+# scores_gen_128 = [sol.cost for sol in solutions_genetic_128]
 ```
 
 ```{python}
@@ -117,17 +118,17 @@ pickle.dump(scores_gen_128, open(filename, 'wb'))
 256
 
 ```{python}
-solutions_genetic_256 = []
+scores_gen_256 = []
 for s in range(samples):
     Graph = nx.from_numpy_matrix(np.array(G[s]))
     PartialSolution.set_graph(Graph)
     gs = GeneticSolver(256, Graph)
     solution = gs.solve(60, mutate=False)
-    solutions_genetic_256.append(solution)
+    scores_gen_256.append(solution.cost)
 ```
 
 ```{python}
-scores_gen_256 = [sol.cost for sol in solutions_genetic_256]
+# scores_gen_256 = [sol.cost for sol in solutions_genetic_256]
 ```
 
 ```{python}
@@ -141,7 +142,7 @@ pickle.dump(scores_gen_256, open(filename, 'wb'))
 random
 
 ```{python}
-solutions_mct_lottery = []
+scores_mct_lottery = []
 for s in range(samples):
     Graph = nx.from_numpy_matrix(np.array(G[s]))
     PartialSolution.set_graph(Graph)
@@ -149,11 +150,11 @@ for s in range(samples):
     mct = MCT(part, lottery='nearest lottery')
     mct.build_tree(60)
     solution = mct.choose_solution()
-    solutions_mct_lottery.append(solution)
+    scores_mct_lottery.append(solution.cost)
 ```
 
 ```{python}
-scores_mct_lottery = [sol.cost for sol in solutions_mct_lottery]
+# scores_mct_lottery = [sol.cost for sol in solutions_mct_lottery]
 ```
 
 ```{python}
@@ -164,7 +165,7 @@ pickle.dump(scores_mct_lottery, open(filename, 'wb'))
 nearest
 
 ```{python}
-solutions_mct_near = []
+scores_mct_nearest = []
 for s in range(samples):
     Graph = nx.from_numpy_matrix(np.array(G[s]))
     PartialSolution.set_graph(Graph)
@@ -172,11 +173,11 @@ for s in range(samples):
     mct = MCT(part, lottery='nearest')
     mct.build_tree(60)
     solution = mct.choose_solution()
-    solutions_mct_near.append(solution)
+    scores_mct_nearest.append(solution.cost)
 ```
 
 ```{python}
-scores_mct_nearest = [sol.cost for sol in solutions_mct_near]
+# scores_mct_nearest = [sol.cost for sol in solutions_mct_near]
 ```
 
 ```{python}
@@ -187,7 +188,54 @@ pickle.dump(scores_mct_nearest, open(filename, 'wb'))
 ## summary 
 
 ```{python}
+# filename = 'scores_hc.sav'
+# scores_hc = pickle.load(open(filename, 'rb'))
 
+# filename = 'scores_gen_128.sav'
+# scores_gen_128 = pickle.load(open(filename, 'rb'))
+
+# filename = 'scores_gen_256.sav'
+# scores_gen_256 = pickle.load(open(filename, 'rb'))
+
+# filename = 'scores_mct_lottery.sav'
+# scores_mct_lottery = pickle.load(open(filename, 'rb'))
+
+# filename = 'scores_mct_nearest.sav'
+# scores_mct_nearest = pickle.load(open(filename, 'rb'))
+```
+
+```{python}
+pd.DataFrame(scores_hc).mean()
+```
+
+```{python}
+pd.DataFrame(scores_gen_128).mean()
+```
+
+```{python}
+pd.DataFrame(scores_gen_256).mean()
+```
+
+```{python}
+scores_gen_256
+```
+
+```{python}
+pd.DataFrame(scores_mct_lottery).mean()
+```
+
+```{python}
+pd.DataFrame(scores_mct_nearest).mean()
+```
+
+```{python}
+# for i in range(samples):
+#     for d, n in zip([scores_hc,scores_gen_128,scores_gen_256,scores_mct_lottery,scores_mct_nearest],
+#                    ['scores_hc','scores_gen_128','scores_gen_256','scores_mct_lottery','scores_mct_nearest']):
+#         print(n)
+#         print(d[i])
+# #         print(pd.DataFrame(d).mean())
+#     print()
 ```
 
 ```{python}
@@ -198,7 +246,7 @@ pickle.dump(scores_mct_nearest, open(filename, 'wb'))
 
 ```{python}
 n = 30
-samples = 50
+samples = 1
 ```
 
 ```{python}
@@ -224,8 +272,8 @@ scores_hc_ptsp = [len(sol.moves) for sol in solutions_hc]
 ```
 
 ```{python}
-filename = 'scores_hc_ptsp.sav'
-pickle.dump(scores_hc_ptsp, open(filename, 'wb'))
+# filename = 'scores_hc_ptsp.sav'
+# pickle.dump(scores_hc_ptsp, open(filename, 'wb'))
 ```
 
 ```{python}
@@ -250,8 +298,8 @@ scores_gen_ptsp = [len(sol.moves) for sol in solutions_gen]
 ```
 
 ```{python}
-filename = 'scores_gen_ptsp.sav'
-pickle.dump(scores_gen_ptsp, open(filename, 'wb'))
+# filename = 'scores_gen_ptsp.sav'
+# pickle.dump(scores_gen_ptsp, open(filename, 'wb'))
 ```
 
 ```{python}
@@ -277,12 +325,41 @@ scores_mcts_ptsp = [len(sol.moves) for sol in solutions_mcts]
 ```
 
 ```{python}
-filename = 'scores_mcts_ptsp.sav'
-pickle.dump(scores_mcts_ptsp, open(filename, 'wb'))
+# filename = 'scores_mcts_ptsp.sav'
+# pickle.dump(scores_mcts_ptsp, open(filename, 'wb'))
 ```
 
 ```{python}
 scores_mcts_ptsp
+```
+
+```{python}
+
+```
+
+# Summary
+
+```{python}
+filename = 'scores_hc_ptsp.sav'
+scores_hc_ptsp = pickle.load(open(filename, 'rb'))
+
+filename = 'scores_gen_ptsp.sav'
+scores_gen_ptsp = pickle.load(open(filename, 'rb'))
+
+filename = 'scores_mcts_ptsp.sav'
+scores_mcts_ptsp = pickle.load(open(filename, 'rb'))
+```
+
+```{python}
+pd.DataFrame(scores_hc_ptsp).mean()
+```
+
+```{python}
+pd.DataFrame(scores_gen_ptsp).mean()
+```
+
+```{python}
+pd.DataFrame(scores_mcts_ptsp).mean()
 ```
 
 ```{python}

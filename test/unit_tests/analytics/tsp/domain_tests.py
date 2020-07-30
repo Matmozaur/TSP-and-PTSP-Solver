@@ -2,7 +2,7 @@ import unittest
 import networkx as nx
 import numpy as np
 
-from main.analytics.tsp.domain.solutions import PartialSolution, ValidSolution
+from analytics import PartialSolution, ValidSolution
 
 
 class TestDomainMethods(unittest.TestCase):
