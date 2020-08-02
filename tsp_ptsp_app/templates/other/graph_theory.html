@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+ <script>
+ document.title = "Graph Theory"
+ </script>
+    <h2>Wprowadzenie</h2>
+    <h4 style="text-align:left">
+    $\textbf{Grafem}$ $G$ nazywamy uporządkowaną parę zbiorów $(V,E)$, gdzie $V$ nazywamy zbiorem wierzchołków, a $E$, będące podzbiorem dwuelementowych podzbiorów $V$, zbiorem krawędzi. 
+    $\textbf{Sąsiedztwem}$ wierzchołka $v\in V$ będziemy nazywali zbiór wszystkich wierzchołków, dla których istnieje w $G$ krawędź zawierająca $v$ oraz ten wierzchołek, sąsiedztwo będziemy oznaczali przez $N(v)$ (czyli $N(v)=\{ u \in V: \{ u,v \}  \in E \}$).
+    $\textbf{Stopniem}$ wierzchołka $v$ będziemy nazywali moc jego sąsiedztwa.
+    $\textbf{Grafem pełnym}$ nazywamy graf, w którym każda para wierzchołków jest połączona krawędzią. Graf pełny rzędu $n$ będziemy oznaczali jako $K_n$.<br>
+    $\textbf{Grafem ważonym}$  $G$ nazywamy graf $G$ wraz z funkcją $w:$ $E \rightarrow \mathbb{R}_+$, wartość $w(e)$ będziemy nazywali $\textbf{wagą}$  $e$.<br>
+    $\textbf{Ścieżką}$  $P$ długości $k$ nazywamy ciąg $k+1$ różnych wierzchołków, czyli $V(P)=\{v_0,v_1,...,v_k\}$  wraz z krawędziami łączącymi kolejne wierzchołki z ciągu, to znaczy $E(P)=\{\{v_0,v_1\},\{v_1,v_2\},...,\{v_{k-1},v_k\}\}$.
+    $\textbf{Wagą ścieżki}$  $P$ nazywamy sumę wag wszystkich krawędzi do niej należących i oznaczamy $w(P)$, tzn. $w(P)=\sum_{n=0}^{k-1}  w((v_n,v_{n+1}))$
+    Ścieżką pomiędzy wierzchołkami $u$ i $v$ w $G$ nazywamy ścieżkę zawartą w $G$, w której pierwszym wierzchołkiem jest $u$ a ostatnim $v$.
+    $\textbf{Cyklem}$  będziemy nazywali graf powstały poprzez dołożenie do ścieżki o długości co najmniej dwa dodatkowej krawędzi łączącej jej wierzchołki o stopniu (liczbie krawędzi, do których należy) równym jeden.<br>
+    Graf jest $\textbf{spójny}$, jeśli dla dowolnych dwóch różnych wierzchołków istnieje ścieżka, która je łączy.
+    $\textbf{Drzewem}$  nazywamy spójny graf bez cykli. Wierzchołki drzewa nazywamy często węzłami. Możemy wyróżnić dowolny wierzchołek w drzewie i nazywać go wówczas $\textbf{korzeniem}$  drzewa. Takie drzewo nazywamy wówczas drzewem ukorzenionym. Wierzchołki drzewa, których stopień jest równy jeden nazywać będziemy $\textbf{liśćmi}$.
+</h4>
+{% endblock %}
+</html>

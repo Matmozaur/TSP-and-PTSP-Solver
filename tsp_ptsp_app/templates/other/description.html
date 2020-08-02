@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+ <script>
+ document.title = "description"
+ </script>
+<h2 style="text-align:left">Overall</h2>
+<ul class="list">
+	<li>
+    <a href="{% url 'graph_theory' %}">Graph Theory</a>
+	</li>
+	<li>
+    <a href="{% url 'gen_desc' %}">Genetic algorithms</a>
+	</li>
+	<li>
+	<a href="{% url 'mcts_desc' %}">Monte Carlo Tree Search</a>
+	</li>
+</ul>
+
+<h2 style="text-align:left">Traveling Salesperson</h2>
+<ul class="list">
+	<li>
+    <a href="{% url 'tsp_desc' %}">Problem Description</a>
+	</li>
+	<li>
+    <a href="{% url 'tsp_methods_desc' %}">Applied Methods</a>
+	</li>
+</ul>
+
+<h2 style="text-align:left">Physical Traveling Salesperson</h2>
+<ul class="list">
+	<li>
+    <a href="{% url 'ptsp_desc' %}">Problem Description</a>
+	</li>
+	<li>
+    <a href="{% url 'ptsp_methods_desc' %}">Applied Methods</a>
+	</li>
+</ul>
+
+{% endblock %}
+</html>

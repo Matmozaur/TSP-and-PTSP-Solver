@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+
+<h2 style="text-align:left"><a href="{% url 'ptsp_file' %}">Solve PTSP problem from file</a></h2>
+<br>
+<h2 style="text-align:left"><a href="{% url 'ptsp_interactive' %}">Solve PTSP problem interactively</a></h2>
+<br>
+<h2 style="text-align:left"><a href="{% url 'ptsp_game' %}">Try yourself</a></h2>
+<br>
+<h2 style="text-align:left"><a href="{% url 'ptsp_desc' %}">Read problem description</a></h2>
+{% endblock %}
+</html>

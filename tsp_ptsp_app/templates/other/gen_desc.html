@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+ <script>
+ document.title = "Genetic"
+ </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['<br>(','<br>)']]}});
+</script>
+<script type="text/javascript"
+  src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<h2>Algorytmy Genetyczne</h2>
+<h4 style="text-align:left">
+
+    Rodzinę algorytmów stosowanych min. do zadań optymalizacyjnych, wzorowanych na biologicznej ewolucji określa się jako $\textbf{algorytmy ewolucyjne}$. Najpopularniejszą klasą algorytmów ewolucyjnych jest zaproponowany przez Johna Hollanda typ algorytmu zwany $\textbf{algorytmem genetycznym}$. W dalszej części rozdziału będziemy zajmowali się tym właśnie podejściem.<br>
+    Do zdefiniowania ogólnej postaci algorytmu z tej klasy musimy wprowadzić matematyczne definicje kilku pojęć, bezpośrednio inspirowanych odpowiadającym pojęciom z dziedziny genetyki.<br>
+    $\textbf{Populacją}$ rozmiaru $k$ będziemy nazywać zbiór $k$ dopuszczalnych rozwiązań rozważanego problemu i oznaczali $P_k$.<br>
+    $\textbf{Krzyżowaniem}$ jedno lub dwu punktowym dopuszczalnych rozwiązań $X$ oraz $Y$ będziemy nazywali odpowiednio jedno lub dwa nowe, dopuszczalne rozwiązania powstałe poprzez dobrane do problemu połączenie rozwiązań $X$ i $Y$.<br>
+    $\textbf{Mutacja}$ rozwiązania $X$ to wprowadzenie do niego pewnych zmian (losowych lub nie), po których będzie ono wciąż dopuszczalnym rozwiązaniem. Często wykorzystujemy tutaj inne, heurystyczne algorytmy przeszukiwania zaczynające od tego rozwiązania (np. lokalne ulepszanie). <br>
+    Znając te definicje możemy zapisać ogólną postać algorytmu genetycznego następująco:<br>
+    &emsp; Wybieramy (najczęściej losujemy) początkową, $k$-elementową populacje rozwiązań $P_k$.<br>
+    &emsp; Zapisujemy najlepsze rozwiązanie z populacji jako $X_B$.<br>
+    &emsp; Dopóki nie nastąpi ustalony warunek (np. maksymalny czas, maksymalna liczba iteracji):<br>
+    &emsp;&emsp;  Dobieramy rozwiązania w pary (losowo lub według ustalonego kryterium), a następnie tworzymy nową populację liczności $2k$ lub $\frac{3}{2}k$ poprzez dodanie do $P_k$ wyników krzyżowań ustalonych par.
+  <br>   
+ &emsp;&emsp;  Dokonujemy mutacji na elementach populacji (czasem tylko z pewnym prawdopodobieństwem, lub nawet w ogóle).<br>
+    &emsp;&emsp;  Wybieramy $k$ (najczęściej najlepszych, według funkcji celu) rozwiązań z populacji i wyrzucamy z niej wszystkie inne rozwiązania.<br>
+    &emsp;&emsp;  Jeśli najlepsze rozwiązanie z nowej populacji jest lepsze niż $X_B$ zapisujemy je jako $X_B$.<br>
+     &emsp;Zwracamy wartość funkcji celu dla  $X_B$ (lub samo $X_B$ jeśli rozważamy problem wyszukiwania optymalnego rozwiązania).<br>
+</h4>
+{% endblock %}
+</html>

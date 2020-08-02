@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+ <script>
+ document.title = "TSP Methods"
+ </script>
+<h2>Metody Stosowane dla Problemu Komiwojarzera</h2>
+<h4 style="text-align:left">
+ Z uwagi na trudność obliczeniową problemu komiwojażera dla większych grafów nie jesteśmy zazwyczaj w stanie znaleźć dokładnego rozwiązania w dopuszczalnym czasie. Z pomocą przychodzą wówczas $\textbf{algorytmy heurystyczne}$, które dają nam pewne dopuszczalne rozwiązanie w stosunkowo krótkim czasie, jednak bez gwarancji jego optymalności.<br>
+ <br>
+ <br>
+ $\textbf{Lokalne Ulepszanie}$
+ <br>
+ <br>
+ Jednym z podstawowych algorytmów użytecznych np. w problemie komiwojażera jest tak zwane lokalne ulepszanie. Aby móc zdefiniować ten algorytm, potrzebujemy najpierw wprowadzić funkcję sąsiedztwa $N$ na dziedzinie problemu: $N: D_\Pi \rightarrow 2^{D_\Pi}$.<br>
+    Zazwyczaj definiuje się ją przy pomocy pewnej metryki $d$ zdefiniowanej na dziedzinie, w następujący sposób: $\forall_{X \in D_{\Pi}} N_d(X)=\{ Y\in D_{\Pi} :d(X,Y)\leq d_0 \}$ dla pewnego $d_0 \in \mathbb{N}$.<br>
+    Mając powyższe definicje, ogólną postać algorytmu lokalnego ulepszania (dla problemu minimalizacji z funkcją celu $F$) można zapisać następująco:
+ <br>
+     &emsp;Wybierz dowolne rozwiązanie początkowe $X$ ($X \in D_{\Pi}$).
+ <br>
+     &emsp;Dopóki istnieje dopuszczalne rozwiązanie $Y\in N(X):$ $F(X)>F(Y)$:
+  <br>
+     &emsp;&emsp;$Y=X$.
+  <br>
+     &emsp;Zwróć $X$.
+  <br>
+   W problemie komiwojażera metrykę, względem której będziemy definiować funkcję sąsiedztwa określa się jako liczbę krawędzi, którymi różnią się cykle Hamiltona, czyli $\forall_{X,Y \in D_{\Pi}} d(X,Y):=|e\in E(X) : e\notin E(Y)|$.<br>
+   Funkcje sąsiedztwa w zależności od maksymalnej liczby różnych krawędzi ($k$) będziemy oznaczali $N_k$, czyli $\forall_{X \in D_{Pi}}N_k(X)=\{Y\in D_{\Pi} : d(X,Y)\leq k\}$.
+   Zazwyczaj w zastosowaniach lokalnego ulepszania dla problemu komiwojażera używa się funkcji sąsiedztw $N_2$ lub $N_3$.<br>
+   Lokalne ulepszanie należy stosować iteracyjnie, zaczynając ok różnych punktów (zazwyczaj losowo wybranych) i zapamiętywać najlepsze uzyskane rozwiązania. Im więcej różnych punktów początkowych wykorzystamy, tym większe prawdopodobieństwo uzyskania optymalnego, lub bliskiego optymalnemu rozwiązania.<br>
+
+<br>
+     <br>
+    $\textbf{Algorytm Genetyczny}$
+ <br>
+ <br>
+    W przypadku problemu komiwojażera jako mutację można zastosować metodę lokalnego ulepszania, z rozwiązaniem początkowym takim jak mutowane rozwiązanie. W zależności od ograniczeń czasowych i złożoności problemu warto zastosować ograniczenie czasowe na tę operację i zwrócić najlepszy wynik znaleziony w zadanym czasie. Operacja mutacji jest tutaj opcjonalne, często zdarza się że algorytmy radzą sobie lepiej (szybciej osiągają dobre wyniki) bez jej zastosowania.
+    <br>
+    Operację krzyżowania rozwiązań $X=(x_1,...,x_n)$ oraz $Y=(y_1,...,y_n)$ definiujemy natomiast bazując na heurystyce mówiącej że "chcemy przejść część drogi tak jak w pierwszym cyklu, a część tak jak w drugim". W myśl tej zasady rozwiązania będziemy konstruować według algorytmu:
+    <br>
+       &emsp;Wybieramy $j,k \in (1,n)$ - zazwyczaj losowo.
+    <br>
+       &emsp;Definiujemy $W=X, Z=Y, i=max(j,k), l_x=max(j,k),l_y=max(j,k) $.
+    <br>
+       &emsp;Dopóki $i\neq min(j,k)$:
+    <br>
+       &emsp;&emsp;Jeśli $y_{l_y}\notin \{x_{min(l,k)},..., x_{max(l,k)-1}\}$:<br>
+    &emsp;&emsp;&emsp; $w_i=y_{l_y}$.<br>
+       &emsp;&emsp;Jeśli $y_{l_y}\in \{x_{min(l,k)},..., x_{max(l,k)-1}\}$:<br>
+     &emsp;&emsp;&emsp;$w_i=y_r,$ gdzie $y_r$ jest pierwszym elementem szeregu $(y_{l_y},y_{l_y+1},...,y_n,y_1,...,y_{min(j,k)}$, takim że $y_r\notin \{x_{min(l,k)},..., x_{max(l,k)-1}\}$.
+    <br>
+    &emsp;&emsp;&emsp;$l_y=1+(r$ $mod$ $n)$.<br>
+
+     &emsp; &emsp; Jeśli $x_{l_x}\notin \{y_{min(l,k)},..., y_{max(l,k)-1}\}$:<br>
+    &emsp; &emsp; &emsp;  $z_i=x_{l_x}$<br>
+     &emsp; &emsp; Jeśli $x_{l_x}\in \{y_{min(l,k)},..., y_{max(l,k)-1}\}$:<br>
+    &emsp;&emsp;&emsp;$z_i=x_r,$ gdzie $y_r$ jest pierwszym elementem szeregu $(x_{l_x},y_{l_x+1},...,x_n,x_1,...,x_{min(j,k)}$, takim że $x_r\notin \{y_{min(l,k)},..., y_{max(l,k)-1}\}$.
+    <br>
+    &emsp;&emsp;&emsp;$l_x=1+(r$ $mod$ $n)$.<br>
+     &emsp;&emsp;$i=1+(i$ $mod$ $n)$.<br>
+     &emsp;Zwracamy $W$ oraz $Z$.
+
+    <br>
+    <br>
+ <br>
+    $\textbf{MCTS}$
+ <br>
+ <br>
+     Stosując metodę przeszukiwania drzew Monte Carlo do problemu komiwojażera, musimy przede wszystkim określić interpretację wierzchołków i ruchów w drzewie Monte Carlo. W naszym podejściu wierzchołki będą odpowiadały częściowym rozwiązaniom, tzn. ciągom różnych wierzchołków w zadanym grafie (ścieżkom).<br>
+    Warunkiem kończącym symulacje będzie oczywiście wykorzystanie wszystkich wierzchołków, a wynikiem waga powstałego w ten sposób (dodając krawędź pomiędzy pierwszym wierzchołkiem a korzeniem) cyklu Hamiltona.<br>
+    Jako warunek stopu dla pętli rozrostu drzewa ustalmy ograniczenie czasowe równe $T$ milisekund ($T$ będzie podawane do algorytmu jako jego parametr).<br>
+    Domyślnymi wartościami związanymi z wierzchołkami będzie para zer. Wartości te będą oznaczały średnią wagę cyklu Hamiltona stworzonego w gałęzi wychodzących z tego wierzchołka oraz liczbę odwiedzin tego wierzchołka w dotychczasowym przebiegu algorytmu.<br>
+    Wyboru potomka w drzewie będziemy dokonywali, przy założeniu że wszystkie rozpatrywane wierzchołki były już odwiedzone, na podstawie zmodyfikowanego wzoru \textbf{UTC} wprowadzonego przez L. Kocsisa i Cs. Szepesvária. Ze względu na minimalizacyjna formę problemu TSP będziemy wybierali wierzchołek o najmniejszej wartości UTC, wyliczanej w następujący sposób (dla wierzchołka $v$): $UTC_v=\overline{w_v}-C\sqrt{\frac{2\lg{n}}{n_v}}$.
+    W powyższym wzorze $\overline{w_v}$ oznacza średnią wagę cyklu Hamiltona związanego z wierzchołkiem $v$, $n$ oznacza całkowitą liczbę iteracji pętli rozrostu drzewa MC, zaś $n_v$ jest dotychczasową liczbą odwiedzin wierzchołka $v$. Wartość $C$ jest parametrem którego optymalizacja może wspomóc działanie algorytmu, nie ma jednak konkretnego wzoru według którego można by wyznaczyć jego optymalna wartość. Zazwyczaj robi się to empirycznie sprawdzając działanie algorytmu dla kilku podanych wartości.<br>
+    W fazie symulacji kolejne ruchy (wierzchołki) będziemy wybierać albo w sposób całkowicie losowy (każdy wierzchołkiem ma takie samo prawdopodobieństwo), albo warunkując prawdopodobieństwo kolejnego wierzchołka na cyklu jego odległością od poprzednika. W drugim przypadku prawdopodobieństwa będą odwrotnie proporcjonalne do odległości.<br>
+    Warunkiem zakończenia symulacji będzie oczywiście wyczerpanie wszystkich wierzchołków w podanym grafie, a jej wynikiem waga powstałego cyklu Hamiltona.<br>
+    Propagacja wsteczna w algorytmie będzie polegała na aktualizacji średniej wierzchołka z którego rozpoczęliśmy symulację, oraz wszystkich wierzchołków poprzedzających go na ścieżce od korzenia o wynik symulacji. Dla każdego z tych wierzchołków zwiększymy też liczbę dotychczasowych odwiedzin o jeden.<br>
+    Po zakończeniu pętli możemy wybrać cykl Hamiltona o najmniejszej wadze z wszystkich cykli jakie powstały podczas rozrostu drzewa (wymaga zapisywania najlepszych rozwiązań). Drugim podejściem jest wybór najlepszego potomka korzenia jako kolejnego wierzchołka w cyklu i rozpoczęcie nowej iteracji całego algorytmu począwszy od tak powstałego rozwiązania początkowego.
+
+</h4>
+
+{% endblock %}
+</html>

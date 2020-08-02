@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+ <script>
+ document.title = "PTSP Methods"
+ </script>
+<h2>Metody Stosowane dla Fizycznego Problemu Komiwojarzera</h2>
+
+<h3>Metoda Sterowania</h3>
+<h4 style="text-align:left">
+Algorytm
+ <br>&emsp; Znajdujemy najmniejsze $n$ spełniające warunek: $\sum_{i=1}^{k}(\frac{1}{2}\Delta t^2 + (k-i)\Delta t^2)\geq |x_n^0-a| + |y_n^0-b| - 5$, gdzie $(x_n^0,y_n^0)$ oznacza pozycje agenta po czasie $n\Delta t$, bez dodatkowej ingerencji<br>
+    <br>&emsp; Stosujemy algorytm konstrukcji rozwiązania:<br>
+    &emsp;&emsp;Dopóki $n\ge 0$:
+        <br>&emsp;&emsp;&emsp; Jeśli $h - \frac{1}{2}(0.1) + n(0.1) \geq 0$ jako pierwszy przyjmiemy ruch $(1,0)$.
+        <br>&emsp;&emsp;&emsp; Jeśli $h - \frac{1}{2}(0.1) + n(0.1) \le 0$, ale za to
+        $w - \frac{1}{2}(0.1) + n(0.1) \geq 0$ jako pierwszy przyjmiemy ruch $(0,1)$.
+        <br>&emsp;&emsp;&emsp; Jeśli $h - \frac{1}{2}(0.1) + n(0.1) \le 0$ oraz $w - \frac{1}{2}(0.1) + n(0.1) \le 0$ wówczas wybieramy ruch $0,0)$.
+        <br>&emsp;&emsp;&emsp; Wykonujemy wybrany ruch.
+ </h4>
+<br>
+<h3>Metody Wyznaczania Kolejności</h3>
+<h4 style="text-align:left">
+ $\textbf{Algorytm Genetyczny}$
+ <br>
+ <br>
+    W zastosowaniu do fizycznego problemu komiwojażera algorytmów genetycznych będziemy używali do wyznaczenia kolejności odwiedzanych punktów. 
+    W celu wyznaczenia dokładnych trajektorii (konkretnych ruchów) będziemy używali nieco zmodyfikowanej wersji przedstawionego w poprzednim rozdziale lokalnie optymalnego algorytmu. Łatwo można zauważyć, że bez straty ogólności możemy w naszym algorytmie zmienić kolejność sprawdzania warunków i dokładania ruchów w płaszczyźnie horyzontalnej i wertykalnej.
+    Modyfikacja będzie polegała na sprawdzeniu dla każdej z tych metod, jak daleko po wykonaniu algorytmu dla najbliższego punktu będzie znajdował się kolejny punkt na ścieżce.
+    Następnie oczywiście wybierzemy ten wariant algorytmu dla którego wynik będzie mniejszy.<br>
+    Zdecydowana większość algorytmu będzie wyglądała identycznie jak dla klasycznego problemu komiwojażera. 
+    W szczególności dotyczy to metody rekombinacji, gdzie pomimo różnicy w tym problemie polegającej na szukaniu optymalnej ścieżki Hamiltona zamiast cyklu Hamiltona, możemy wciąż stosować ten sam algorytm.<br>
+    Jedyną wprowadzoną zmianą będzie funkcja straty, to znaczy "waga" ścieżki. Oczywiście moglibyśmy potraktować nasze miasta jako graf ważony, gdzie wagi krawędzi odpowiadałyby odległościom, na przykład w metryce euklidesowej lub taksówkowej, a następnie jako funkcje straty brać po prostu wagę danej ścieżki. 
+    Nie jest to jednak optymalna metryka, ponieważ nie bierze pod uwagę wektora prędkości przypisanego do naszego agenta w momencie odwiedzenia konkretnego miasta.<br>
+    Najprostszym rozwiązaniem tego problemu jest oczywiście określenie funkcji straty jako ilości ruchów potrzebnych do przebycia trasy przy zastosowaniu naszego algorytmu.
+    W tej sytuacji pewnym problemem może być złożoność czasowa takiego problemu, skutkująca z kolei słabszym tempem zbieżności algorytmu genetycznego.<br>
+    <br>
+    <br>
+ <br>
+    $\textbf{MCTS}$
+ <br>
+ <br>
+     W naszym podejściu ponownie będziemy chcieli wyznaczyć jedynie optymalną kolejność odwiedzanych punktów (miast). Warto jednak zaznaczyć, że istnieje możliwość zastosowania tego typu algorytmu do znalezienia całej sekwencji sterowania. Rozwiązanie takie w porównaniu do klasycznej implementacji algorytmu zakłada między innymi nie przeprowadzanie symulacji z liści drzewa przeszukiwań, ale raczej używanie funkcji oceniającej stan w jakim znajdzie się nasz agent po wykonaniu ruchów z odpowiadającej danemu liściowi ścieżki.
+    Autorzy proponują również dołożenie dodatkowych "kar" do funkcji straty, które zwiększały by jej wartość jeśli agent poruszałby się poza wyznaczoną mapą oraz w zależności od liczby już wykonanych ruchów. Niestety dokładne parametry użyte do konstrukcji algorytmu nie zostały podane w artykule a wyznaczenie ich optymalnych wartości wiąże się z duża trudnością obliczeniową. Osiągnięte dotychczas, dla dobranych metodą kilku prób i błędów wyniki nie stanowią poprawy względem przedstawionego wcześniej algorytmu lokalnego, nawet zakładając losową kolejność odwiedzanych miast. Biorąc również pod uwagę znacznie większą złożoność tego algorytmu, będziemy wykorzystywali jedynie jego wersję pomagającą ustalić kolejność odwiedzanych miast. 
+   <br> 
+    Wykorzystanie metody MCTS dla fizycznej wersji problemu komiwojażera będzie się odbywało niemal identycznie jak dla jego klasycznej wersji.
+    Główną różnicą będzie tutaj funkcja straty, a którą będziemy w naszym rozwiązaniu przyjmować ilość ruchów potrzebną do odwiedzenia wszystkich miast w podanej kolejności, przy użyciu algorytmu lokalnie optymalnego.
+    <br>
+
+ </h4>
+{% endblock %}
+</html>

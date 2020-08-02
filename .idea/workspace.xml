@@ -2,83 +2,36 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c75520c-4bf3-4b82-9a1c-dd57d151cad5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/TSP_PTSP_solver/settings.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TSP_PTSP_solver/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TSP_PTSP_solver/wsgi.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/manage.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/results/scores_gen_128.sav" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/results/scores_gen_256.sav" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/results/scores_hc.sav" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/results/scores_mct_lottery.sav" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/results/scores_mct_nearest.sav" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/css/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/css/baseStyle.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/background_graph.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/placeholder.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/media/base_video.mkv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/media/init.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/media/temp.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/static" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/forms.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/migrations/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/base.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/home.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/tests.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/tsp_views.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/images/db.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/images/desc.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/other/description.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/other/gen_desc.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/other/graph_theory.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/other/mcts_desc.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/other/ptsp_desc.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/other/ptsp_methods_desc.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/other/saved.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/other/tsp_desc.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/other/tsp_methods_desc.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/ptsp/ptsp.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/ptsp/ptsp_file.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/ptsp/ptsp_game.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/ptsp/ptsp_interactive.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/tsp/tsp.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/tsp/tsp_file.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/tsp/tsp_interactive.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/other_views.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/ptsp_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/TSP-and-PTSP-Solver.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/TSP-and-PTSP-Solver.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/Numeric tests-checkpoint.Rmd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.ipynb_checkpoints/Untitled-checkpoint.Rmd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Numeric tests.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/Numeric tests.Rmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/TSP_PTSP_solver/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/basic_solvers_2005/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/basic_order_solvers.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/basic_solvers_2005/basic_order_solvers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/basic_steering_solvers.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/basic_solvers_2005/basic_steering_solvers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/basic_solvers_2005/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/basic_solvers_2005/metrics.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/.ipynb_checkpoints/Untitled-checkpoint.Rmd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/Untitled.Rmd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/game/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2005.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/game/agent_2005.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/agent_2012.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/game/agent_2012.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/map.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/game/map.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/ptsp_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/game/ptsp_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/domain/game/solution.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/game/solution.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/genetic/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/genetic/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/genetic/genetic_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/genetic/genetic_order.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/genetic/genetic_trajectory.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/genetic/genetic_trajectory.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/mcts/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/mcts/mct_order.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/mct_steerage.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/mcts/mct_steerage.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/mcts/node_order.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/ptsp/mcts/node_steerage.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/mcts/node_steerage.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/domain/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/domain/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/domain/basic_solvers.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/domain/basic_solvers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/domain/solutions.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/domain/solutions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/genetic/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/genetic/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/genetic/genetic_solver.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/genetic/genetic_solver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/mcts/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/mcts/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/mcts/mct.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/mcts/mct.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/analytics/tsp/mcts/node.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/mcts/node.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scores_gen_128.sav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scores_gen_256.sav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scores_gen_ptsp.sav" beforeDir="false" afterPath="$PROJECT_DIR$/results/scores_gen_ptsp.sav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scores_hc.sav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scores_hc_ptsp.sav" beforeDir="false" afterPath="$PROJECT_DIR$/results/scores_hc_ptsp.sav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scores_mct_lottery.sav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scores_mct_nearest.sav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scores_mcts_ptsp.sav" beforeDir="false" afterPath="$PROJECT_DIR$/results/scores_mcts_ptsp.sav" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/unit_tests/analytics/tsp/domain_tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/unit_tests/analytics/tsp/domain_tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TSP_PTSP_solver/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/TSP_PTSP_solver/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/views/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/views/tsp_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/tsp_views.py" afterDir="false" />
     </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -88,6 +41,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -101,10 +55,17 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../abb/Graph_segmentator_app" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\static\images" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\ptsp\mcts" />
+      <recent name="$PROJECT_DIR$/main/analytics/ptsp/domain/game" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/results" />
       <recent name="$PROJECT_DIR$" />
@@ -112,11 +73,18 @@
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\ptsp\domain" />
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\tsp\domain" />
     </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
-      <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\ptsp\mcts" />
-      <recent name="$PROJECT_DIR$/main/analytics/ptsp/domain/game" />
-    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
   </component>
   <component name="RunManager" selected="Python.map">
     <configuration name="map" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -192,7 +160,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;$PROJECT_DIR$/test/unit_tests/analytics/tsp/domain_tests.py&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
@@ -207,7 +174,6 @@
       </list>
     </recent_temporary>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="project-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -226,7 +192,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
@@ -245,7 +213,6 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="423" y="269" width="424" height="484" key="FileChooserDialogImpl" timestamp="1595839900590">

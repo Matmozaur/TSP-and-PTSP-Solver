@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+ <script>
+ document.title = "Traveling Salesperson"
+ </script>
+<h2>Problem Komiwojażera</h2>
+<h4 style="text-align:left">
+ Jednym z najbardziej znanychproblemów optymalizacyjnych jest problem minimalnego cyklu Hamiltona w pełnym grafie ważonym, zwany inaczej problemem komiwojażera (TSP). Nazwa jest inspirowana typowym przykładem przeniesienia problemu do realnego świata, przedstawiającego go z punktu widzenia podróżującego sprzedawcy, który ma odwiedzić n miast w jak najkrótszym czasie.
+ <br>
+ <br>
+    Definicja problemu w wersji decyzyjnej:<br>
+ <br>
+    Dane:
+<br>
+    $G=(V,E)$ - graf pełny.
+<br>
+    $w: E\rightarrow\mathbb{N}$ - funkcja wagowa krawędzi - $w(e)$ - waga krawędzi $e$.
+<br>
+    $D\in\mathbb{N}$ - maksywalna waga cyklu
+<br>
+    Pytanie:
+<br>
+    Czy istnieje taki cykl Hamiltona $H$ w $G$, że waga tego cyklu będzie mniejsza bądź równa $D$?
+<br>
+ <br>
+ <br>
+    Definicja problemu w wersji optymalizacyjnej:
+<br>
+ <br>
+    $\textbf{Dane:}$
+<br>
+    $G=(V,E)$ - graf pełny.<br>
+    $w: E\rightarrow\mathbb{N}$ - funkcja wagowa krawędzi - $w(e)$-waga krawędzi $e$.
+<br>
+    $\textbf{Szukamy:}$
+<br>
+    Minimalne $D\in\mathbb{N}$ takie że istnieje w $G$ cykl Hamiltonma $H$ o wadze $D$.
+</h4>
+{% endblock %}
+</html>

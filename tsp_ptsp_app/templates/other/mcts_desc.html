@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+ <script>
+ document.title = "MCTS"
+ </script>
+<h2>MCTS</h2>
+<h4 style="text-align:left">
+    Metoda Monte Carlo przeszukiwania drzew, lubMCTS (Monte Carlo Tree Search) jest heurystyką używaną przede wszystkim do wyboru optymalnego ruchu w grach dwuosobowych. Jeśli jednak przedstawimy nasz problem w odpowiedni sposób, możemy zastosować podejście przedstawione w ogólnym schemacie algorytmu również do typowych problemów minimalizacyjnych takich jak problem komiwojażera lub jego fizyczna wersja.
+    Ogólna zasada działania algorytmu polega na stworzeniu drzewa, z którego wierzchołkami są powiązane pary liczb (średni wynik symulacji oraz liczba symulacji z udziałem węzła) oraz aktualny stan zagadnienia. Inaczej mówiąc, dla każdego wierzchołka $v$ w drzewie istnieje para liczb $(x_v,y_v)$ oraz pewna reprezentacja aktualnego stanu zagadnienia $S_v$.  Rozwijanie drzewa poprzez powtarzanie ciągu operacji $\textbf{wyboru}$, $\textbf{rozrostu}$, $\textbf{symulacji}$ oraz $\textbf{propagacji wstecznej}$ a następnie wybraniu najlepszej decyzji, bazując na powstałym drzewie.<br>
+    Wierzchołki drzewa odpowiadają stanom problemu po wykonaniu pewnej decyzji (stanom gry w przypadku gier, częściowym rozwiązaniom w przypadku np. problemu komiwojażera).<br>
+    Ogólny schemat algorytmu (dla gry dwuosobowej, w której gracze wykonują ruchy naprzemiennie):
+
+    <br>&emsp;Tworzymy drzewo (oznaczamy je $MCT$). Na początku składa się ono tylko z jednego wierzchołka (aktualnego stanu gry), który wybieramy na korzeń (oznaczmy go przez $v_0$). Para wartości przypisana temu wierzchołkowi może być dowolna).
+    <br>&emsp;Dopóki nie zostanie spełniony warunek (np. osiągnięte ograniczenie czasowe, osiągnięcie maksymalnej liczby symulacji lub wykorzystanie maksymalnej puli pamięci):
+    <br>&emsp;&emsp;Ustalamy $v_s=v_0$.
+    <br>&emsp;&emsp;(wybór) dla ustalonego wierzchołka $v_s$ wybieramy i odwiedzamy jego losowego nieodwiedzonego dotychczas w algorytmie potomka, jeśli takowy istnieje, a następnie przechodzimy od razu do fazy symulacji. Jeśli nie istnieje taki potomek wybieramy potomka o największej wartości ustalonego wcześniej kryterium, opartego na parze wielkości skojarzonych z wierzchołkiem (potomkiem). Jeśli wybrany wierzchołek jest liściem, zapamiętujemy go i przechodzimy do następnego punktu. Jeśli wybrany wierzchołek, oznaczmy go przez $v$, liściem nie jest ustalamy $v_s=v$ a następnie powtarzamy tę fazę.
+    
+    <br>&emsp;&emsp;(rozrost) jeśli stan gry w wybranym wierzchołku oznacza jej zakończenie (wierzchołek terminalny), zapamiętujemy wynik i przechodzimy od razu do fazy propagacji wstecznej. W przeciwnym wypadku ustalamy wszystkie możliwe ruchy i dla każdego z nich tworzymy wierzchołek odpowiadający stanowi gry po tym ruchu (skojarzona z nim para liczb przyjmuje domyślne, ustawione w algorytmie wartości - najczęściej dwa zera). Wybieramy teraz dowolny z powstałych wierzchołków i zapamiętujemy go. Jeśli wierzchołek jest terminalny, zapamiętujemy wynik i przechodzimy do fazy propagacji wstecznej.
+    
+    <br>&emsp;&emsp;(symulacja) począwszy od stanu gry w zapamiętanym wierzchołku, wykonujemy w losowy sposób kolejne ruchy aż do zakończenia gry. Następnie zapamiętujemy wynik i przechodzimy do fazy propagacji wstecznej.
+
+
+    <br>&emsp;&emsp;(propagacja wsteczna) na podstawie uzyskanego wyniku rozgrywki aktualizujemy wszystkie pary liczb powiązane z zapamiętanym wierzchołkiem oraz wszystkimi jego poprzednikami w ustalony sposób, mając na uwadze, który gracz aktualnie wykonuje ruch dla stanów gry skojarzonych z tymi wierzchołkami.
+    \end{enumerate}
+    
+    <br>&emsp;Na podstawie tak stworzonego drzewa wybieramy kolejny ruch jako ten, dla którego ustalone wcześniej kryterium dało najlepszy wynik.
+    W celu uzyskania algorytmu dla konkretnego problemu musimy w powyższym schemacie zdefiniować:
+    <br>&emsp;sposób reprezentacji stanów gry powiązanych z wierzchołkami,
+    <br>&emsp;warunek stopu pętli odpowiedzialnej za rozrost drzewa,
+    <br>&emsp;domyślne wartości skojarzone z wierzchołkami,
+    <br>&emsp;kryterium wyboru potomka w drzewie,
+    <br>&emsp;sposób wyboru kolejnych ruchów w fazie symulacji,
+    <br>&emsp;warunek zakończenia symulacji i sposób ustalenia wyniku,
+    <br>&emsp;metodę aktualizacji wartości przy propagacji wstecznej,
+    <br>&emsp;kryterium wyboru ruchu na podstawie drzewa.
+    <br>
+    Wybór powyższych parametrów algorytmu zależy ściśle od analizowanego problemu.
+</h4>
+{% endblock %}
+</html>

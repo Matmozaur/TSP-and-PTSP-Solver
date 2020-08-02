@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+ <script>
+ document.title = "Physical Traveling Salesperson"
+ </script>
+<h2>Fizyczny Problem Komiwojażera</h2>
+<h4 style="text-align:left">
+   Fizyczny problem komiwojażera został pierwszy raz przedstawiony na konferencji dotyczącej algorytmów ewolucyjnych i genetycznych (GECCO) w 2005 roku, w postaci problemu konkursowego. Jest on w pewnym sensie rozszerzoną wersją geometrycznego problemu komiwojażera, zamieniając go w abstrakcyjną reprezentację jednoosobowej gry.
+    Agent (reprezentacja komiwojażera) oraz miasta są osadzonymi w dwuwymiarowej przestrzeni euklidesowej kołami o zadanych promieniach (odpowiednio $R_A$ oraz $R_C$), o współrzędnych będących parami liczb rzeczywistych. Przyjmujemy że agent ma masę równa $1kg$, zaś w każdym kroku możemy przyłożyć do niego siłę $1N$ w jednym z 4 równoległych kierunków (góra, dół, prawo, lewo).   Celem gry jest poprowadzenie Agenta przez wszystkie miasta za pomocą jak najmniejszej liczby kroków.<br>
+    Dokładny opis problemu w wersji optymalizacyjnej (przyjmujemy, że jednostki odległości są takie same dla każdej zmiennej i takie same jak w układzie współrzędnych, czas jest zaś wyrażony w sekundach):<br>
+    <br>
+    $\textbf{Dane:}$<br>
+    &emsp;$l_0,u_0,l_1,u_1$ - ograniczenia mapy<br>
+    &emsp;$p_0=(p_1^0,p_1^1)...,p_n=(p_n^0,p_n^1)$ - pozycje miast na mapie: $\forall_{1\leq i \leq n}: p_i^0\in [l_0,u_0] ,p_i^1\in [l_1,u_1]$ )<br>
+    &emsp;$R_A$ - promień agenta <br>
+    &emsp;$R_C$ - promień miasta <br>
+    &emsp;$\Delta t$ - różnica czasowa między ruchami <br>
+    $\textbf{Szukamy:}$<br>
+    Najmniejsza liczba naturalna $k$ taka że istnieje $k$ ruchów $m_1,...m_k$ takich, że po ich wykonaniu każde z zadanych miast będzie odwiedzone.<br>
+    $\textbf{Przebieg:}$<br>
+    &emsp;Początkowe współrzędne agenta: ($P_0 = \frac{l_0+u_0}{2},\frac{l_1+u_1}{2}$)<br>
+    &emsp;Początkowy wektor prędkości agenta: ($v_0=(0,0)$)<br>
+    &emsp;Miasto o numerze $i$ uznajemy za odwiedzone (w momencie $t$) gdy $\parallel d_t-P_n \parallel \leq R_C+R_A$ dla pewnego $t$ będącego wielokrotnością $\Delta t$.
+    &emsp;Ruchem w grze w czasie t będziemy nazywali 2-elementowy wektor $m_t=(h_t, v_t)$ ze zbioru $\{(1,0), (0,1), (-1,0), (0,-1), (0,0)\}$. Ruchy wykonujemy w czasie $t$, dla $t$ będącego wielokrotnością $\Delta t$.<br>
+    &emsp;Parametry agenta po $\Delta t$ od ruchu aktualizujemy zgodnie ze wzorami:<br>
+    &emsp;&emsp;$P_{t+\Delta t} = P_t+\Delta t v_{t}+\frac{1}{2}m_t{\Delta t}^2$<br>
+    &emsp;&emsp;$v_{t+\Delta t} = v_t + m_{t}\Delta t$<br>
+
+    
+    W dalszej części pracy będziemy zajmowali się problemem z parametrami i ograniczeniami takimi jak podane w konkursie:<br>
+    &emsp;$R_A=0$, <br>
+    &emsp;$R_C=5$, <br>
+    &emsp;$\Delta t = \sqrt{0.1}$<br>
+
+    Warto zwrócić uwagę, że pomimo podobieństwa do geometrycznego problemu komiwojażera (właściwie do problemu wyszukiwania minimalnej ścieżki Hamiltona), to przez dodanie elementów mechaniki klasycznej do sposobu, w jaki porusza się nasz "komiwojażer" optymalna kolejność odwiedzanych wierzchołków może się bardzo różnić.
+</h4>
+   {% endblock %}
+</html>
