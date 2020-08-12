@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 ]
 
 ROOT_URLCONF = 'TSP_PTSP_solver.urls'
@@ -64,6 +65,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',
+                # 'django.template.context_processors.i18n',
             ],
         },
     },
@@ -132,3 +134,15 @@ STATICFILES_DIRS =(
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(STATIC_ROOT,'/media/')
+
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale/'),
+)
+
+
+# ugettext = lambda s: s
+# LANGUAGES = (
+#     ('en', ugettext('English')),
+#     ('pl', ugettext('Polish')),
+# )

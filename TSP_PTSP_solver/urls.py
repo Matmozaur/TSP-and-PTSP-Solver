@@ -18,10 +18,13 @@ from django.conf.urls import url
 from tsp_ptsp_app import views
 from django.conf.urls.static import static
 from django.conf import settings
+# from django.conf.urls.i18n import i18n_patterns
+# from django.utils.translation import ugettext_lazy as _
 
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    # url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^$', views.home, name='home'),
     url(r'^tsp/', views.tsp, name='tsp'),
     url(r'^ptsp/', views.ptsp, name='ptsp'),

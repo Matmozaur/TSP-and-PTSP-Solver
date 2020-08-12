@@ -1,0 +1,41 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.3.2
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+```{python}
+import networkx as nx
+import numpy as np
+```
+
+```{python}
+m = np.matrix([[1,3,6],[4,5,3],[1,2,3]])
+graph = nx.from_numpy_matrix(m)
+```
+
+```{python}
+graph
+```
+
+```{python}
+import matplotlib.pyplot as plt
+```
+
+```{python}
+    nx.draw(graph, with_labels=True)
+    plt.savefig('plotgraph.png', dpi=300, bbox_inches='tight')
+    plt.show()
+```
+
+```{python}
+
+```
