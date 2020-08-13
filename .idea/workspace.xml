@@ -2,17 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c75520c-4bf3-4b82-9a1c-dd57d151cad5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Test.Rmd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/analytics/tsp/main_tsp.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/tsp_jsons/test.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/tsp_jsons/test2.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/tsp_jsons/test3.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Statistical tests.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/Statistical tests.Rmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TSP_PTSP_solver/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/TSP_PTSP_solver/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TSP_PTSP_solver/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/TSP_PTSP_solver/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analytics/tsp/mcts/node.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/mcts/node.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/media/temporary.png" beforeDir="false" afterPath="$PROJECT_DIR$/static/media/temporary.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/templates/tsp/tsp_file.html" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/tsp/tsp_file.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/views/ptsp_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/ptsp_views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/views/tsp_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/tsp_views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

@@ -47,7 +47,7 @@ def tsp_file_run(request):
                 int(request.POST.get('population')), bool(context['mutate']))
         elif context['method'] == "MCTS":
             context['solution'] = tsp_interface.get_mcts_solution(float(request.POST.get('time')),
-                boolean(request.POST.get('simulation')))
+                request.POST.get('simulation'))
         else:
             pass
     context['weight'] = context['solution'].cost
