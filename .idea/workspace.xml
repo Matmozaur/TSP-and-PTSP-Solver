@@ -2,10 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c75520c-4bf3-4b82-9a1c-dd57d151cad5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/tsp_ptsp_app/connector.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analytics/tsp/mcts/node.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/mcts/node.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TSP_PTSP_solver/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/TSP_PTSP_solver/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/media/temporary.png" beforeDir="false" afterPath="$PROJECT_DIR$/static/media/temporary.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/media/temporary_solution.png" beforeDir="false" afterPath="$PROJECT_DIR$/static/media/temporary_solution.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/templates/tsp/tsp.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/templates/tsp/tsp_file.html" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/tsp/tsp_file.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/templates/tsp/tsp_interactive.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/views/other_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/other_views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/views/tsp_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/tsp_views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,7 +58,38 @@
       <recent name="C:\Users\matt9\Desktop\Projects\TSP-and-PTSP-Solver\main\analytics\tsp\domain" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main_tsp">
+  <component name="RunManager" selected="Python.connector">
+    <configuration name="connector" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="TSP-and-PTSP-Solver" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="$USER_HOME$/my_project_env/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tsp_ptsp_app" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" />
+        </ENTRIES>
+      </EXTENSION>
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tsp_ptsp_app/connector.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main_tsp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="TSP-and-PTSP-Solver" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -146,36 +184,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest in domain_tests.py" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
-      <module name="TSP-and-PTSP-Solver" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test/unit_tests/analytics/tsp" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_parameters" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/test/unit_tests/analytics/tsp/domain_tests.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.main_tsp" />
       <item itemvalue="Python.map" />
       <item itemvalue="Python.mct_steerage" />
       <item itemvalue="Python.node_steerage" />
-      <item itemvalue="Python tests.pytest in domain_tests.py" />
+      <item itemvalue="Python.connector" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.connector" />
         <item itemvalue="Python.main_tsp" />
         <item itemvalue="Python.map" />
         <item itemvalue="Python.mct_steerage" />
         <item itemvalue="Python.node_steerage" />
-        <item itemvalue="Python tests.pytest in domain_tests.py" />
       </list>
     </recent_temporary>
   </component>
@@ -224,11 +246,14 @@
       <screen x="0" y="27" width="1280" height="997" />
     </state>
     <state x="98" y="169" width="1084" height="710" key="#com.intellij.execution.impl.EditConfigurationsDialog/1280.0.1280.1024/0.27.1280.997@0.27.1280.997" timestamp="1596655472051" />
+    <state x="309" y="313" width="651" height="396" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1597341864143">
+      <screen x="0" y="27" width="1280" height="997" />
+    </state>
+    <state x="309" y="313" width="651" height="396" key="#com.intellij.fileTypes.FileTypeChooser/1280.0.1280.1024/0.27.1280.997@0.27.1280.997" timestamp="1597341864143" />
     <state x="423" y="269" width="424" height="484" key="FileChooserDialogImpl" timestamp="1595839900590">
       <screen x="0" y="27" width="1280" height="997" />
     </state>
     <state x="423" y="269" width="424" height="484" key="FileChooserDialogImpl/1280.0.1280.1024/0.27.1280.997@0.27.1280.997" timestamp="1595839900590" />
-    <state x="468" y="269" width="424" height="484" key="FileChooserDialogImpl/67.27.1213.997@67.27.1213.997" timestamp="1588613155058" />
     <state width="1257" height="182" key="GridCell.Tab.0.bottom" timestamp="1596655735052">
       <screen x="0" y="27" width="1280" height="997" />
     </state>
@@ -249,10 +274,6 @@
     </state>
     <state width="1257" height="182" key="GridCell.Tab.0.right/1280.0.1280.1024/0.27.1280.997@0.27.1280.997" timestamp="1596655735052" />
     <state width="1190" height="176" key="GridCell.Tab.0.right/67.27.1213.997@67.27.1213.997" timestamp="1593027577165" />
-    <state x="129" y="146" key="SettingsEditor" timestamp="1588533159380">
-      <screen x="0" y="27" width="1280" height="997" />
-    </state>
-    <state x="129" y="146" key="SettingsEditor/1280.0.1280.1024/0.27.1280.997@0.27.1280.997" timestamp="1588533159380" />
     <state x="283" y="138" width="770" height="773" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1593026972263">
       <screen x="67" y="27" width="1213" height="997" />
     </state>

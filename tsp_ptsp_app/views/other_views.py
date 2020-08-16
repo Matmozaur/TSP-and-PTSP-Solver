@@ -1,8 +1,9 @@
-
+from .tsp_views import context_tsp
 from django.shortcuts import render
 
 
 def home(request):
+    context_tsp.clear()
     return render(request, 'home.html')
 
 
