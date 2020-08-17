@@ -76,3 +76,7 @@ class TSPController:
     def relabel(self, graph):
         mapping = dict(zip([i for i in range(len(self.graph_to_show.nodes))], self.graph_to_show.nodes))
         return nx.relabel_nodes(graph, mapping, copy=False)
+
+    @staticmethod
+    def get_solution_from_list(sol):
+        return ValidSolution(sol)

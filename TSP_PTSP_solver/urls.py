@@ -42,6 +42,7 @@ urlpatterns = [
     url(r'^ptsp_game/', views.ptsp_game, name='ptsp_game'),
     url(r'^tsp_file_run/', views.tsp_file_run, name='tsp_file_run'),
     url(r'^tsp_save/', views.tsp_save, name='tsp_save'),
+    url(r'^load_tsp/', views.load_tsp, name='load_tsp'),
 ]
 
 urlpatterns+=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)

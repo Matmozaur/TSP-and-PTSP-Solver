@@ -1,4 +1,5 @@
 from .tsp_views import context_tsp
+from tsp_ptsp_app.connector import load_all_tsp
 from django.shortcuts import render
 
 
@@ -8,7 +9,9 @@ def home(request):
 
 
 def saved(request):
-    return render(request, 'other/saved.html')
+    data_tsp = load_all_tsp()
+    context_dic = {'data_tsp': data_tsp}
+    return render(request, 'other/saved.html', context_dic)
 
 
 def description(request):

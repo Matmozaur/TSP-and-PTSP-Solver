@@ -1,8 +1,9 @@
 from django.views.decorators.csrf import ensure_csrf_cookie
 from analytics.tsp.main_tsp import TSPController
-from tsp_ptsp_app.connector import save_tsp
+from tsp_ptsp_app.connector import save_tsp, load_tsp_sol
 from django.shortcuts import render
 import json
+import ast
 
 context_tsp = {}
 tsp_interface = TSPController.get_instance()
@@ -60,3 +61,30 @@ def tsp_save(request):
         except:
             context_tsp['nunique'] = True
     return render(request, 'tsp/tsp_file.html', context_tsp)
+
+
+def load_tsp(request):
+    if request.method == 'POST':
+        context_tsp.clear()
+        row = request.POST.get("tsp_sol")
+        name = row.split(':')[0]
+        all_info = load_tsp_sol(name)
+        context_tsp['uploaded_file'] = ast.literal_eval(all_info['graph'])
+        context_tsp['instance'] = tsp_interface.generate_graph(context_tsp['uploaded_file'])
+        tsp_interface.save_graph_image('static/media/temporary.png')
+        context_tsp['graph_image'] = "/static/media/temporary.png"
+        s = all_info['solution'][1:len(all_info['solution'])-1]
+        context_tsp['solution'] = s.split(", ")
+        context_tsp['solution'] = [int(i) for i in context_tsp['solution']]
+        context_tsp['solution'] = tsp_interface.get_solution_from_list(context_tsp['solution'])
+        context_tsp['weight'] = context_tsp['solution'].cost
+        context_tsp['core solution'] = HC = context_tsp['solution'].HC
+        context_tsp['solution'] = context_tsp['solution'].Graph.edge_subgraph(
+            [(HC[i], HC[(i+1) % len(HC)]) for i in range(len(HC))]).copy()
+        context_tsp['solution'] = tsp_interface.relabel(context_tsp['solution'])
+        tsp_interface.save_graph_image('static/media/temporary_solution.png', context_tsp['solution'], True)
+        context_tsp['solution_image'] = "/static/media/temporary_solution.png"
+        context_tsp['name'] = all_info['name']
+        context_tsp['description'] = all_info['description']
+    return render(request, 'tsp/tsp_file.html', context_tsp)
+

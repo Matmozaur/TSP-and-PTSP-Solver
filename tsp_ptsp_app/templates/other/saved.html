@@ -1,38 +1,21 @@
 <!DOCTYPE html>
 {% extends "base.html" %}
 {% block content %}
-
-<div class="main__tiles">
-    	<a href="{% url 'tsp' %}" class="tile tile--tsp">
-		<img class="tile__image" src="/static/images/placeholder.png" >
-		<div class="tile__content">
-			<h2 class="tile__title">Traveling Salesperson</h2>
-			<p class="tile__description">Click to see more...</p>
-		</div>
-	</a>
-	<a href="{% url 'ptsp' %}" class="tile tile--ptsp">
-		<img class="tile__image" src="/static/images/placeholder.png" >
-		<div class="tile__content">
-			<h2 class="tile__title">Physical Traveling Salesperson</h2>
-			<p class="tile__description">Click to see more...</p>
-		</div>
-	</a>
-	<a href="{% url 'saved' %}" class="tile tile--saved">
-		<img class="tile__image" src="/static/images/placeholder.png" >
-		<div class="tile__content">
-			<h2 class="tile__title">Saved analysis</h2>
-			<p class="tile__description">Click to see more...</p>
-		</div>
-	</a>
-
-	<a href="{% url 'description' %}" class="tile tile--description">
-		<img class="tile__image" src="/static/images/placeholder.png" >
-		<div class="tile__content">
-			<h2 class="tile__title">Algorithms descriptions</h2>
-			<p class="tile__description">Click to see more...</p>
-		</div>
-	</a>
-</div>
+ <script>
+ document.title = "Saved Analysis"
+ </script>
+<h2>TSP Solutions:</h2>
+    <form style="text-align: center;" method="post" action="{% url 'load_tsp' %}">
+        {% csrf_token %}
+        <select name="tsp_sol" size="10">
+            {% for item in data_tsp %}
+                <option value={{item.0}}:{{item.1}} selected="selected">{{item.0}} -{{item.1}} </option>
+            {% endfor %}
+        </select>
+        <input class="button" type="submit" value="Choose">
+	</form>
+<br>
+<h2>PTSP Solutions:</h2>
 
 {% endblock %}
 </html>

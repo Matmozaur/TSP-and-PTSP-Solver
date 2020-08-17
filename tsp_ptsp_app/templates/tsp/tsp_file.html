@@ -111,10 +111,17 @@
 		{% if solution_image %}
 			<form method="post" style="text-align: center;" action="{% url 'tsp_save' %}">
 				{% csrf_token %}
+				{% if name %}
+				<div class="block__row">
+					<label>Name:</label>
+					<input type="text" name="Name" value={{ name }}>
+				</div>
+				{% else %}
 				<div class="block__row">
 					<label>Name:</label>
 					<input type="text" name="Name" value='Name'>
 				</div>
+				{% endif %}
 				<div class="block__row">
 					<label>Description:</label>
 					<textarea rows="7" name="Description">{{ description }}</textarea>

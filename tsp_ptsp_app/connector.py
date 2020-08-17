@@ -5,7 +5,6 @@ from TSP_PTSP_solver.settings import BASE_DIR, STATIC_ROOT
 
 
 def save_tsp(graph, solution, name, description):
-    print(name)
     graph = str(graph)
     solution = str(solution)
     conn = sqlite3.connect(os.path.join(BASE_DIR, 'db.sqlite3'))
@@ -17,15 +16,25 @@ def save_tsp(graph, solution, name, description):
     conn.close()
 
 
-# save_tsp('''{
-#     "type": "adjacency matrix",
-#     "graph": {
-#         "names": null,
-# 		"matrix": [
-#           [0,20,3,4,5],
-#           [10,0,3,40,5],
-#           [1,2,0,4,50],
-#           [10,2,30,0,5],
-#           [1,2,3,2,0]]
-#         }
-#     }''', '[0,1,2,3,4]', 'Test', 'testing')
+def load_all_tsp():
+    conn = sqlite3.connect(os.path.join(BASE_DIR, 'db.sqlite3'))
+    cur = conn.cursor()
+    cur.execute('select Name, Description from TSP ')
+    data = cur.fetchall()
+    conn.close()
+    return data
+
+
+def load_tsp_sol(name):
+    conn = sqlite3.connect(os.path.join(BASE_DIR, 'db.sqlite3'))
+    cur = conn.cursor()
+    all_info = {}
+    cur.execute('select Graph, Solution, Name, Description from TSP where name=?', (name,))
+    data = cur.fetchall()
+    all_info['graph'] = data[0][0]
+    all_info['solution'] = data[0][1]
+    all_info['name'] = data[0][2]
+    all_info['description'] = data[0][3]
+    conn.close()
+    return all_info
+
