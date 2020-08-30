@@ -37,13 +37,13 @@ urlpatterns = [
     url(r'^ptsp_desc/', views.ptsp_desc, name='ptsp_desc'),
     url(r'^ptsp_methods_desc/', views.ptsp_methods_desc, name='ptsp_methods_desc'),
     url(r'^tsp_file/', views.tsp_file, name='tsp_file'),
-    url(r'^ptsp_file/', views.ptsp_file, name='ptsp_file'),
-    url(r'^ptsp_interactive/', views.ptsp_interactive, name='ptsp_interactive'),
+    url(r'^ptsp_solver/', views.ptsp_solver, name='ptsp_solver'),
     url(r'^ptsp_game/', views.ptsp_game, name='ptsp_game'),
     url(r'^tsp_file_run/', views.tsp_file_run, name='tsp_file_run'),
+    url(r'^ptsp_file_run/', views.ptsp_file_run, name='ptsp_file_run'),
     url(r'^tsp_save/', views.tsp_save, name='tsp_save'),
     url(r'^load_tsp/', views.load_tsp, name='load_tsp'),
 ]
 
-urlpatterns+=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

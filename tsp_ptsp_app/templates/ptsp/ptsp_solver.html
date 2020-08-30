@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row">
+	<div class="column">
+		<h2>Physical Traveling Salesperson Problem</h2>
+		<a href="{% url 'ptsp_desc' %}" class="button">Description</a>
+		<div class="column__block">
+            {% if HC or Genetic or MCTS %}
+                <br>
+                <h3 style="text-align: center;">"{{ method }}"</h3>
+            {% else %}
+                <div class="column__block1">
+                <form method="post" style="text-align: center;" action="{% url 'ptsp_solver' %}">
+                    <h3 style="text-align: center;">Choose method:</h3>
+                    {% csrf_token %}
+                    <select name="method" size="3">
+                            <option value="HC">Hill-Climbing</option>
+                            <option value="Genetic">Genetic Algorithm</option>
+                            <option value="MCTS">Monte Carlo Tree Search</option>
+                    </select>
+                    <input class="button" type="submit" value="Submit"/>
+                </form>
+                </div>
+            {% endif %}
+            			{% if method %}
+			{% if HC or Genetic or MCTS %}
+			<h3 style="text-align: center;">Parameters:</h3>
+			<form method="post" style="text-align: center;" enctype="multipart/form-data"
+				  action="{% url 'ptsp_file_run' %}">
+				{% csrf_token %}
+				<div class="block__row">
+					<label>Time limit (s):</label>
+					<input type="number" name="time" value=60.0>
+                    <label>Metric for solutions:</label>
+					<select name="sol_metric" size="3">
+                            <option value="dist">Distance</option>
+                            <option value="angle">Angle</option>
+                            <option value="local">Local Solution</option>
+                    </select>
+				 </div>
+			{% endif %}
+				{% if HC %}
+				<input type="submit" class="button" value="Submit" onclick="$('#loading').show();">
+				<input type="reset" class="button" value="Reset">
+				{% endif %}
+
+				{% if Genetic %}
+				{% csrf_token %}
+				<div class="block__row">
+					<label>Population:</label>
+					<input type="" step="1" name="population" value=64>
+				 </div>
+				 <div class="block__row">
+					 <input type="checkbox" id="mutate" name="mutate" value="True">
+  					<label for="mutate"> Mutate</label><br>
+				 </div>
+				<input type="submit" class="button" value="Submit" onclick="$('#loading').show();">
+				<input type="reset" class="button" value="Reset">
+				{% endif %}
+
+				{% if MCTS %}
+				{% csrf_token %}
+				<div class="block__row">
+					<label>Simulation:</label>
+					<select name="simulation" size="3">
+						<option value="nearest lottery" selected="selected">Nearest</option>
+						<option value="lottery">Lottery</option>
+						<option value="random">Random</option>
+					</select>
+				 </div>
+				<input type="submit" class="button" value="Submit" onclick="$('#loading').show();">
+				<input type="reset" class="button" value="Reset">
+				{% endif %}
+				</form>
+			{% endif %}
+		</div>
+    </div>
+
+	<div class="column">
+		<h2>Map</h2>
+            <br>
+            <p style="text-align: center;"><img src="{{ map_image }}" alt=""  width="500"/></p>
+
+
+        {% if solution_image %}
+        <h2>Solution</h2>
+				<br>
+            	<p style="text-align: center;"><img src="{{ solution_image }}" alt=""  width="500"/></p>
+			{% endif %}
+				<div id="loading" style="display:none;">
+					Loading!
+					<br>
+					<img src="/static/images/tenor.gif" alt="" /></div>
+				<br>
+        {% if length %}
+            <p style="text-align: center;">Lenght of the solution: {{ length }}</p>
+        {% endif %}
+
+		{% if solution_image %}
+			<form method="post" style="text-align: center;" action="{% url 'tsp_save' %}">
+				{% csrf_token %}
+				{% if name %}
+				<div class="block__row">
+					<label>Name:</label>
+					<input type="text" name="Name" value={{ name }}>
+				</div>
+				{% else %}
+				<div class="block__row">
+					<label>Name:</label>
+					<input type="text" name="Name" value='Name'>
+				</div>
+				{% endif %}
+				<div class="block__row">
+					<label>Description:</label>
+					<textarea rows="7" name="Description">{{ description }}</textarea>
+				</div>
+				<input class="button" type="submit" value="Submit">
+				<input class="button" type="reset" value="Reset">
+				{% if nunique %}
+					<h5 style="color:red">
+						Already in base, choose other name!
+					</h5>
+				{% endif %}
+			</form>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}
+</html>

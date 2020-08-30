@@ -1,10 +1,12 @@
 from .tsp_views import context_tsp
+from .ptsp_views import context_ptsp
 from tsp_ptsp_app.connector import load_all_tsp
 from django.shortcuts import render
 
 
 def home(request):
     context_tsp.clear()
+    context_ptsp.clear()
     return render(request, 'home.html')
 
 
