@@ -1,5 +1,6 @@
 import math
 import random
+import numpy as np
 
 
 def dist_eu(a, b):
@@ -51,15 +52,15 @@ class NodeOrder:
         elif lottery == 'nearest':
             nodes_left = set(NodeOrder.nodes).difference(set(self.partial))
             return NodeOrder(self, min(nodes_left,
-                                       key=lambda x: dist_eu(self.cities[self.partial[-1]], x)[
+                                       key=lambda x: dist_eu(self.cities[self.partial[-1]], self.cities[x])[
                                            'weight']))
-        elif lottery == 'nearest lottery':
+        elif lottery == 'lottery':
             pass
             nodes_left = list(set(NodeOrder.nodes).difference(set(self.partial)))
-            p = [dist_eu(self.cities[self.partial[-1]], x)['weight'] for x in nodes_left]
+            p = [dist_eu(self.cities[self.partial[-1]], self.cities[x]) for x in nodes_left]
             s = sum(p)
             p = [x / s for x in p]
-            return NodeOrder(self, random.sample(nodes_left, 1, p=p)[0])
+            return NodeOrder(self, np.random.choice(nodes_left, 1, p=p)[0])
         else:
             raise ValueError
 

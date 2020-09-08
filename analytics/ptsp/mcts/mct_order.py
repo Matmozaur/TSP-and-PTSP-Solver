@@ -5,7 +5,7 @@ from analytics.ptsp.domain.basic_solvers_2005.metrics import MetricOrder
 from .node_order import NodeOrder
 
 
-def cost(solution, ptsp_map, config, cost_func):
+def calculate_cost(solution, ptsp_map, config, cost_func):
     m_o = MetricOrder(ptsp_map, cost_func, config)
     return m_o.metric(solution)
 
@@ -33,7 +33,7 @@ class MCTOrder:
             self.iteration += 1
             leaf = self._traverse(self.root)
             if leaf.is_terminal:
-                self._backpropagate(leaf, leaf.partial.cost)
+                self._backpropagate(leaf, calculate_cost(leaf.partial, self.map, self.config, self.cost_function))
                 continue
             else:
                 if leaf.visited:
@@ -64,7 +64,7 @@ class MCTOrder:
 
     def _simulate(self, leaf):
         if leaf.is_terminal:
-            c = cost(leaf.partial, self.map, self.config, self.cost_function)
+            c = calculate_cost(leaf.partial, self.map, self.config, self.cost_function)
             if c < self.best_cost:
                 self.best_cost = c
                 self.best_sol = leaf.partial
