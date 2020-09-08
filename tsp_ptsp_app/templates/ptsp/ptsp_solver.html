@@ -35,7 +35,7 @@
 					<input type="number" name="time" value=60.0>
                     <label>Metric for solutions:</label>
 					<select name="sol_metric" size="3">
-                            <option value="dist">Distance</option>
+                            <option value="dist" selected="selected">Distance</option>
                             <option value="angle">Angle</option>
                             <option value="local">Local Solution</option>
                     </select>
@@ -50,7 +50,7 @@
 				{% csrf_token %}
 				<div class="block__row">
 					<label>Population:</label>
-					<input type="" step="1" name="population" value=64>
+					<input type="" step="1" name="population" value=16>
 				 </div>
 				 <div class="block__row">
 					 <input type="checkbox" id="mutate" name="mutate" value="True">
@@ -65,7 +65,7 @@
 				<div class="block__row">
 					<label>Simulation:</label>
 					<select name="simulation" size="3">
-						<option value="nearest lottery" selected="selected">Nearest</option>
+						<option value="nearest" selected="selected">Nearest</option>
 						<option value="lottery">Lottery</option>
 						<option value="random">Random</option>
 					</select>

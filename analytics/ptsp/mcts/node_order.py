@@ -52,8 +52,7 @@ class NodeOrder:
         elif lottery == 'nearest':
             nodes_left = set(NodeOrder.nodes).difference(set(self.partial))
             return NodeOrder(self, min(nodes_left,
-                                       key=lambda x: dist_eu(self.cities[self.partial[-1]], self.cities[x])[
-                                           'weight']))
+                                       key=lambda x: dist_eu(self.cities[self.partial[-1]], self.cities[x])))
         elif lottery == 'lottery':
             pass
             nodes_left = list(set(NodeOrder.nodes).difference(set(self.partial)))

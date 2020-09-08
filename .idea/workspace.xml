@@ -3,10 +3,17 @@
   <component name="ChangeListManager">
     <list default="true" id="4c75520c-4bf3-4b82-9a1c-dd57d151cad5" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/analytics/ptsp/mcts/mct_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/mcts/mct_order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Numeric tests.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/Numeric tests.Rmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analytics/ptsp/domain/basic_solvers_2005/basic_steering_solvers.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/domain/basic_solvers_2005/basic_steering_solvers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analytics/ptsp/main_ptsp.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/main_ptsp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/analytics/ptsp/mcts/node_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/ptsp/mcts/node_order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analytics/tsp/main_tsp.py" beforeDir="false" afterPath="$PROJECT_DIR$/analytics/tsp/main_tsp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/media/temporary.png" beforeDir="false" afterPath="$PROJECT_DIR$/static/media/temporary.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/media/temporary_solution.png" beforeDir="false" afterPath="$PROJECT_DIR$/static/media/temporary_solution.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/templates/ptsp/ptsp.html" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/ptsp/ptsp.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/templates/ptsp/ptsp_solver.html" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/templates/ptsp/ptsp_solver.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/views/ptsp_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/ptsp_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsp_ptsp_app/views/tsp_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/tsp_ptsp_app/views/tsp_views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

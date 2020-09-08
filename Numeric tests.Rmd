@@ -255,7 +255,31 @@ maps = [Map(n,320,240,5) for _ in range(samples)]
 config = PTSPConfiguration()
 ```
 
+```{python}
+
+```
+
+```{python}
+time.time()
+```
+
+```{python}
+local_solution(maps[0], config, order=[i for i in range(30)])
+```
+
+```{python}
+time.time()
+```
+
+```{python}
+
+```
+
 # hill climbing
+
+```{python}
+time.time()
+```
 
 ```{python}
 solutions_hc = []
@@ -265,6 +289,10 @@ for s in range(samples):
     o = hill_climbing_ptsp(m, 60, config, 'local')
     solution = local_solution(m, config,o)
     solutions_hc.append(solution)
+```
+
+```{python}
+time.time()
 ```
 
 ```{python}
@@ -280,7 +308,15 @@ scores_hc_ptsp = [len(sol.moves) for sol in solutions_hc]
 scores_hc_ptsp
 ```
 
+```{python}
+
+```
+
 # genetic
+
+```{python}
+time.time()
+```
 
 ```{python}
 solutions_gen = []
@@ -291,6 +327,10 @@ for s in range(samples):
     o = gs.solve('local',60)
     solution = local_solution(m, config,o)
     solutions_gen.append(solution)
+```
+
+```{python}
+time.time()
 ```
 
 ```{python}

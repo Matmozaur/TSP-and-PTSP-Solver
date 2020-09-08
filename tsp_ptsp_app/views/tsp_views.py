@@ -4,6 +4,7 @@ from tsp_ptsp_app.connector import save_tsp, load_tsp_sol
 from django.shortcuts import render
 import json
 import ast
+import matplotlib
 
 context_tsp = {}
 tsp_interface = TSPController.get_instance()

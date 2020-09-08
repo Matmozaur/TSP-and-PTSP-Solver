@@ -1,6 +1,7 @@
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.shortcuts import render
 from analytics.ptsp.main_ptsp import PTSPController
+import time
 import json
 
 context_ptsp = {}
@@ -39,6 +40,7 @@ def ptsp_file_run(request):
                                                         request.POST.get('sol_metric'))
         elif context_ptsp['method'] == "Genetic":
             context_ptsp['mutate'] = (request.POST.get('mutate') is True)
+            print('a', time.time())
             context_ptsp['solution'] = ptsp_interface.get_genetic_solution(float(request.POST.get('time')),
                 request.POST.get('sol_metric'), int(request.POST.get('population')))
         elif context_ptsp['method'] == "MCTS":

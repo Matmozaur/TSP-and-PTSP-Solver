@@ -28,7 +28,7 @@ class PTSPController:
 
     def generate_map(self, file):
         if file is None:
-            map_ptsp = Map(30, 320, 240, 5)
+            map_ptsp = Map(10, 320, 240, 5)
         else:
             map_ptsp = Map.load(file)
         self.map = map_ptsp

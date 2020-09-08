@@ -26,6 +26,7 @@ class TSPController:
             TSPController.__instance = self
 
     def generate_graph(self, request):
+        plt.style.use('default')
         try:
             if request['type'] == "adjacency matrix":
                 m = np.matrix(request['graph']['matrix'])
@@ -48,6 +49,7 @@ class TSPController:
             print("Bad json format!")
 
     def save_graph_image(self, path, graph=None, cycle=False):
+        plt.style.use('default')
         if graph is None:
             graph = self.graph_to_show
         pos = nx.spectral_layout(graph, weight=None) if cycle else nx.circular_layout(graph)
@@ -74,6 +76,7 @@ class TSPController:
         return mct.choose_solution()
 
     def relabel(self, graph):
+        plt.style.use('default')
         mapping = dict(zip([i for i in range(len(self.graph_to_show.nodes))], self.graph_to_show.nodes))
         return nx.relabel_nodes(graph, mapping, copy=False)
 

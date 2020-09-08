@@ -54,7 +54,7 @@ def check_n(start, v, dest, r, t, n):
     return g >= dist - r
 
 
-def number_of_moves(start, v, dest, r, t, upper=10000, lower=0):
+def number_of_moves(start, v, dest, r, t, upper=1000, lower=0):
     if lower == upper:
         return upper
     elif check_n(start, v, dest, r, t, int((upper + lower) / 2)):
@@ -260,3 +260,90 @@ def local_solution(pstp_map, config=None, order=None):
                     pstp_map.reset()
                     return solution
     return solution
+
+
+# def local_next_city_greedy(start, v, dest, r, t, n):
+#     if n == 0:
+#         return []
+#     base_loc = (start[0] + n * t * v[0], start[1] + n * t * v[1])
+#     h = dest[0] - base_loc[0]
+#     w = dest[1] - base_loc[1]
+#     moves = []
+#     if h > 0:
+#         if w > 0:
+#             while n > 0:
+#                 if w >= h:
+#                     moves.append((0, 1))
+#                     w += math.pow(t, 2) / 2
+#                     w -= n * math.pow(t, 2)
+#                 else:
+#                     moves.append((1, 0))
+#                     h += math.pow(t, 2) / 2
+#                     h -= n * math.pow(t, 2)
+#                 n -= 1
+#         else:
+#             while n > 0:
+#                 if w >= h:
+#                     moves.append((0, 1))
+#                     w += math.pow(t, 2) / 2
+#                     w -= n * math.pow(t, 2)
+#                 else:
+#                     moves.append((1, 0))
+#                     h += math.pow(t, 2) / 2
+#                     h -= n * math.pow(t, 2)
+#                 n -= 1
+#     else:
+#         while n > 0:
+#             if w < 0:
+#                 if (w - math.pow(t, 2) / 2 + n * math.pow(t, 2)) <= 0:
+#                     moves.append((0, -1))
+#                     w -= math.pow(t, 2) / 2
+#                     w += n * math.pow(t, 2)
+#                 elif (h - math.pow(t, 2) / 2 + n * math.pow(t, 2)) <= 0:
+#                     moves.append((-1, 0))
+#                     h -= math.pow(t, 2) / 2
+#                     h += n * math.pow(t, 2)
+#                 else:
+#                     moves.append((0, 0))
+#                 n -= 1
+#             else:
+#                 if (w - math.pow(t, 2) / 2 + n * math.pow(t, 2)) >= 0:
+#                     moves.append((0, 1))
+#                     w += math.pow(t, 2) / 2
+#                     w -= n * math.pow(t, 2)
+#                 elif (h - math.pow(t, 2) / 2 + n * math.pow(t, 2)) <= 0:
+#                     moves.append((-1, 0))
+#                     h -= math.pow(t, 2) / 2
+#                     h += n * math.pow(t, 2)
+#                 else:
+#                     moves.append((0, 0))
+#                 n -= 1
+#     return moves
+#
+#
+#
+# def local_solution_greedy(pstp_map, config=None, order=None):
+#     if order is None:
+#         order = range(len(pstp_map.cities))
+#     if config is None:
+#         config = PTSPConfiguration()
+#     a = Agent(pstp_map, config)
+#     i = 0
+#     solution = Solution([], pstp_map, config)
+#     start = a.location
+#     while i < len(pstp_map.cities):
+#         n = number_of_moves(start, a.v, pstp_map.cities[order[i]], config.r + pstp_map.radius,
+#                             config.dt, upper=config.max_moves, lower=0)
+#         moves = local_next_city_greedy(start, a.v, pstp_map.cities[order[i]],
+#                                           config.r + pstp_map.radius, config.dt, n)
+#         for move in moves:
+#             a.update(move)
+#             start = a.location
+#             solution.moves.append(move)
+#             pstp_map.try_visit(a.location[0], a.location[1], 0)
+#             while pstp_map.visited[order[i]]:
+#                 i += 1
+#                 if all(pstp_map.visited):
+#                     pstp_map.reset()
+#                     return solution
+#     return solution
