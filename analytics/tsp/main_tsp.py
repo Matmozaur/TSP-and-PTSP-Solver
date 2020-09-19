@@ -53,7 +53,7 @@ class TSPController:
         if graph is None:
             graph = self.graph_to_show
         pos = nx.spectral_layout(graph, weight=None) if cycle else nx.circular_layout(graph)
-        nx.draw_networkx(graph, pos)
+        nx.draw_networkx(graph, pos, node_color='yellow')
         labels = nx.get_edge_attributes(graph, 'weight')
         nx.draw_networkx_edge_labels(graph, pos, edge_labels=labels)
         plt.savefig(path, dpi=300, bbox_inches='tight')
