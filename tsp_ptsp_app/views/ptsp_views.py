@@ -1,6 +1,7 @@
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.shortcuts import render
 from analytics.ptsp.main_ptsp import PTSPController
+from tsp_ptsp_app.connector import save_ptsp, load_ptsp_sol
 import time
 import json
 
@@ -56,3 +57,32 @@ def ptsp_file_run(request):
 
 def ptsp_game(request):
     return render(request, 'ptsp/ptsp_game.html', context_ptsp)
+
+
+def load_ptsp(request):
+    if request.method == 'POST':
+        context_ptsp.clear()
+        row = request.POST.get("ptsp_sol")
+        print(row)
+        name = row.split(':')[0]
+        all_info = load_ptsp_sol(name)
+        context_ptsp['map'] = all_info['map']
+        context_ptsp['config'] = all_info['config']
+        context_ptsp['solution'] = all_info['solution']
+        ptsp_interface.map = context_ptsp['map']
+        ptsp_interface.config = context_ptsp['config']
+        ptsp_interface.save_map_image('static/media/temporary.png')
+        context_ptsp['map_image'] = "/static/media/temporary.png"
+        context_ptsp['length'] = len(context_ptsp['solution'].moves)
+        ptsp_interface.save_sol_image('static/media/temporary_solution.png', context_ptsp['solution'])
+        context_ptsp['solution_image'] = "/static/media/temporary_solution.png"
+    return render(request, 'ptsp/ptsp_solver.html', context_ptsp)
+
+
+def ptsp_save(request):
+    pass
+    if request.method == 'POST':
+        save_ptsp(context_ptsp['map'], context_ptsp['config'], context_ptsp['solution'], request.POST.get('Name'),
+                    request.POST.get('Description'))
+
+    return render(request, 'ptsp/ptsp_solver.html', context_ptsp)

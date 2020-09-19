@@ -9,13 +9,21 @@
         {% csrf_token %}
         <select name="tsp_sol" size="10">
             {% for item in data_tsp %}
-                <option value={{item.0}}:{{item.1}} selected="selected">{{item.0}} -{{item.1}} </option>
+                <option style="width: 800px;" value={{item.0}}:{{item.1}} selected="selected">{{item.0}}  -  {{item.1}} </option>
             {% endfor %}
         </select>
         <input class="button" type="submit" value="Choose">
 	</form>
 <br>
 <h2>PTSP Solutions:</h2>
-
+<form style="text-align: center; " method="post" action="{% url 'load_ptsp' %}">
+        {% csrf_token %}
+        <select name="ptsp_sol" size="10">
+            {% for item in data_ptsp %}
+                <option style="width: 800px;" value={{item.0}}:{{item.1}} selected="selected">{{item.0}}  -  {{item.1}} </option>
+            {% endfor %}
+        </select>
+        <input class="button" type="submit" value="Choose">
+	</form>
 {% endblock %}
 </html>

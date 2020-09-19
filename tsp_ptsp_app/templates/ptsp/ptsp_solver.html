@@ -99,7 +99,7 @@
         {% endif %}
 
 		{% if solution_image %}
-			<form method="post" style="text-align: center;" action="{% url 'tsp_save' %}">
+			<form method="post" style="text-align: center;" action="{% url 'ptsp_save' %}">
 				{% csrf_token %}
 				{% if name %}
 				<div class="block__row">

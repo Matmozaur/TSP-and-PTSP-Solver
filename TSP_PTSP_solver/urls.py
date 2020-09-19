@@ -43,6 +43,8 @@ urlpatterns = [
     url(r'^ptsp_file_run/', views.ptsp_file_run, name='ptsp_file_run'),
     url(r'^tsp_save/', views.tsp_save, name='tsp_save'),
     url(r'^load_tsp/', views.load_tsp, name='load_tsp'),
+    url(r'^load_ptsp/', views.load_ptsp, name='load_ptsp'),
+    url(r'^ptsp_save/', views.ptsp_save, name='ptsp_save'),
 ]
 
 urlpatterns += static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
