@@ -1,0 +1,23 @@
+services:
+  tsp-solver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tsp-ptsp-solver
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=true
+      - ENVIRONMENT=development
+    volumes:
+      - ./src:/app/src
+      - ./analytics:/app/analytics
+      - ./media:/app/media
+      - ./results:/app/results
+    command: uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
