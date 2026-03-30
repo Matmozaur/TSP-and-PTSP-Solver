@@ -1,4 +1,4 @@
-.PHONY: help install dev test lint format type-check clean build run docker-build docker-up docker-down
+.PHONY: help install dev test lint format type-check clean build run docker-build docker-up docker-down frontend frontend-dev
 
 help:
 	@echo "TSP-PTSP Solver - Available commands:"
@@ -8,7 +8,9 @@ help:
 	@echo "  make dev           Install with dev dependencies"
 	@echo ""
 	@echo "Development:"
-	@echo "  make run          Run development server"
+	@echo "  make run          Run development server (backend)"
+	@echo "  make frontend     Run Streamlit frontend"
+	@echo "  make frontend-dev Run frontend in dev mode"
 	@echo "  make test         Run tests"
 	@echo "  make test-cov     Run tests with coverage"
 	@echo "  make lint         Run code linting"
@@ -21,7 +23,7 @@ help:
 	@echo ""
 	@echo "Docker:"
 	@echo "  make docker-build Build Docker image"
-	@echo "  make docker-up    Start Docker containers"
+	@echo "  make docker-up    Start Docker containers (backend + frontend)"
 	@echo "  make docker-down  Stop Docker containers"
 	@echo "  make docker-logs  View Docker logs"
 
@@ -35,6 +37,12 @@ dev:
 # Development
 run:
 	python run.py
+
+frontend:
+	streamlit run streamlit_app.py
+
+frontend-dev:
+	streamlit run streamlit_app.py --logger.level=debug --client.showErrorDetails=true
 
 test:
 	pytest tests/ -v
@@ -64,9 +72,15 @@ clean:
 
 # Docker
 docker-build:
-	docker build -t tsp-ptsp-solver:latest .
+	docker-compose build
 
 docker-up:
+	@echo "Starting services..."
+	@echo "Backend will be available at: http://localhost:8000"
+	@echo "Frontend will be available at: http://localhost:8501"
+	docker-compose up
+
+docker-up-d:
 	docker-compose up -d
 
 docker-down:

@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: tsp-ptsp-solver
+    container_name: tsp-ptsp-solver-api
     ports:
       - "8000:8000"
     environment:
@@ -16,8 +16,35 @@ services:
       - ./results:/app/results
     command: uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/ptsp/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 5s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tsp-ptsp-solver-frontend
+    ports:
+      - "8501:8501"
+    environment:
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+      - STREAMLIT_CLIENT_TOOLBAR_MODE=viewer
+      - API_BASE_URL=http://tsp-solver:8000
+    volumes:
+      - ./streamlit_app.py:/app/streamlit_app.py
+      - ./frontend:/app/frontend
+      - ./media:/app/media
+      - ./results:/app/results
+    command: streamlit run streamlit_app.py --server.port=8501 --server.address=0.0.0.0
+    depends_on:
+      - tsp-solver
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge

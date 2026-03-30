@@ -43,8 +43,8 @@ class TSPSolverService:
         Returns:
             Graph metadata
         """
-        m = np.matrix(matrix)
-        self.graph = nx.from_numpy_matrix(m)
+        m = np.array(matrix)
+        self.graph = nx.from_numpy_array(m)
 
         # Create display graph with optional labels
         self.graph_display = self.graph.copy()

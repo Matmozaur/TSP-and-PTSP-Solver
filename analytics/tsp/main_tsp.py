@@ -28,8 +28,8 @@ class TSPController:
     def generate_graph(self, request):
         try:
             if request['type'] == "adjacency matrix":
-                m = np.matrix(request['graph']['matrix'])
-                graph = nx.from_numpy_matrix(m)
+                m = np.array(request['graph']['matrix'])
+                graph = nx.from_numpy_array(m)
                 if request["graph"]['names'] is not None:
                     print(graph.nodes)
                     graph_to_show = copy.deepcopy(graph)

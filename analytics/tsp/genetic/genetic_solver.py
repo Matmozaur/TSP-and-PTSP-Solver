@@ -32,8 +32,8 @@ class GeneticSolver:
         :type h: int
         """
         g = x.Graph
-        x = x.HC
-        y = y.HC
+        x = x.solution
+        y = y.solution
         n = len(list(g.nodes))
         if h is None:
             h = random.randrange(int(n * 0.25), int(n * 0.75))

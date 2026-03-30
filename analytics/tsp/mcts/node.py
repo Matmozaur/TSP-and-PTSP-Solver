@@ -14,13 +14,13 @@ class Node:
             self.partial = parent
             self.visited = True
         else:
-            self.partial = PartialSolution(parent.partial.HC + [v])
+            self.partial = PartialSolution(parent.partial.solution + [v])
             self.visited = False
         self.mean = 0
         self.visits = 0
 
     def find_children(self):
-        nodes_left = set(PartialSolution.Graph.nodes).difference(set(self.partial.HC))
+        nodes_left = set(PartialSolution.Graph.nodes).difference(set(self.partial.solution))
         return set([Node(self, x) for x in nodes_left])
 
     @property
@@ -41,14 +41,14 @@ class Node:
 
     def random_child(self, lottery):
         if lottery == 'random':
-            nodes_left = set(PartialSolution.Graph.nodes).difference(set(self.partial.HC))
-            return Node(self, random.sample(nodes_left, 1)[0])
+            nodes_left = set(PartialSolution.Graph.nodes).difference(set(self.partial.solution))
+            return Node(self, random.sample(list(nodes_left), 1)[0])
         elif lottery == 'nearest':
-            nodes_left = set(PartialSolution.Graph.nodes).difference(set(self.partial.HC))
-            return Node(self, min(nodes_left, key=lambda x: self.partial.Graph.get_edge_data(self.partial.HC[-1], x)['weight']))
+            nodes_left = set(PartialSolution.Graph.nodes).difference(set(self.partial.solution))
+            return Node(self, min(nodes_left, key=lambda x: self.partial.Graph.get_edge_data(self.partial.solution[-1], x)['weight']))
         elif lottery == 'nearest lottery':
-            nodes_left = list(set(PartialSolution.Graph.nodes).difference(set(self.partial.HC)))
-            p = [1/self.partial.Graph.get_edge_data(self.partial.HC[-1], x)['weight'] for x in nodes_left]
+            nodes_left = list(set(PartialSolution.Graph.nodes).difference(set(self.partial.solution)))
+            p = [1/self.partial.Graph.get_edge_data(self.partial.solution[-1], x)['weight'] for x in nodes_left]
             s = sum(p)
             p = [x/s for x in p]
             return Node(self, choice(nodes_left, 1, p=p)[0])

@@ -49,7 +49,7 @@ class MCT:
     @staticmethod
     def _rollout(leaf):
         leaf.children = leaf.find_children()
-        return random.sample(leaf.children, 1)[0]
+        return random.sample(list(leaf.children), 1)[0]
 
     def _simulate(self, leaf):
         if leaf.is_terminal:
