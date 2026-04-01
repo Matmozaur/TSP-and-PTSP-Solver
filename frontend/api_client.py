@@ -38,7 +38,7 @@ class APIClient:
         self,
         matrix: list[list[float]],
         method: str,
-        time_limit: float = 60.0,
+        time_limit: float = 5.0,
         names: list[str] | None = None,
         population: int | None = 50,
         mutate: bool = True,

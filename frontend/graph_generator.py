@@ -98,7 +98,10 @@ def generate_circle_matrix(n_nodes: int) -> tuple[list[list[float]], list[str]]:
                 )
                 matrix[i][j] = dist
 
-    names = [f"City {i}" for i in range(n_nodes)]
+    names = [
+        f"City {i}\n({points[i][0]:.1f}, {points[i][1]:.1f})"
+        for i in range(n_nodes)
+    ]
 
     return matrix.tolist(), names
 

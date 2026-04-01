@@ -73,6 +73,9 @@ def main() -> None:
     if "names" not in st.session_state:
         st.session_state.names = None
 
+    if "graph_layout" not in st.session_state:
+        st.session_state.graph_layout = None
+
     api_client = st.session_state.api_client
 
     # Check API health
@@ -120,16 +123,21 @@ def main() -> None:
                     if sample_type == "Random":
                         matrix = generate_random_matrix(n_nodes, seed=42)
                         names = [f"City {i}" for i in range(n_nodes)]
+                        layout_hint = "random"
                     elif sample_type == "Euclidean":
                         matrix, names = generate_euclidean_matrix(n_nodes, seed=42)
+                        layout_hint = "euclidean"
                     elif sample_type == "Circle":
                         matrix, names = generate_circle_matrix(n_nodes)
+                        layout_hint = "circle"
                     else:  # Grid
                         grid_size = int(n_nodes**0.5)
                         matrix, names = generate_grid_matrix(grid_size)
+                        layout_hint = "grid"
 
                     st.session_state.matrix = matrix
                     st.session_state.names = names
+                    st.session_state.graph_layout = layout_hint
                     st.session_state.solution = None
                     st.success(f"✅ Generated {sample_type} graph with {len(matrix)} nodes")
 
@@ -140,6 +148,7 @@ def main() -> None:
                     df = pd.read_csv(uploaded_file)
                     st.session_state.matrix = df.values.tolist()
                     st.session_state.names = [f"Node {i}" for i in range(len(df))]
+                    st.session_state.graph_layout = None
                     st.session_state.solution = None
                     st.success(f"✅ Loaded graph with {len(df)} nodes")
 
@@ -157,6 +166,7 @@ def main() -> None:
                 matrix = [[0.0] * n_nodes_manual for _ in range(n_nodes_manual)]
                 st.session_state.matrix = matrix
                 st.session_state.names = [f"City {i}" for i in range(n_nodes_manual)]
+                st.session_state.graph_layout = None
                 st.session_state.solution = None
 
     # Main content
@@ -170,7 +180,11 @@ def main() -> None:
     with col1:
         st.subheader("📍 Graph Visualization")
         G = create_graph_from_matrix(st.session_state.matrix, st.session_state.names)
-        fig = visualize_graph(G, title="Original Graph")
+        fig = visualize_graph(
+            G,
+            title="Original Graph",
+            layout_hint=st.session_state.graph_layout,
+        )
         st.plotly_chart(fig, use_container_width=True)
 
     # Display matrix
@@ -202,7 +216,7 @@ def main() -> None:
             "Time Limit (s)",
             min_value=1.0,
             max_value=300.0,
-            value=30.0,
+            value=5.0,
             step=1.0,
             help="Maximum time to spend solving",
         )
@@ -273,6 +287,7 @@ def main() -> None:
                 tour=solution["tour"],
                 names=st.session_state.names,
                 title="Solution Tour",
+                layout_hint=st.session_state.graph_layout,
             )
             st.plotly_chart(fig, use_container_width=True)
 

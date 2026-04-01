@@ -2,14 +2,205 @@
 
 from __future__ import annotations
 
+import math
+import re
 from typing import TYPE_CHECKING
 
 import networkx as nx
 import plotly.graph_objects as go
-import plotly.express as px
 
 if TYPE_CHECKING:
     pass
+
+
+COORDINATE_PATTERN = re.compile(r"\((-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)\)")
+
+
+def _extract_positions(G: nx.Graph) -> dict[int, tuple[float, float]] | None:
+    """Extract geometric positions from node labels when available."""
+    positions: dict[int, tuple[float, float]] = {}
+
+    for node, data in G.nodes(data=True):
+        label = data.get("label")
+        if not isinstance(label, str):
+            return None
+
+        match = COORDINATE_PATTERN.search(label)
+        if match is None:
+            return None
+
+        positions[node] = (float(match.group(1)), float(match.group(2)))
+
+    return positions if len(positions) == G.number_of_nodes() else None
+
+
+def _is_circle_layout(pos: dict[int, tuple[float, float]]) -> bool:
+    """Return whether positions resemble nodes placed on a circle."""
+    if len(pos) < 5:
+        return False
+
+    xs = [x for x, _ in pos.values()]
+    ys = [y for _, y in pos.values()]
+    center_x = sum(xs) / len(xs)
+    center_y = sum(ys) / len(ys)
+    radii = [math.hypot(x - center_x, y - center_y) for x, y in pos.values()]
+
+    mean_radius = sum(radii) / len(radii)
+    if mean_radius == 0:
+        return False
+
+    variance = sum((radius - mean_radius) ** 2 for radius in radii) / len(radii)
+    return math.sqrt(variance) / mean_radius < 0.12
+
+
+def _is_grid_layout(pos: dict[int, tuple[float, float]]) -> bool:
+    """Return whether positions resemble a grid."""
+    if len(pos) < 4:
+        return False
+
+    rounded_x = {round(x, 6) for x, _ in pos.values()}
+    rounded_y = {round(y, 6) for _, y in pos.values()}
+    return len(rounded_x) > 1 and len(rounded_y) > 1 and len(rounded_x) * len(rounded_y) == len(pos)
+
+
+def _sorted_circle_nodes(pos: dict[int, tuple[float, float]]) -> list[int]:
+    """Return nodes sorted by angle around the centroid."""
+    xs = [x for x, _ in pos.values()]
+    ys = [y for _, y in pos.values()]
+    center_x = sum(xs) / len(xs)
+    center_y = sum(ys) / len(ys)
+
+    return sorted(
+        pos,
+        key=lambda node: math.atan2(pos[node][1] - center_y, pos[node][0] - center_x),
+    )
+
+
+def _grid_step(values: list[float]) -> float | None:
+    """Find the smallest positive spacing in a coordinate list."""
+    unique_values = sorted({round(value, 6) for value in values})
+    positive_steps = [
+        unique_values[i + 1] - unique_values[i]
+        for i in range(len(unique_values) - 1)
+        if unique_values[i + 1] - unique_values[i] > 1e-6
+    ]
+    return min(positive_steps) if positive_steps else None
+
+
+def _build_display_edges(
+    G: nx.Graph,
+    pos: dict[int, tuple[float, float]] | None,
+) -> list[tuple[int, int]]:
+    """Choose a readable subset of edges for visualization."""
+    if pos is None or G.number_of_edges() <= max(3 * G.number_of_nodes(), 20):
+        return list(G.edges())
+
+    if _is_circle_layout(pos):
+        ordered_nodes = _sorted_circle_nodes(pos)
+        return [
+            (ordered_nodes[i], ordered_nodes[(i + 1) % len(ordered_nodes)])
+            for i in range(len(ordered_nodes))
+        ]
+
+    if _is_grid_layout(pos):
+        x_step = _grid_step([x for x, _ in pos.values()])
+        y_step = _grid_step([y for _, y in pos.values()])
+        if x_step is not None and y_step is not None:
+            edges: set[tuple[int, int]] = set()
+            tolerance = min(x_step, y_step) / 10
+            nodes = list(pos.keys())
+
+            for i, u in enumerate(nodes):
+                x0, y0 = pos[u]
+                for v in nodes[i + 1 :]:
+                    x1, y1 = pos[v]
+                    same_row = abs(y0 - y1) <= tolerance and abs(abs(x0 - x1) - x_step) <= tolerance
+                    same_column = abs(x0 - x1) <= tolerance and abs(abs(y0 - y1) - y_step) <= tolerance
+                    if same_row or same_column:
+                        edges.add((u, v))
+
+            if edges:
+                return sorted(edges)
+
+    edges: set[tuple[int, int]] = set()
+    nodes = list(pos.keys())
+    k_nearest = min(3, max(len(nodes) - 1, 1))
+
+    for node in nodes:
+        x0, y0 = pos[node]
+        neighbors = sorted(
+            (
+                (math.hypot(x0 - pos[other][0], y0 - pos[other][1]), other)
+                for other in nodes
+                if other != node
+            ),
+            key=lambda item: item[0],
+        )
+        for _, other in neighbors[:k_nearest]:
+            edges.add((min(node, other), max(node, other)))
+
+    return sorted(edges)
+
+
+def _get_layout_positions(G: nx.Graph) -> dict[int, tuple[float, float]]:
+    """Use embedded coordinates when possible, otherwise fall back to spring layout."""
+    return _extract_positions(G) or nx.spring_layout(G, k=2, iterations=50, seed=42)
+
+
+def _get_forced_layout_positions(
+    G: nx.Graph,
+    layout_hint: str | None,
+) -> dict[int, tuple[float, float]] | None:
+    """Get deterministic positions for explicit layout types."""
+    if layout_hint is None:
+        return None
+
+    layout = layout_hint.lower()
+    nodes = sorted(G.nodes())
+    n = len(nodes)
+
+    if layout == "circle":
+        pos = nx.circular_layout(nodes)
+        return {node: (float(pos[node][0]), float(pos[node][1])) for node in nodes}
+
+    if layout == "grid":
+        if n == 0:
+            return {}
+        cols = math.ceil(math.sqrt(n))
+        rows = math.ceil(n / cols)
+        positions: dict[int, tuple[float, float]] = {}
+        for index, node in enumerate(nodes):
+            row = index // cols
+            col = index % cols
+            positions[node] = (float(col), float(-row))
+        return positions
+
+    return None
+
+
+def _get_display_edges_for_layout(G: nx.Graph, layout_hint: str | None) -> list[tuple[int, int]] | None:
+    """Build readable edge subsets for explicit layout types."""
+    if layout_hint is None:
+        return None
+
+    layout = layout_hint.lower()
+    nodes = sorted(G.nodes())
+    n = len(nodes)
+
+    if layout == "circle" and n >= 3:
+        return [(nodes[i], nodes[(i + 1) % n]) for i in range(n)]
+
+    if layout == "grid" and n >= 2:
+        cols = math.ceil(math.sqrt(n))
+        edges: list[tuple[int, int]] = []
+        for index, node in enumerate(nodes):
+            if (index + 1) % cols != 0 and index + 1 < n:
+                edges.append((node, nodes[index + 1]))
+            if index + cols < n:
+                edges.append((node, nodes[index + cols]))
+        return edges
+
+    return None
 
 
 def create_graph_from_matrix(
@@ -48,6 +239,7 @@ def visualize_graph(
     title: str = "Graph Visualization",
     height: int = 600,
     width: int = 800,
+    layout_hint: str | None = None,
 ) -> go.Figure:
     """Create interactive Plotly visualization of graph.
 
@@ -60,20 +252,22 @@ def visualize_graph(
     Returns:
         Plotly figure
     """
-    # Use spring layout for better visualization
-    pos = nx.spring_layout(G, k=2, iterations=50, seed=42)
+    forced_pos = _get_forced_layout_positions(G, layout_hint)
+    pos = forced_pos or _get_layout_positions(G)
+    forced_edges = _get_display_edges_for_layout(G, layout_hint)
+    display_edges = forced_edges or _build_display_edges(G, _extract_positions(G))
 
     # Create edge traces
     edge_x = []
     edge_y = []
     edge_text = []
 
-    for edge in G.edges(data=True):
-        x0, y0 = pos[edge[0]]
-        x1, y1 = pos[edge[1]]
+    for u, v in display_edges:
+        x0, y0 = pos[u]
+        x1, y1 = pos[v]
         edge_x.extend([x0, x1, None])
         edge_y.extend([y0, y1, None])
-        weight = edge[2].get("weight", 1)
+        weight = G.edges[u, v].get("weight", 1)
         edge_text.append(f"{weight:.1f}")
 
     edge_trace = go.Scatter(
@@ -133,7 +327,7 @@ def visualize_graph(
             margin=dict(b=20, l=5, r=5, t=40),
             annotations=[],
             xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, scaleanchor="x", scaleratio=1),
             plot_bgcolor="rgba(240, 240, 240, 0.5)",
             height=height,
             width=width,
@@ -150,6 +344,7 @@ def visualize_solution(
     title: str = "TSP Solution",
     height: int = 600,
     width: int = 800,
+    layout_hint: str | None = None,
 ) -> go.Figure:
     """Visualize TSP solution by highlighting the tour path.
 
@@ -164,7 +359,10 @@ def visualize_solution(
     Returns:
         Plotly figure with highlighted tour
     """
-    pos = nx.spring_layout(G, k=2, iterations=50, seed=42)
+    forced_pos = _get_forced_layout_positions(G, layout_hint)
+    pos = forced_pos or _get_layout_positions(G)
+    forced_edges = _get_display_edges_for_layout(G, layout_hint)
+    display_edges = forced_edges or _build_display_edges(G, _extract_positions(G))
 
     # Create tour path edges
     tour_x = []
@@ -197,7 +395,7 @@ def visualize_solution(
         u, v = tour[i], tour[(i + 1) % len(tour)]
         tour_edges.add((min(u, v), max(u, v)))
 
-    for edge in G.edges():
+    for edge in display_edges:
         u, v = min(edge[0], edge[1]), max(edge[0], edge[1])
         if (u, v) not in tour_edges:
             x0, y0 = pos[edge[0]]
@@ -251,7 +449,7 @@ def visualize_solution(
             hovermode="closest",
             margin=dict(b=20, l=5, r=5, t=40),
             xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, scaleanchor="x", scaleratio=1),
             plot_bgcolor="rgba(240, 240, 240, 0.5)",
             height=height,
             width=width,

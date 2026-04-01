@@ -96,7 +96,7 @@ async def visualize_graph(
 async def solve_from_file(
     file: UploadFile = File(...),
     method: str = "HC",
-    time_limit: float = 60.0,
+    time_limit: float = 5.0,
 ) -> dict:
     """Upload JSON file with graph and solve.
 

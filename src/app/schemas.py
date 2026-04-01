@@ -38,7 +38,7 @@ class TSPSolutionRequest(BaseModel):
 
     graph: FullGraphData = Field(..., description="Graph data")
     method: str = Field(..., description="Solving method: Random, HC, Genetic, MCTS")
-    time_limit: float = Field(60.0, ge=0.1, description="Time limit in seconds")
+    time_limit: float = Field(5.0, ge=0.1, description="Time limit in seconds")
     population: int | None = Field(50, ge=10, description="Population size for Genetic")
     mutate: bool = Field(True, description="Enable mutation in Genetic algorithm")
     simulation_type: str | None = Field("nearest", description="Simulation type for MCTS")
