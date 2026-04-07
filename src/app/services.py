@@ -210,7 +210,18 @@ class TSPSolverService:
         if labels:
             nx.draw_networkx_edge_labels(self.graph_display, pos, edge_labels=labels)
 
-        plt.savefig(str(output_path), dpi=300, bbox_inches="tight")
-        plt.close()
+        try:
+            plt.savefig(str(output_path), dpi=300, bbox_inches="tight")
+        except PermissionError:
+            import tempfile
+
+            stem = Path(filename).stem or "graph"
+            suffix = Path(filename).suffix or ".png"
+            fallback_dir = Path(tempfile.gettempdir()) / "tsp-ptsp-media"
+            fallback_dir.mkdir(parents=True, exist_ok=True)
+            output_path = fallback_dir / f"{stem}_{int(time.time() * 1000)}{suffix}"
+            plt.savefig(str(output_path), dpi=300, bbox_inches="tight")
+        finally:
+            plt.close()
 
         return output_path

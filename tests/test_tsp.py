@@ -40,7 +40,7 @@ def test_tsp_solve_invalid_method(client):
     }
 
     response = client.post("/api/v1/tsp/solve", json=payload)
-    assert response.status_code == 400
+    assert response.status_code == 422
 
 
 def test_tsp_solve_invalid_matrix(client):
@@ -54,7 +54,7 @@ def test_tsp_solve_invalid_matrix(client):
     }
 
     response = client.post("/api/v1/tsp/solve", json=payload)
-    assert response.status_code == 400
+    assert response.status_code == 422
 
 
 def test_tsp_visualize(client):
