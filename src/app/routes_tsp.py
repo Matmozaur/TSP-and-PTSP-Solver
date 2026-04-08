@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import time
+import json
 from pathlib import Path
 
-from fastapi import APIRouter, Body, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
 
 from .config import settings
@@ -17,29 +17,49 @@ from .services import TSPSolverService
 
 router = APIRouter(prefix="/tsp", tags=["TSP"])
 
-# Initialize service
-tsp_service = TSPSolverService(media_path=settings.media_path)
+
+# ---------------------------------------------------------------------------
+# Dependency — a fresh, stateless service instance per request
+# ---------------------------------------------------------------------------
+
+
+def get_tsp_service() -> TSPSolverService:
+    """FastAPI dependency that provides a request-scoped :class:`TSPSolverService`.
+
+    Each request receives its own instance so no mutable graph state is shared
+    across concurrent requests.  The ``LocalPythonExecutor`` default is used
+    until a Go worker is wired in Phase 2.
+    """
+    return TSPSolverService(media_path=settings.media_path)
+
+
+# ---------------------------------------------------------------------------
+# Routes
+# ---------------------------------------------------------------------------
 
 
 @router.post("/solve", response_model=SolutionResponse, status_code=status.HTTP_200_OK)
-async def solve_tsp(request: TSPSolutionRequest) -> dict:
+async def solve_tsp(
+    request: TSPSolutionRequest,
+    service: TSPSolverService = Depends(get_tsp_service),
+) -> dict:
     """Solve TSP instance using specified algorithm.
 
     Args:
-        request: TSP solution request with graph and parameters
+        request: TSP solution request with graph and parameters.
+        service: Request-scoped solver service (injected).
 
     Returns:
-        Solution with tour, cost, and execution time
+        Solution with tour, cost, and execution time.
 
     Raises:
-        HTTPException: If graph loading or solving fails
+        HTTPException: If graph loading or solving fails.
     """
     try:
-        # Load graph
-        tsp_service.load_graph_from_matrix(request.graph.matrix, request.graph.names)
+        ctx = service.load_graph_from_matrix(request.graph.matrix, request.graph.names)
 
-        # Solve
-        result = tsp_service.solve(
+        result = service.solve(
+            ctx=ctx,
             method=request.method,
             max_time=request.time_limit,
             population_size=request.population or 50,
@@ -63,22 +83,24 @@ async def solve_tsp(request: TSPSolutionRequest) -> dict:
 async def visualize_graph(
     graph_data: FullGraphData = Body(...),
     filename: str = "graph.png",
+    service: TSPSolverService = Depends(get_tsp_service),
 ) -> FileResponse:
-    """Generate and return graph visualization.
+    """Generate and return graph visualisation.
 
     Args:
-        graph_data: Graph data
-        filename: Output filename
+        graph_data: Graph data.
+        filename: Output filename.
+        service: Request-scoped solver service (injected).
 
     Returns:
-        Graph image file
+        Graph image file.
 
     Raises:
-        HTTPException: If visualization fails
+        HTTPException: If visualisation fails.
     """
     try:
-        tsp_service.load_graph_from_matrix(graph_data.matrix, graph_data.names)
-        image_path = tsp_service.save_graph_visualization(filename)
+        ctx = service.load_graph_from_matrix(graph_data.matrix, graph_data.names)
+        image_path = service.save_graph_visualization(ctx, filename)
 
         return FileResponse(
             path=image_path,
@@ -97,23 +119,23 @@ async def solve_from_file(
     file: UploadFile = File(...),
     method: str = "HC",
     time_limit: float = 5.0,
+    service: TSPSolverService = Depends(get_tsp_service),
 ) -> dict:
     """Upload JSON file with graph and solve.
 
     Args:
-        file: JSON file with graph data
-        method: Solving method
-        time_limit: Maximum computation time
+        file: JSON file with graph data.
+        method: Solving method.
+        time_limit: Maximum computation time.
+        service: Request-scoped solver service (injected).
 
     Returns:
-        Solution
+        Solution.
 
     Raises:
-        HTTPException: If file reading or solving fails
+        HTTPException: If file reading or solving fails.
     """
     try:
-        import json
-
         if file.content_type != "application/json":
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -130,9 +152,10 @@ async def solve_from_file(
             )
 
         graph_data = FullGraphData(**graph_input["graph"])
-        tsp_service.load_graph_from_matrix(graph_data.matrix, graph_data.names)
+        ctx = service.load_graph_from_matrix(graph_data.matrix, graph_data.names)
 
-        result = tsp_service.solve(
+        result = service.solve(
+            ctx=ctx,
             method=method,
             max_time=time_limit,
         )
@@ -155,3 +178,4 @@ async def health_check() -> dict:
         Health status
     """
     return {"status": "healthy", "service": "TSP Solver"}
+

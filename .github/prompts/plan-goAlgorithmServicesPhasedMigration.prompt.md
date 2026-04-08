@@ -2,15 +2,6 @@
 
 This revision assumes all production algorithm services are written in Go, while the coordinator, monitoring, analytics/reference code, and frontend remain in Python. To keep the program usable after every milestone, the migration is phased around a stable Python coordinator: first preserve the current app, then introduce a coordinator abstraction, then progressively move execution from in-process Python to external Go workers. The frontend changes for larger graphs, concurrent algorithm runs, and Timescale-backed progress are introduced only when the backend can support them without breaking the existing flow.
 
-**Phase 0 — Baseline and contracts**
-- Freeze the current API and behavior in [src/app/schemas.py](src/app/schemas.py#L15-L61), [src/app/routes_tsp.py](src/app/routes_tsp.py#L18-L151), [frontend/api_client.py](frontend/api_client.py#L13-L120), and [streamlit_app.py](streamlit_app.py#L56-L285).
-- Build regression/parity coverage around the current Python algorithms referenced from [src/app/services.py](src/app/services.py#L11-L14), especially `HC`, `Genetic`, and `MCTS`.
-- Document the future internal worker contract and the public migration target in [README.md](README.md).
-
-Working program after this phase:
-- The existing app works exactly as today.
-- There is a reliable benchmark and comparison baseline before any Go rewrite begins.
-
 **Phase 1 — Python coordinator seam**
 - Refactor [src/app/services.py](src/app/services.py#L20-L219) so `TSPSolverService` becomes an orchestration layer rather than the only execution engine.
 - Introduce an internal execution interface for `solve`, with one implementation still calling the current Python algorithms from [analytics/tsp/domain/basic_solvers.py](analytics/tsp/domain/basic_solvers.py#L17-L39), [analytics/tsp/genetic/genetic_solver.py](analytics/tsp/genetic/genetic_solver.py#L8-L118), and [analytics/tsp/mcts/mct.py](analytics/tsp/mcts/mct.py#L7-L75).
