@@ -28,6 +28,11 @@ class Settings(BaseSettings):
     media_path: Path = Path("./media")
     results_path: Path = Path("./results")
 
+    # Go worker settings (Phase 2)
+    go_worker_enabled: bool = False
+    go_worker_url: str = "http://localhost:8080"
+    go_worker_timeout_seconds: float = 30.0
+
     model_config = {
         "env_file": ".env",
         "case_sensitive": False,

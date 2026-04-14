@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
@@ -9,11 +8,10 @@ from fastapi.responses import FileResponse
 from .config import settings
 from .schemas import (
     FullGraphData,
-    GraphImageResponse,
     SolutionResponse,
     TSPSolutionRequest,
 )
-from .services import TSPSolverService
+from .services import TSPSolverService, build_executor
 
 router = APIRouter(prefix="/tsp", tags=["TSP"])
 
@@ -27,10 +25,16 @@ def get_tsp_service() -> TSPSolverService:
     """FastAPI dependency that provides a request-scoped :class:`TSPSolverService`.
 
     Each request receives its own instance so no mutable graph state is shared
-    across concurrent requests.  The ``LocalPythonExecutor`` default is used
-    until a Go worker is wired in Phase 2.
+    across concurrent requests.  Executor selection is configuration-driven:
+    the Go worker handles ``Random``/``HC`` when enabled, with local Python
+    fallback for resiliency and for all other methods.
     """
-    return TSPSolverService(media_path=settings.media_path)
+    executor = build_executor(
+        go_worker_enabled=settings.go_worker_enabled,
+        go_worker_url=settings.go_worker_url,
+        go_worker_timeout_seconds=settings.go_worker_timeout_seconds,
+    )
+    return TSPSolverService(media_path=settings.media_path, executor=executor)
 
 
 # ---------------------------------------------------------------------------

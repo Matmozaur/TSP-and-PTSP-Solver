@@ -20,6 +20,7 @@ import time
 from pathlib import Path
 from typing import Protocol, TypedDict
 
+import httpx
 import networkx as nx
 import numpy as np
 
@@ -151,6 +152,69 @@ class LocalPythonExecutor:
 # ---------------------------------------------------------------------------
 # Orchestration service — delegates execution, owns graph loading & I/O
 # ---------------------------------------------------------------------------
+
+
+class RemoteGoExecutor:
+    """Delegates selected methods to a Go worker with local Python fallback."""
+
+    _REMOTE_METHODS = {"Random", "HC"}
+
+    def __init__(
+        self,
+        base_url: str,
+        timeout_seconds: float = 30.0,
+        fallback: ExecutorProtocol | None = None,
+    ) -> None:
+        self._base_url = base_url.rstrip("/")
+        self._timeout_seconds = timeout_seconds
+        self._fallback: ExecutorProtocol = fallback or LocalPythonExecutor()
+        self._client = httpx.Client(base_url=self._base_url, timeout=self._timeout_seconds)
+
+    def execute(self, request: SolveRequest) -> SolveResult:
+        method = request["method"]
+        if method not in self._REMOTE_METHODS:
+            return self._fallback.execute(request)
+
+        graph = request["graph"]
+        matrix = nx.to_numpy_array(graph, dtype=float).tolist()
+
+        payload = {
+            "method": method,
+            "matrix": matrix,
+            "max_time": request["max_time"],
+        }
+
+        try:
+            response = self._client.post("/solve", json=payload)
+            response.raise_for_status()
+            data = response.json()
+
+            return SolveResult(
+                tour=[int(node) for node in data["tour"]],
+                cost=float(data["cost"]),
+                method=str(data.get("method", method)),
+                execution_time=float(data["execution_time"]),
+            )
+        except Exception:
+            return self._fallback.execute(request)
+
+
+def build_executor(
+    *,
+    go_worker_enabled: bool,
+    go_worker_url: str,
+    go_worker_timeout_seconds: float,
+) -> ExecutorProtocol:
+    """Construct the algorithm executor based on runtime configuration."""
+    local_executor = LocalPythonExecutor()
+    if not go_worker_enabled:
+        return local_executor
+
+    return RemoteGoExecutor(
+        base_url=go_worker_url,
+        timeout_seconds=go_worker_timeout_seconds,
+        fallback=local_executor,
+    )
 
 
 class TSPSolverService:
