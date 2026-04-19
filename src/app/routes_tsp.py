@@ -25,6 +25,8 @@ from .services import TSPSolverService, build_executor
 router = APIRouter(prefix="/tsp", tags=["TSP"])
 _job_coordinator: TSPJobCoordinator | None = None
 _coordinator_lock = threading.Lock()
+_tsp_service: TSPSolverService | None = None
+_tsp_service_lock = threading.Lock()
 
 
 # ---------------------------------------------------------------------------
@@ -33,19 +35,25 @@ _coordinator_lock = threading.Lock()
 
 
 def get_tsp_service() -> TSPSolverService:
-    """FastAPI dependency that provides a request-scoped :class:`TSPSolverService`.
+    """FastAPI dependency providing a singleton :class:`TSPSolverService`.
 
-    Each request receives its own instance so no mutable graph state is shared
-    across concurrent requests.  Executor selection is configuration-driven:
-    the Go worker handles ``Random``/``HC`` when enabled, with local Python
-    fallback for resiliency and for all other methods.
+    The executor (including any ``httpx.Client`` inside
+    :class:`RemoteGoExecutor`) is shared across requests so that HTTP
+    connections are reused and the client is not leaked.
     """
-    executor = build_executor(
-        go_worker_enabled=settings.go_worker_enabled,
-        go_worker_url=settings.go_worker_url,
-        go_worker_timeout_seconds=settings.go_worker_timeout_seconds,
-    )
-    return TSPSolverService(media_path=settings.media_path, executor=executor)
+    global _tsp_service
+    if _tsp_service is None:
+        with _tsp_service_lock:
+            if _tsp_service is None:
+                executor = build_executor(
+                    go_worker_enabled=settings.go_worker_enabled,
+                    go_worker_url=settings.go_worker_url,
+                    go_worker_timeout_seconds=settings.go_worker_timeout_seconds,
+                )
+                _tsp_service = TSPSolverService(
+                    media_path=settings.media_path, executor=executor
+                )
+    return _tsp_service
 
 
 def get_tsp_job_coordinator() -> TSPJobCoordinator:

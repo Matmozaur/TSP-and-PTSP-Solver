@@ -127,6 +127,9 @@ func randomTour(n int, rng *rand.Rand) []int {
 
 func hillClimb(matrix [][]float64, maxTime float64, rng *rand.Rand) []int {
 	n := len(matrix)
+	if n < 2 {
+		return randomTour(n, rng)
+	}
 	best := randomTour(n, rng)
 	bestCost := tourCost(matrix, best)
 

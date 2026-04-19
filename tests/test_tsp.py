@@ -98,13 +98,16 @@ def test_tsp_submit_job_status_and_result(client):
     job_id = submit_data["job_id"]
 
     latest_status = None
-    for _ in range(200):
+    timeout_seconds = 8.0
+    poll_interval = 0.02
+    deadline = time.monotonic() + timeout_seconds
+    while time.monotonic() < deadline:
         status_resp = client.get(f"/api/v1/tsp/jobs/{job_id}")
         assert status_resp.status_code == 200
         latest_status = status_resp.json()
         if latest_status["status"] in {"COMPLETED", "FAILED", "CANCELLED"}:
             break
-        time.sleep(0.1)
+        time.sleep(poll_interval)
 
     assert latest_status is not None
     assert latest_status["status"] in {"COMPLETED", "FAILED", "CANCELLED"}

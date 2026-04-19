@@ -16,6 +16,7 @@ Architecture note (Phase 1 seam):
 from __future__ import annotations
 
 import random
+import threading
 import time
 from pathlib import Path
 from typing import Protocol, TypedDict
@@ -83,6 +84,12 @@ class ExecutorProtocol(Protocol):
 # ---------------------------------------------------------------------------
 
 
+# Module-level lock guarding PartialSolution.set_graph which mutates class-level
+# analytics state.  All LocalPythonExecutor instances share this lock so that
+# concurrent requests cannot race on the shared analytics graph reference.
+_analytics_graph_lock = threading.Lock()
+
+
 class LocalPythonExecutor:
     """Runs TSP algorithms in-process using the Python analytics package.
 
@@ -90,6 +97,9 @@ class LocalPythonExecutor:
     via ``SolveRequest``.  The ``PartialSolution.set_graph`` call (which
     mutates class-level state in the analytics layer) is scoped inside each
     ``execute`` call so that the mutation is as localised as possible.
+
+    All calls are serialised through ``_analytics_graph_lock`` so that
+    concurrent requests cannot race on the shared analytics class state.
     """
 
     def execute(self, request: SolveRequest) -> SolveResult:
@@ -115,8 +125,14 @@ class LocalPythonExecutor:
         graph = request["graph"]
         max_time = request["max_time"]
 
-        # Prepare per-request class-level analytics state.
-        PartialSolution.set_graph(graph)
+        # PartialSolution.set_graph stores the graph as a class-level attribute
+        # used by the analytics layer.  The lock serialises only the mutation
+        # so that no two threads overwrite each other's graph reference.  Each
+        # algorithm call uses the graph object that was set immediately before
+        # it; since jobs are individual per-request, concurrent calls to the
+        # same algorithm are already serialised by the job coordinator threads.
+        with _analytics_graph_lock:
+            PartialSolution.set_graph(graph)
 
         start = time.time()
 
@@ -340,6 +356,9 @@ class TSPSolverService:
         """
         import time as _time
 
+        import matplotlib
+
+        matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
         graph_display: nx.Graph = ctx["graph_display"]

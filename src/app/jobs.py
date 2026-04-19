@@ -218,8 +218,9 @@ class TSPJobCoordinator:
 
     def _run_job(self, job_id: str) -> None:
         """Worker method executed in a background thread for each submitted job."""
+        # Re-fetch to pick up any cancel that arrived between submit and thread start.
         job = self._repository.get_job(job_id)
-        if not job or job["status"] == "CANCELLED":
+        if not job or job["status"] == "CANCELLED" or job.get("cancel_requested"):
             return
 
         try:
