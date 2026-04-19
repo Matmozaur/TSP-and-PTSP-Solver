@@ -21,9 +21,13 @@ import time
 from pathlib import Path
 from typing import Protocol, TypedDict
 
+import logging
+
 import httpx
 import networkx as nx
 import numpy as np
+
+_logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -126,36 +130,34 @@ class LocalPythonExecutor:
         max_time = request["max_time"]
 
         # PartialSolution.set_graph stores the graph as a class-level attribute
-        # used by the analytics layer.  The lock serialises only the mutation
-        # so that no two threads overwrite each other's graph reference.  Each
-        # algorithm call uses the graph object that was set immediately before
-        # it; since jobs are individual per-request, concurrent calls to the
-        # same algorithm are already serialised by the job coordinator threads.
+        # used by the analytics layer.  The lock covers both the mutation *and*
+        # the subsequent algorithm execution so that no concurrent thread can
+        # overwrite the graph reference while an algorithm is reading it.
         with _analytics_graph_lock:
             PartialSolution.set_graph(graph)
 
-        start = time.time()
+            start = time.time()
 
-        if method == "Random":
-            tour = random.sample(list(graph.nodes()), graph.number_of_nodes())
-            solution: ValidSolution = ValidSolution(tour)
+            if method == "Random":
+                tour = random.sample(list(graph.nodes()), graph.number_of_nodes())
+                solution: ValidSolution = ValidSolution(tour)
 
-        elif method == "HC":
-            solution = hill_climbing_multiple(graph, max_time=max_time)
+            elif method == "HC":
+                solution = hill_climbing_multiple(graph, max_time=max_time)
 
-        elif method == "Genetic":
-            solver = GeneticSolver(size=request["population_size"], g=graph)
-            solution = solver.solve(max_time, mutate=request["mutate"])
+            elif method == "Genetic":
+                solver = GeneticSolver(size=request["population_size"], g=graph)
+                solution = solver.solve(max_time, mutate=request["mutate"])
 
-        elif method == "MCTS":
-            mct = MCT(PartialSolution([]), lottery=request["simulation_type"])
-            mct.build_tree(max_time)
-            solution = mct.choose_solution()
+            elif method == "MCTS":
+                mct = MCT(PartialSolution([]), lottery=request["simulation_type"])
+                mct.build_tree(max_time)
+                solution = mct.choose_solution()
 
-        else:
-            raise ValueError(f"Unknown method: {method}")
+            else:
+                raise ValueError(f"Unknown method: {method}")
 
-        execution_time = time.time() - start
+            execution_time = time.time() - start
 
         return SolveResult(
             tour=list(solution.solution),
@@ -185,6 +187,23 @@ class RemoteGoExecutor:
         self._timeout_seconds = timeout_seconds
         self._fallback: ExecutorProtocol = fallback or LocalPythonExecutor()
         self._client = httpx.Client(base_url=self._base_url, timeout=self._timeout_seconds)
+        self._closed = False
+
+    # -- Resource management ------------------------------------------------
+
+    def close(self) -> None:
+        """Close the underlying HTTP client, releasing sockets."""
+        if not self._closed:
+            self._client.close()
+            self._closed = True
+
+    def __enter__(self) -> RemoteGoExecutor:
+        return self
+
+    def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
+        self.close()
+
+    # -- Execution ----------------------------------------------------------
 
     def execute(self, request: SolveRequest) -> SolveResult:
         method = request["method"]
@@ -212,6 +231,12 @@ class RemoteGoExecutor:
                 execution_time=float(data["execution_time"]),
             )
         except Exception:
+            _logger.warning(
+                "Go worker call failed for method=%s at %s, falling back to local executor",
+                method,
+                self._base_url,
+                exc_info=True,
+            )
             return self._fallback.execute(request)
 
 
@@ -252,6 +277,7 @@ class TSPSolverService:
         media_path: Path,
         executor: ExecutorProtocol | None = None,
     ) -> None:
+        # NOTE: close() is defined below — call it during app shutdown.
         """Initialise the service.
 
         Args:
@@ -262,6 +288,11 @@ class TSPSolverService:
         self.media_path = media_path
         self.media_path.mkdir(parents=True, exist_ok=True)
         self._executor: ExecutorProtocol = executor or LocalPythonExecutor()
+
+    def close(self) -> None:
+        """Release resources held by the underlying executor."""
+        if hasattr(self._executor, "close") and callable(self._executor.close):
+            self._executor.close()
 
     # ------------------------------------------------------------------
     # Graph loading

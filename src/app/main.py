@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -9,7 +12,14 @@ from fastapi.responses import JSONResponse
 from . import __version__
 from .config import settings
 from .routes_ptsp import router as ptsp_router
-from .routes_tsp import router as tsp_router
+from .routes_tsp import close_tsp_resources, router as tsp_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Application lifespan: clean up singletons on shutdown."""
+    yield
+    close_tsp_resources()
 
 
 def create_app() -> FastAPI:
@@ -23,6 +33,7 @@ def create_app() -> FastAPI:
         description=settings.api_description,
         version=settings.app_version,
         debug=settings.debug,
+        lifespan=lifespan,
     )
 
     # Add CORS middleware

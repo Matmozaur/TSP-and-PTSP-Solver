@@ -29,8 +29,25 @@ _tsp_service: TSPSolverService | None = None
 _tsp_service_lock = threading.Lock()
 
 
+def close_tsp_resources() -> None:
+    """Close long-lived resources held by route-level singletons.
+
+    Called from the FastAPI lifespan shutdown hook so that httpx clients,
+    thread pools, etc. are released cleanly.
+    """
+    global _job_coordinator, _tsp_service
+
+    if _job_coordinator is not None:
+        _job_coordinator.shutdown()
+        _job_coordinator = None
+
+    if _tsp_service is not None:
+        _tsp_service.close()
+        _tsp_service = None
+
+
 # ---------------------------------------------------------------------------
-# Dependency — a fresh, stateless service instance per request
+# Dependency — singleton service shared across requests
 # ---------------------------------------------------------------------------
 
 

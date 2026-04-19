@@ -86,8 +86,8 @@ def test_tsp_submit_job_status_and_result(client):
             "names": ["A", "B", "C", "D"],
         },
         "runs": [
-            {"method": "Random", "time_limit": 1.0},
-            {"method": "HC", "time_limit": 1.0},
+            {"method": "Random", "time_limit": 0.1},
+            {"method": "HC", "time_limit": 0.1},
         ],
     }
 
@@ -99,7 +99,7 @@ def test_tsp_submit_job_status_and_result(client):
 
     latest_status = None
     timeout_seconds = 8.0
-    poll_interval = 0.02
+    poll_interval = 0.05
     deadline = time.monotonic() + timeout_seconds
     while time.monotonic() < deadline:
         status_resp = client.get(f"/api/v1/tsp/jobs/{job_id}")

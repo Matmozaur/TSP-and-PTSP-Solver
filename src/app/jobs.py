@@ -7,6 +7,7 @@ import json
 import logging
 import threading
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from typing import Any, Protocol
 
@@ -118,24 +119,40 @@ def build_job_repository(database_url: str | None) -> JobRepositoryProtocol:
     return InMemoryJobRepository()
 
 
+_DEFAULT_MAX_WORKERS = 4
+
+
 class TSPJobCoordinator:
-    """Coordinator that executes one or more algorithm runs per submitted job."""
+    """Coordinator that executes one or more algorithm runs per submitted job.
+
+    Jobs are dispatched to a bounded :class:`~concurrent.futures.ThreadPoolExecutor`
+    so that concurrency stays controllable under load.
+    """
 
     def __init__(
         self,
         solver: TSPSolverService,
         repository: JobRepositoryProtocol,
+        max_workers: int = _DEFAULT_MAX_WORKERS,
     ) -> None:
         self._solver = solver
         self._repository = repository
+        self._pool = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="tsp-job")
+
+    # -- Lifecycle ----------------------------------------------------------
+
+    def shutdown(self, wait: bool = False) -> None:
+        """Shut down the worker pool, optionally waiting for in-flight jobs."""
+        self._pool.shutdown(wait=wait)
+
+    # -- Public API ---------------------------------------------------------
 
     def submit_job(self, graph: dict[str, Any], runs: list[dict[str, Any]]) -> dict[str, Any]:
         """Persist and enqueue an async batch job."""
         job = self._create_job(graph=graph, runs=runs)
         self._repository.upsert_job(job)
 
-        thread = threading.Thread(target=self._run_job, args=(job["job_id"],), daemon=True)
-        thread.start()
+        self._pool.submit(self._run_job, job["job_id"])
 
         return {
             "job_id": job["job_id"],
