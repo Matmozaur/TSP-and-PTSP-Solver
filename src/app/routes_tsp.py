@@ -1,19 +1,30 @@
 from __future__ import annotations
 
 import json
+import threading
 
 from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
 
 from .config import settings
+from .jobs import TSPJobCoordinator, build_job_repository
 from .schemas import (
     FullGraphData,
+    JobCancelResponse,
+    JobResultResponse,
+    JobStatusResponse,
+    JobSubmitResponse,
+    RunResultResponse,
+    RunStatusResponse,
     SolutionResponse,
+    TSPBatchJobRequest,
     TSPSolutionRequest,
 )
 from .services import TSPSolverService, build_executor
 
 router = APIRouter(prefix="/tsp", tags=["TSP"])
+_job_coordinator: TSPJobCoordinator | None = None
+_coordinator_lock = threading.Lock()
 
 
 # ---------------------------------------------------------------------------
@@ -37,6 +48,23 @@ def get_tsp_service() -> TSPSolverService:
     return TSPSolverService(media_path=settings.media_path, executor=executor)
 
 
+def get_tsp_job_coordinator() -> TSPJobCoordinator:
+    """FastAPI dependency that provides the singleton async job coordinator."""
+    global _job_coordinator
+    if _job_coordinator is None:
+        with _coordinator_lock:
+            if _job_coordinator is None:
+                executor = build_executor(
+                    go_worker_enabled=settings.go_worker_enabled,
+                    go_worker_url=settings.go_worker_url,
+                    go_worker_timeout_seconds=settings.go_worker_timeout_seconds,
+                )
+                service = TSPSolverService(media_path=settings.media_path, executor=executor)
+                repository = build_job_repository(settings.database_url)
+                _job_coordinator = TSPJobCoordinator(solver=service, repository=repository)
+    return _job_coordinator
+
+
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
@@ -45,13 +73,13 @@ def get_tsp_service() -> TSPSolverService:
 @router.post("/solve", response_model=SolutionResponse, status_code=status.HTTP_200_OK)
 async def solve_tsp(
     request: TSPSolutionRequest,
-    service: TSPSolverService = Depends(get_tsp_service),
+    coordinator: TSPJobCoordinator = Depends(get_tsp_job_coordinator),
 ) -> dict:
-    """Solve TSP instance using specified algorithm.
+    """Compatibility solve facade mapped to a one-run job execution.
 
     Args:
         request: TSP solution request with graph and parameters.
-        service: Request-scoped solver service (injected).
+        coordinator: Async job coordinator.
 
     Returns:
         Solution with tour, cost, and execution time.
@@ -60,16 +88,24 @@ async def solve_tsp(
         HTTPException: If graph loading or solving fails.
     """
     try:
-        ctx = service.load_graph_from_matrix(request.graph.matrix, request.graph.names)
-
-        result = service.solve(
-            ctx=ctx,
-            method=request.method,
-            max_time=request.time_limit,
-            population_size=request.population or 50,
-            mutate=request.mutate,
-            simulation_type=request.simulation_type or "nearest",
+        job = coordinator.run_job_sync(
+            graph=request.graph.model_dump(),
+            runs=[
+                {
+                    "method": request.method,
+                    "time_limit": request.time_limit,
+                    "population": request.population or 50,
+                    "mutate": request.mutate,
+                    "simulation_type": request.simulation_type or "nearest",
+                }
+            ],
         )
+
+        run = job["runs"][0]
+        result = run.get("result")
+        if run.get("status") != "COMPLETED" or not result:
+            error_message = run.get("error") or f"Run did not complete: {run.get('status')}"
+            raise RuntimeError(error_message)
 
         return SolutionResponse(**result)
 
@@ -77,6 +113,99 @@ async def solve_tsp(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except RuntimeError as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+
+@router.post(
+    "/jobs",
+    response_model=JobSubmitResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def submit_tsp_job(
+    request: TSPBatchJobRequest,
+    coordinator: TSPJobCoordinator = Depends(get_tsp_job_coordinator),
+) -> dict:
+    """Submit an async TSP batch job."""
+    try:
+        return coordinator.submit_job(
+            graph=request.graph.model_dump(),
+            runs=[run.model_dump() for run in request.runs],
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.get("/jobs/{job_id}", response_model=JobStatusResponse)
+async def get_tsp_job_status(
+    job_id: str,
+    coordinator: TSPJobCoordinator = Depends(get_tsp_job_coordinator),
+) -> JobStatusResponse:
+    """Return current status for a submitted job."""
+    job = coordinator.get_job(job_id)
+    if not job:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
+
+    return JobStatusResponse(
+        job_id=job["job_id"],
+        status=job["status"],
+        created_at=job["created_at"],
+        updated_at=job["updated_at"],
+        runs=[
+            RunStatusResponse(
+                run_id=run["run_id"],
+                method=run["method"],
+                status=run["status"],
+                error=run.get("error"),
+                started_at=run.get("started_at"),
+                finished_at=run.get("finished_at"),
+            )
+            for run in job["runs"]
+        ],
+    )
+
+
+@router.get("/jobs/{job_id}/result", response_model=JobResultResponse)
+async def get_tsp_job_result(
+    job_id: str,
+    coordinator: TSPJobCoordinator = Depends(get_tsp_job_coordinator),
+) -> JobResultResponse:
+    """Return final or partial job results."""
+    job = coordinator.get_job(job_id)
+    if not job:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
+
+    return JobResultResponse(
+        job_id=job["job_id"],
+        status=job["status"],
+        runs=[
+            RunResultResponse(
+                run_id=run["run_id"],
+                method=run["method"],
+                status=run["status"],
+                error=run.get("error"),
+                started_at=run.get("started_at"),
+                finished_at=run.get("finished_at"),
+                result=run.get("result"),
+            )
+            for run in job["runs"]
+        ],
+    )
+
+
+@router.post("/jobs/{job_id}/cancel", response_model=JobCancelResponse)
+async def cancel_tsp_job(
+    job_id: str,
+    coordinator: TSPJobCoordinator = Depends(get_tsp_job_coordinator),
+) -> JobCancelResponse:
+    """Request cancellation for a submitted job."""
+    job = coordinator.cancel_job(job_id)
+    if not job:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
+
+    return JobCancelResponse(
+        job_id=job["job_id"],
+        status=job["status"],
+        message="Cancellation requested",
+    )
 
 
 @router.post(
@@ -118,6 +247,9 @@ async def visualize_graph(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
+# NOTE: /upload intentionally bypasses the async job coordinator and calls the
+# service directly.  It is a convenience endpoint for one-off file uploads and
+# is not expected to participate in the batch job lifecycle.
 @router.post("/upload", response_model=SolutionResponse)
 async def solve_from_file(
     file: UploadFile = File(...),

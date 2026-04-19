@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     go_worker_url: str = "http://localhost:8080"
     go_worker_timeout_seconds: float = 30.0
 
+    # Phase 3 async job persistence
+    database_url: str | None = None
+
     model_config = {
         "env_file": ".env",
         "case_sensitive": False,
