@@ -1,5 +1,7 @@
 .PHONY: help install dev test lint format type-check clean build run docker-build docker-up docker-down frontend frontend-dev
 
+UV ?= uv
+
 help:
 	@echo "TSP-PTSP Solver - Available commands:"
 	@echo ""
@@ -29,36 +31,36 @@ help:
 
 # Setup
 install:
-	uv install
+	$(UV) sync
 
 dev:
-	uv install -e ".[dev]"
+	$(UV) sync --extra dev
 
 # Development
 run:
-	python run.py
+	$(UV) run python run.py
 
 frontend:
-	streamlit run streamlit_app.py
+	$(UV) run streamlit run streamlit_app.py
 
 frontend-dev:
-	streamlit run streamlit_app.py --logger.level=debug --client.showErrorDetails=true
+	$(UV) run streamlit run streamlit_app.py --logger.level=debug --client.showErrorDetails=true
 
-test:
-	pytest tests/ -v
+test: dev
+	$(UV) run pytest tests/ -v
 
-test-cov:
-	pytest tests/ -v --cov=src --cov-report=html --cov-report=term-missing
+test-cov: dev
+	$(UV) run pytest tests/ -v --cov=src --cov-report=html --cov-report=term-missing
 
-lint:
-	ruff check src/ tests/
+lint: dev
+	$(UV) run ruff check src/ tests/
 
-format:
-	black src/ tests/
-	isort src/ tests/
+format: dev
+	$(UV) run black src/ tests/
+	$(UV) run isort src/ tests/
 
-type-check:
-	mypy src/ --strict
+type-check: dev
+	$(UV) run mypy src/ --strict
 
 quality: lint type-check test
 
@@ -96,7 +98,7 @@ docker-rebuild:
 
 # Build
 build: clean
-	python -m build
+	$(UV) run python -m build
 
 # Default
 .DEFAULT_GOAL := help

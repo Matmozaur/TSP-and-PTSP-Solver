@@ -1,216 +1,420 @@
-"""TSP Solver Service - orchestrates algorithm execution."""
+"""TSP Solver Service - orchestrates algorithm execution.
+
+Architecture note (Phase 1 seam):
+  - ``ExecutorProtocol`` is the single interface that separates *what* to run from *how*
+    to run it.  ``TSPSolverService`` only orchestrates; it never calls analytics code
+    directly.
+  - ``LocalPythonExecutor`` is the concrete implementation that wraps the existing Python
+    algorithms.  It is the only executor right now; future Go workers will implement the
+    same protocol.
+  - ``TSPSolverService`` holds *no* mutable graph state of its own.  Graph state is
+    confined to a single request: ``load_graph_from_matrix`` returns a ``GraphContext``
+    that is passed explicitly into ``solve``.  This makes the service safe for concurrent
+    use and easy to test in isolation.
+"""
 
 from __future__ import annotations
 
+import random
+import threading
 import time
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import Protocol, TypedDict
 
+import logging
+
+import httpx
 import networkx as nx
 import numpy as np
-from analytics.tsp.domain.basic_solvers import hill_climbing_multiple
-from analytics.tsp.domain.solutions import PartialSolution, ValidSolution
-from analytics.tsp.genetic.genetic_solver import GeneticSolver
-from analytics.tsp.mcts.mct import MCT
 
-if TYPE_CHECKING:
-    pass
+_logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Data-transfer types shared across the execution boundary
+# ---------------------------------------------------------------------------
+
+
+class SolveRequest(TypedDict):
+    """All inputs needed to run one TSP algorithm against one graph."""
+
+    method: str
+    graph: nx.Graph
+    max_time: float
+    population_size: int
+    mutate: bool
+    simulation_type: str
+
+
+class SolveResult(TypedDict):
+    """Normalised output produced by any executor implementation."""
+
+    tour: list[int]
+    cost: float
+    method: str
+    execution_time: float
+
+
+class GraphContext(TypedDict):
+    """Per-request graph data returned by ``load_graph_from_matrix``."""
+
+    graph: nx.Graph
+    graph_display: nx.Graph
+    nodes: list[int]
+    edges: list[tuple[int, int]]
+    node_count: int
+    edge_count: int
+
+
+# ---------------------------------------------------------------------------
+# Executor protocol — the seam for future Go workers
+# ---------------------------------------------------------------------------
+
+
+class ExecutorProtocol(Protocol):
+    """Interface that every algorithm executor must satisfy.
+
+    Implementations must be stateless with respect to graph data; all
+    information required to run the algorithm is carried in *request*.
+    """
+
+    def execute(self, request: SolveRequest) -> SolveResult:
+        """Run the requested algorithm and return a normalised result."""
+        ...
+
+
+# ---------------------------------------------------------------------------
+# Local Python executor — wraps the existing analytics implementations
+# ---------------------------------------------------------------------------
+
+
+# Module-level lock guarding PartialSolution.set_graph which mutates class-level
+# analytics state.  All LocalPythonExecutor instances share this lock so that
+# concurrent requests cannot race on the shared analytics graph reference.
+_analytics_graph_lock = threading.Lock()
+
+
+class LocalPythonExecutor:
+    """Runs TSP algorithms in-process using the Python analytics package.
+
+    This executor is intentionally stateless: all per-request data arrives
+    via ``SolveRequest``.  The ``PartialSolution.set_graph`` call (which
+    mutates class-level state in the analytics layer) is scoped inside each
+    ``execute`` call so that the mutation is as localised as possible.
+
+    All calls are serialised through ``_analytics_graph_lock`` so that
+    concurrent requests cannot race on the shared analytics class state.
+    """
+
+    def execute(self, request: SolveRequest) -> SolveResult:
+        """Execute *request* and return a :class:`SolveResult`.
+
+        Args:
+            request: Fully-populated solve request.
+
+        Returns:
+            Solution tour, cost, method label, and wall-clock execution time.
+
+        Raises:
+            ValueError: If *request['method']* is not a recognised algorithm.
+        """
+        # Import here so the rest of the module has no hard dependency on the
+        # analytics package — easier to tree-shake when packaging Go workers.
+        from analytics.tsp.domain.basic_solvers import hill_climbing_multiple
+        from analytics.tsp.domain.solutions import PartialSolution, ValidSolution
+        from analytics.tsp.genetic.genetic_solver import GeneticSolver
+        from analytics.tsp.mcts.mct import MCT
+
+        method = request["method"]
+        graph = request["graph"]
+        max_time = request["max_time"]
+
+        # PartialSolution.set_graph stores the graph as a class-level attribute
+        # used by the analytics layer.  The lock covers both the mutation *and*
+        # the subsequent algorithm execution so that no concurrent thread can
+        # overwrite the graph reference while an algorithm is reading it.
+        with _analytics_graph_lock:
+            PartialSolution.set_graph(graph)
+
+            start = time.time()
+
+            if method == "Random":
+                tour = random.sample(list(graph.nodes()), graph.number_of_nodes())
+                solution: ValidSolution = ValidSolution(tour)
+
+            elif method == "HC":
+                solution = hill_climbing_multiple(graph, max_time=max_time)
+
+            elif method == "Genetic":
+                solver = GeneticSolver(size=request["population_size"], g=graph)
+                solution = solver.solve(max_time, mutate=request["mutate"])
+
+            elif method == "MCTS":
+                mct = MCT(PartialSolution([]), lottery=request["simulation_type"])
+                mct.build_tree(max_time)
+                solution = mct.choose_solution()
+
+            else:
+                raise ValueError(f"Unknown method: {method}")
+
+            execution_time = time.time() - start
+
+        return SolveResult(
+            tour=list(solution.solution),
+            cost=float(solution.cost),
+            method=method,
+            execution_time=execution_time,
+        )
+
+
+# ---------------------------------------------------------------------------
+# Orchestration service — delegates execution, owns graph loading & I/O
+# ---------------------------------------------------------------------------
+
+
+class RemoteGoExecutor:
+    """Delegates selected methods to a Go worker with local Python fallback."""
+
+    _REMOTE_METHODS = {"Random", "HC"}
+
+    def __init__(
+        self,
+        base_url: str,
+        timeout_seconds: float = 30.0,
+        fallback: ExecutorProtocol | None = None,
+    ) -> None:
+        self._base_url = base_url.rstrip("/")
+        self._timeout_seconds = timeout_seconds
+        self._fallback: ExecutorProtocol = fallback or LocalPythonExecutor()
+        self._client = httpx.Client(base_url=self._base_url, timeout=self._timeout_seconds)
+        self._closed = False
+
+    # -- Resource management ------------------------------------------------
+
+    def close(self) -> None:
+        """Close the underlying HTTP client, releasing sockets."""
+        if not self._closed:
+            self._client.close()
+            self._closed = True
+
+    def __enter__(self) -> RemoteGoExecutor:
+        return self
+
+    def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
+        self.close()
+
+    # -- Execution ----------------------------------------------------------
+
+    def execute(self, request: SolveRequest) -> SolveResult:
+        method = request["method"]
+        if method not in self._REMOTE_METHODS:
+            return self._fallback.execute(request)
+
+        graph = request["graph"]
+        matrix = nx.to_numpy_array(graph, dtype=float).tolist()
+
+        payload = {
+            "method": method,
+            "matrix": matrix,
+            "max_time": request["max_time"],
+        }
+
+        try:
+            response = self._client.post("/solve", json=payload)
+            response.raise_for_status()
+            data = response.json()
+
+            return SolveResult(
+                tour=[int(node) for node in data["tour"]],
+                cost=float(data["cost"]),
+                method=str(data.get("method", method)),
+                execution_time=float(data["execution_time"]),
+            )
+        except Exception:
+            _logger.warning(
+                "Go worker call failed for method=%s at %s, falling back to local executor",
+                method,
+                self._base_url,
+                exc_info=True,
+            )
+            return self._fallback.execute(request)
+
+
+def build_executor(
+    *,
+    go_worker_enabled: bool,
+    go_worker_url: str,
+    go_worker_timeout_seconds: float,
+) -> ExecutorProtocol:
+    """Construct the algorithm executor based on runtime configuration."""
+    local_executor = LocalPythonExecutor()
+    if not go_worker_enabled:
+        return local_executor
+
+    return RemoteGoExecutor(
+        base_url=go_worker_url,
+        timeout_seconds=go_worker_timeout_seconds,
+        fallback=local_executor,
+    )
 
 
 class TSPSolverService:
-    """Service for solving Traveling Salesman Problem using various algorithms."""
+    """Orchestration layer for TSP solving.
 
-    def __init__(self, media_path: Path) -> None:
-        """Initialize TSP solver service.
+    Responsibilities:
+    - Load graph data from various input formats (:meth:`load_graph_from_matrix`).
+    - Delegate algorithm execution to an injected :class:`ExecutorProtocol`.
+    - Manage visualisation artefacts.
+
+    This class holds **no mutable graph state** between calls.  Routes must
+    pass the :class:`GraphContext` returned by :meth:`load_graph_from_matrix`
+    into :meth:`solve` explicitly.  This makes each request fully independent
+    and safe for concurrent use.
+    """
+
+    def __init__(
+        self,
+        media_path: Path,
+        executor: ExecutorProtocol | None = None,
+    ) -> None:
+        # NOTE: close() is defined below — call it during app shutdown.
+        """Initialise the service.
 
         Args:
-            media_path: Path where to save generated images
+            media_path: Directory where visualisation images are saved.
+            executor: Algorithm executor to use.  Defaults to
+                :class:`LocalPythonExecutor` when *None*.
         """
-        self.graph: nx.Graph | None = None
-        self.graph_display: nx.Graph | None = None
         self.media_path = media_path
         self.media_path.mkdir(parents=True, exist_ok=True)
+        self._executor: ExecutorProtocol = executor or LocalPythonExecutor()
+
+    def close(self) -> None:
+        """Release resources held by the underlying executor."""
+        if hasattr(self._executor, "close") and callable(self._executor.close):
+            self._executor.close()
+
+    # ------------------------------------------------------------------
+    # Graph loading
+    # ------------------------------------------------------------------
 
     def load_graph_from_matrix(
         self, matrix: list[list[float]], node_names: list[str] | None = None
-    ) -> dict:
-        """Load graph from adjacency matrix.
+    ) -> GraphContext:
+        """Build a NetworkX graph from an adjacency matrix.
 
         Args:
-            matrix: Adjacency matrix
-            node_names: Optional node labels
+            matrix: Square adjacency matrix.
+            node_names: Optional display labels for nodes.
 
         Returns:
-            Graph metadata
+            :class:`GraphContext` carrying the graph objects and metadata.
+                Pass this into :meth:`solve` or :meth:`save_graph_visualization`.
         """
         m = np.array(matrix)
-        self.graph = nx.from_numpy_array(m)
+        graph: nx.Graph = nx.from_numpy_array(m)
 
-        # Create display graph with optional labels
-        self.graph_display = self.graph.copy()
+        graph_display: nx.Graph = graph.copy()
         if node_names:
             mapping = {i: name for i, name in enumerate(node_names)}
-            self.graph_display = nx.relabel_nodes(self.graph_display, mapping, copy=True)
+            graph_display = nx.relabel_nodes(graph_display, mapping, copy=True)
 
-        # Set graph for PartialSolution
-        PartialSolution.set_graph(self.graph)
+        return GraphContext(
+            graph=graph,
+            graph_display=graph_display,
+            nodes=list(graph.nodes()),
+            edges=list(graph.edges()),
+            node_count=graph.number_of_nodes(),
+            edge_count=graph.number_of_edges(),
+        )
 
-        return {
-            "nodes": list(self.graph.nodes()),
-            "edges": list(self.graph.edges()),
-            "node_count": self.graph.number_of_nodes(),
-            "edge_count": self.graph.number_of_edges(),
-        }
-
-    def solve_random(self) -> ValidSolution:
-        """Generate random solution.
-
-        Returns:
-            Random TSP solution
-
-        Raises:
-            RuntimeError: If no graph is loaded
-        """
-        if self.graph is None:
-            raise RuntimeError("No graph loaded. Call load_graph_from_matrix first.")
-
-        import random
-
-        tour = random.sample(range(len(list(self.graph.nodes))), len(list(self.graph.nodes)))
-        return ValidSolution(tour)
-
-    def solve_hill_climbing(self, max_time: float) -> ValidSolution:
-        """Solve using Hill Climbing algorithm.
-
-        Args:
-            max_time: Maximum computation time in seconds
-
-        Returns:
-            Best TSP solution found
-
-        Raises:
-            RuntimeError: If no graph is loaded
-        """
-        if self.graph is None:
-            raise RuntimeError("No graph loaded. Call load_graph_from_matrix first.")
-
-        return hill_climbing_multiple(self.graph, max_time=max_time)
-
-    def solve_genetic(self, max_time: float, population_size: int, mutate: bool) -> ValidSolution:
-        """Solve using Genetic Algorithm.
-
-        Args:
-            max_time: Maximum computation time
-            population_size: Population size for GA
-            mutate: Whether to enable mutation
-
-        Returns:
-            Best TSP solution found
-
-        Raises:
-            RuntimeError: If no graph is loaded
-        """
-        if self.graph is None:
-            raise RuntimeError("No graph loaded. Call load_graph_from_matrix first.")
-
-        solver = GeneticSolver(size=population_size, g=self.graph)
-        return solver.solve(max_time, mutate=mutate)
-
-    def solve_mcts(self, max_time: float, simulation_type: str = "nearest") -> ValidSolution:
-        """Solve using Monte Carlo Tree Search.
-
-        Args:
-            max_time: Maximum computation time
-            simulation_type: Type of simulation (nearest, lottery)
-
-        Returns:
-            Best TSP solution found
-
-        Raises:
-            RuntimeError: If no graph is loaded
-        """
-        if self.graph is None:
-            raise RuntimeError("No graph loaded. Call load_graph_from_matrix first.")
-
-        mct = MCT(PartialSolution([]), lottery=simulation_type)
-        mct.build_tree(max_time)
-        return mct.choose_solution()
+    # ------------------------------------------------------------------
+    # Solving
+    # ------------------------------------------------------------------
 
     def solve(
         self,
+        ctx: GraphContext,
         method: str,
         max_time: float,
         population_size: int = 50,
         mutate: bool = True,
         simulation_type: str = "nearest",
     ) -> dict:
-        """Main solve method that dispatches to appropriate algorithm.
+        """Dispatch a solve request to the configured executor.
 
         Args:
-            method: Algorithm to use (Random, HC, Genetic, MCTS)
-            max_time: Maximum computation time
-            population_size: Population size for GA
-            mutate: Enable mutation for GA
-            simulation_type: Simulation type for MCTS
+            ctx: Graph context produced by :meth:`load_graph_from_matrix`.
+            method: Algorithm label — one of ``Random``, ``HC``, ``Genetic``,
+                ``MCTS``.
+            max_time: Wall-clock budget in seconds.
+            population_size: GA population size.
+            mutate: Enable mutation step in GA.
+            simulation_type: Rollout strategy for MCTS
+                (``nearest`` or ``lottery``).
 
         Returns:
-            Solution with metadata and execution time
+            Dict with ``tour``, ``cost``, ``method``, and ``execution_time``.
 
         Raises:
-            ValueError: If method is invalid
-            RuntimeError: If no graph is loaded
+            ValueError: If *method* is not recognised.
         """
-        if method not in ["Random", "HC", "Genetic", "MCTS"]:
-            raise ValueError(f"Unknown method: {method}")
+        valid_methods = {"Random", "HC", "Genetic", "MCTS"}
+        if method not in valid_methods:
+            raise ValueError(f"Unknown method: {method!r}. Valid: {sorted(valid_methods)}")
 
-        start_time = time.time()
+        request = SolveRequest(
+            method=method,
+            graph=ctx["graph"],
+            max_time=max_time,
+            population_size=population_size,
+            mutate=mutate,
+            simulation_type=simulation_type,
+        )
+        return dict(self._executor.execute(request))
 
-        if method == "Random":
-            solution = self.solve_random()
-        elif method == "HC":
-            solution = self.solve_hill_climbing(max_time)
-        elif method == "Genetic":
-            solution = self.solve_genetic(max_time, population_size, mutate)
-        else:  # MCTS
-            solution = self.solve_mcts(max_time, simulation_type)
-
-        execution_time = time.time() - start_time
-
-        return {
-            "tour": list(solution.solution),
-            "cost": float(solution.cost),
-            "method": method,
-            "execution_time": execution_time,
-        }
-
-    def save_graph_visualization(self, filename: str = "graph.png") -> Path:
-        """Save graph visualization to file.
+    def save_graph_visualization(
+        self, ctx: GraphContext, filename: str = "graph.png"
+    ) -> Path:
+        """Save graph visualisation to file.
 
         Args:
-            filename: Output filename
+            ctx: Graph context produced by :meth:`load_graph_from_matrix`.
+            filename: Output filename.
 
         Returns:
-            Path to saved image
-
-        Raises:
-            RuntimeError: If no graph is loaded
+            Path to the saved image.
         """
-        if self.graph_display is None:
-            raise RuntimeError("No graph loaded. Call load_graph_from_matrix first.")
+        import time as _time
 
+        import matplotlib
+
+        matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
+        graph_display: nx.Graph = ctx["graph_display"]
         output_path = self.media_path / filename
 
-        pos = nx.circular_layout(self.graph_display)
-        nx.draw_networkx(self.graph_display, pos)
+        pos = nx.circular_layout(graph_display)
+        nx.draw_networkx(graph_display, pos)
 
         # Add edge labels with weights
-        labels = nx.get_edge_attributes(self.graph_display, "weight")
+        labels = nx.get_edge_attributes(graph_display, "weight")
         if labels:
-            nx.draw_networkx_edge_labels(self.graph_display, pos, edge_labels=labels)
+            nx.draw_networkx_edge_labels(graph_display, pos, edge_labels=labels)
 
-        plt.savefig(str(output_path), dpi=300, bbox_inches="tight")
-        plt.close()
+        try:
+            plt.savefig(str(output_path), dpi=300, bbox_inches="tight")
+        except PermissionError:
+            import tempfile
+
+            stem = Path(filename).stem or "graph"
+            suffix = Path(filename).suffix or ".png"
+            fallback_dir = Path(tempfile.gettempdir()) / "tsp-ptsp-media"
+            fallback_dir.mkdir(parents=True, exist_ok=True)
+            output_path = fallback_dir / f"{stem}_{int(_time.time() * 1000)}{suffix}"
+            plt.savefig(str(output_path), dpi=300, bbox_inches="tight")
+        finally:
+            plt.close()
 
         return output_path

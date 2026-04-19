@@ -2,18 +2,23 @@ services:
   tsp-solver:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.python
     container_name: tsp-ptsp-solver-api
     ports:
       - "8000:8000"
     environment:
       - DEBUG=true
       - ENVIRONMENT=development
+      - GO_WORKER_ENABLED=true
+      - GO_WORKER_URL=http://go-worker:8080
+      - GO_WORKER_TIMEOUT_SECONDS=30
     volumes:
       - ./src:/app/src
       - ./analytics:/app/analytics
       - ./media:/app/media
       - ./results:/app/results
+    depends_on:
+      - go-worker
     command: uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/ptsp/health"]
@@ -22,10 +27,24 @@ services:
       retries: 3
       start_period: 5s
 
+  go-worker:
+    build:
+      context: .
+      dockerfile: go-worker/Dockerfile
+    container_name: tsp-go-worker
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.python
     container_name: tsp-ptsp-solver-frontend
     ports:
       - "8501:8501"
