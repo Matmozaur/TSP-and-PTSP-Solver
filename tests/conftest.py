@@ -6,7 +6,7 @@ import pytest
 def _teardown_singleton(routes) -> None:  # type: ignore[no-untyped-def]
     """Close resources held by route singletons before clearing them."""
     if routes._job_coordinator is not None:
-        routes._job_coordinator.shutdown(wait=False)
+        routes._job_coordinator.shutdown(wait=True)
         routes._job_coordinator = None
 
     if routes._tsp_service is not None:

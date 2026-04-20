@@ -6,6 +6,7 @@ import copy
 import json
 import logging
 import threading
+import time as _time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
@@ -120,6 +121,11 @@ def build_job_repository(database_url: str | None) -> JobRepositoryProtocol:
 
 
 _DEFAULT_MAX_WORKERS = 4
+
+# If wall-clock execution exceeds this multiplier of the run's time_limit,
+# a warning is logged.  The algorithms themselves enforce the deadline;
+# this is a diagnostic aid.
+_OVERRUN_WARN_FACTOR = 2.0
 
 
 class TSPJobCoordinator:
@@ -288,6 +294,7 @@ class TSPJobCoordinator:
                 self._repository.upsert_job(job)
 
                 try:
+                    t0 = _time.monotonic()
                     result = self._solver.solve(
                         ctx=ctx,
                         method=current_run["method"],
@@ -296,6 +303,16 @@ class TSPJobCoordinator:
                         mutate=current_run["mutate"],
                         simulation_type=current_run["simulation_type"],
                     )
+                    elapsed = _time.monotonic() - t0
+                    if elapsed > current_run["time_limit"] * _OVERRUN_WARN_FACTOR:
+                        _logger.warning(
+                            "Run %s method=%s overran time limit "
+                            "(limit=%.1fs, actual=%.1fs)",
+                            current_run["run_id"],
+                            current_run["method"],
+                            current_run["time_limit"],
+                            elapsed,
+                        )
                     current_run["result"] = result
                     current_run["status"] = "COMPLETED"
                 except Exception as exc:

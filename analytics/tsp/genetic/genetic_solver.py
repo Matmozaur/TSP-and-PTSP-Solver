@@ -75,22 +75,37 @@ class GeneticSolver:
         else:
             return x
 
-    def generate_new_generation(self, h=None, mutate=True, mut_args=None):
+    def generate_new_generation(self, h=None, mutate=True, mut_args=None, deadline=None):
         """
         :type mut_args: dict
         :type mutate: bool
         :type h: int
+        :type deadline: float | None
         """
         if mut_args is None:
-            mut_args = {'alg': 'hc', 'max_time': 5}
+            mut_args = {'alg': 'hc', 'max_time': 0.05}
         random.shuffle(self.population)
         new_generation = []
         for X, Y in zip(self.population[::2], self.population[1::2]):
+            if deadline is not None and time.time() >= deadline:
+                break
             c, d = self.crossover(X, Y, h)
             new_generation.append(c)
             new_generation.append(d)
         if mutate:
-            new_generation = [self.mutation(a, mut_args['alg'], mut_args['max_time']) for a in new_generation]
+            mutated = []
+            for a in new_generation:
+                if deadline is not None and time.time() >= deadline:
+                    mutated.append(a)
+                    continue
+                # Cap per-individual mutation time to remaining budget
+                if deadline is not None:
+                    remaining = deadline - time.time()
+                    mt = min(mut_args['max_time'], max(remaining * 0.5, 0.001))
+                else:
+                    mt = mut_args['max_time']
+                mutated.append(self.mutation(a, mut_args['alg'], mt))
+            new_generation = mutated
         return new_generation
 
     def solve(self, max_time=60, h=None, mutate=True, mut_args=None):
@@ -100,21 +115,26 @@ class GeneticSolver:
         :type mutate: bool
         :type mut_args: dict
         """
-        if mut_args is None:
-            mut_args = {'alg': 'hc', 'max_time': 5}
         start = time.time()
+        deadline = start + max_time
         self.population.sort(key=lambda a: a.cost)
         xbest = self.population[0]
         cbest = self.population[0].cost
-        while 1:
-            self.population += self.generate_new_generation(h, mutate, mut_args)
+        while True:
+            remaining = deadline - time.time()
+            if remaining <= 0.001:
+                break
+            # Budget mutation time: share remaining time across the population
+            per_individual = min(remaining / max(self.size, 1), 0.5)
+            alg = 'hc'
+            if mut_args is not None:
+                alg = mut_args.get('alg', 'hc')
+            gen_mut_args = {'alg': alg, 'max_time': per_individual}
+            self.population += self.generate_new_generation(h, mutate, gen_mut_args, deadline)
             self.population.sort(key=lambda a: a.cost)
             self.population = self.population[:self.size]
             ccurr = self.population[0].cost
             if ccurr < cbest:
                 xbest = self.population[0]
                 cbest = ccurr
-            end = time.time()
-            if end - start > max_time - 0.001:
-                break
         return xbest

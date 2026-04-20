@@ -132,8 +132,8 @@ def test_tsp_job_cancel(client):
             ],
         },
         "runs": [
-            {"method": "MCTS", "time_limit": 2.0},
-            {"method": "Genetic", "time_limit": 2.0},
+            {"method": "MCTS", "time_limit": 1.0},
+            {"method": "Genetic", "time_limit": 1.0},
         ],
     }
 

@@ -203,8 +203,10 @@ class ValidSolution(PartialSolution):
             Improved ValidSolution
         """
         start_time: float = time.time()
+        deadline: float = start_time + max_time
         local_max: ValidSolution = copy.deepcopy(self)
         tour = local_max.solution
+        n = len(tour)
 
         improved = True
         while improved:
@@ -213,14 +215,21 @@ class ValidSolution(PartialSolution):
             best_i = 0
             best_j = 0
 
-            # Find best swap
-            for i in range(len(tour)):
-                for j in range(len(tour)):
+            # Find best swap — check time every row to avoid over-running
+            timed_out = False
+            for i in range(n):
+                if time.time() >= deadline:
+                    timed_out = True
+                    break
+                for j in range(i + 1, n):
                     gain = local_max._calculate_gain(i, j)
                     if gain > best_gain:
                         best_gain = gain
                         best_i = i
                         best_j = j
+
+            if timed_out:
+                break
 
             # Apply best swap if found
             if best_gain > 0:
@@ -228,7 +237,7 @@ class ValidSolution(PartialSolution):
                 improved = True
 
             # Check time limit
-            if time.time() - start_time > max_time - 0.001:
+            if time.time() >= deadline:
                 break
 
         return local_max

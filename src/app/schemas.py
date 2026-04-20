@@ -47,7 +47,7 @@ class TSPSolutionRequest(BaseModel):
 
     graph: FullGraphData = Field(..., description="Graph data")
     method: str = Field(..., description="Solving method: Random, HC, Genetic, MCTS")
-    time_limit: float = Field(5.0, ge=0.1, description="Time limit in seconds")
+    time_limit: float = Field(5.0, ge=0.1, le=600.0, description="Time limit in seconds")
     population: int | None = Field(50, ge=10, description="Population size for Genetic")
     mutate: bool = Field(True, description="Enable mutation in Genetic algorithm")
     simulation_type: str | None = Field("nearest", description="Simulation type for MCTS")
@@ -63,7 +63,7 @@ class AlgorithmRunRequest(BaseModel):
     """One algorithm run configuration within a batch job."""
 
     method: str = Field(..., description="Solving method: Random, HC, Genetic, MCTS")
-    time_limit: float = Field(5.0, ge=0.1, description="Time limit in seconds")
+    time_limit: float = Field(5.0, ge=0.1, le=600.0, description="Time limit in seconds")
     population: int = Field(50, ge=10, description="Population size for Genetic")
     mutate: bool = Field(True, description="Enable mutation in Genetic algorithm")
     simulation_type: str = Field("nearest", description="Simulation type for MCTS")

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import os
-import time
 from typing import TYPE_CHECKING
 
 import streamlit as st
@@ -76,6 +75,9 @@ def main() -> None:
     if "graph_layout" not in st.session_state:
         st.session_state.graph_layout = None
 
+    if "active_job_id" not in st.session_state:
+        st.session_state.active_job_id = None
+
     api_client = st.session_state.api_client
 
     # Check API health
@@ -112,7 +114,7 @@ def main() -> None:
             n_nodes = st.slider(
                 "Number of Nodes",
                 min_value=5,
-                max_value=50,
+                max_value=500,
                 value=10,
                 step=1,
                 help="Number of cities/nodes in the graph",
@@ -157,7 +159,7 @@ def main() -> None:
             n_nodes_manual = st.number_input(
                 "Number of nodes",
                 min_value=3,
-                max_value=20,
+                max_value=500,
                 value=5,
                 step=1,
             )
@@ -204,6 +206,8 @@ def main() -> None:
 
     col1, col2, col3, col4 = st.columns(4)
 
+    n_nodes_current = len(st.session_state.matrix)
+
     with col1:
         method = st.selectbox(
             "Algorithm",
@@ -240,24 +244,116 @@ def main() -> None:
         else:
             mutate = True
 
-    solve_button = st.button("▶️ Solve", use_container_width=True, type="primary")
+    if n_nodes_current > 200:
+        st.info(
+            f"📊 Graph has {n_nodes_current} nodes. The job will run asynchronously "
+            "and progress will be displayed below."
+        )
+
+    col_solve, col_cancel = st.columns([3, 1])
+    solve_button = col_solve.button("▶️ Solve", use_container_width=True, type="primary")
+    cancel_button = col_cancel.button(
+        "⏹️ Cancel",
+        use_container_width=True,
+        disabled=st.session_state.get("active_job_id") is None,
+    )
+
+    # Handle cancellation
+    if cancel_button and st.session_state.get("active_job_id"):
+        try:
+            api_client.cancel_job(st.session_state.active_job_id)
+            st.warning("Cancellation requested.")
+            st.session_state.active_job_id = None
+        except Exception as e:
+            st.error(f"❌ Cancel failed: {e}")
 
     if solve_button:
-        with st.spinner("Solving..."):
-            try:
-                start = time.time()
-                solution = api_client.solve_tsp(
-                    matrix=st.session_state.matrix,
-                    method=method,
-                    time_limit=time_limit,
-                    names=st.session_state.names,
-                    population=population,
-                    mutate=mutate,
+        run_config: dict = {
+            "method": method,
+            "time_limit": time_limit,
+            "population": population,
+            "mutate": mutate,
+            "simulation_type": "nearest",
+        }
+
+        progress_bar = st.progress(0, text="Submitting job...")
+
+        try:
+            # Submit as an async job
+            submit_resp = api_client.submit_job(
+                matrix=st.session_state.matrix,
+                runs=[run_config],
+                names=st.session_state.names,
+            )
+            job_id = submit_resp["job_id"]
+            st.session_state.active_job_id = job_id
+
+            progress_bar.progress(10, text=f"Job submitted ({job_id[:8]}…). Waiting for results…")
+
+            # Poll until terminal
+            def _on_status(status_payload: dict) -> None:
+                """Update the progress bar based on run statuses."""
+                runs = status_payload.get("runs", [])
+                total = max(len(runs), 1)
+                done = sum(
+                    1 for r in runs if r.get("status") in {"COMPLETED", "FAILED", "CANCELLED"}
                 )
-                st.session_state.solution = solution
-                st.success(f"✅ Solution found in {solution['execution_time']:.2f}s")
-            except Exception as e:
-                st.error(f"❌ Error solving: {str(e)}")
+                running = sum(1 for r in runs if r.get("status") == "RUNNING")
+                pct = int(10 + 85 * done / total)  # 10-95% range
+                label = f"Running… ({done}/{total} runs complete"
+                if running:
+                    label += f", {running} in progress"
+                label += ")"
+                progress_bar.progress(min(pct, 95), text=label)
+
+            # Use a per-run timeout relative to the time limit
+            poll_timeout = max(time_limit * 3, 30.0)
+
+            final_status = api_client.poll_job_until_done(
+                job_id,
+                poll_interval=0.5,
+                timeout=poll_timeout,
+                on_status=_on_status,
+            )
+
+            st.session_state.active_job_id = None
+
+            if final_status["status"] == "CANCELLED":
+                progress_bar.progress(100, text="Job cancelled.")
+                st.warning("Job was cancelled.")
+            elif final_status["status"] == "FAILED":
+                progress_bar.progress(100, text="Job failed.")
+                # Show first error among runs
+                runs = final_status.get("runs", [])
+                errors = [r.get("error") for r in runs if r.get("error")]
+                detail = errors[0] if errors else "Unknown error"
+                st.error(f"❌ Job failed: {detail}")
+            else:
+                progress_bar.progress(100, text="Done!")
+                # Fetch full result payload
+                result_resp = api_client.get_job_result(job_id)
+                runs = result_resp.get("runs", [])
+
+                # For single-run compatibility, grab the first completed result
+                completed_runs = [
+                    r for r in runs
+                    if r.get("status") == "COMPLETED" and r.get("result")
+                ]
+                if completed_runs:
+                    solution = completed_runs[0]["result"]
+                    st.session_state.solution = solution
+                    st.success(f"✅ Solution found in {solution['execution_time']:.2f}s")
+                else:
+                    st.error("❌ No completed runs found in job result.")
+
+        except TimeoutError:
+            st.session_state.active_job_id = None
+            progress_bar.progress(100, text="Timed out.")
+            st.error("❌ Job timed out waiting for results. Try increasing the time limit.")
+        except Exception as e:
+            st.session_state.active_job_id = None
+            progress_bar.progress(100, text="Error.")
+            st.error(f"❌ Error solving: {e}")
 
     # Display solution
     if st.session_state.solution:
