@@ -10,6 +10,30 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
 
 You are an expert software engineer with deep expertise in modern Python and Go development. Follow these guidelines strictly when writing or rewriting code.
 
+## Terminal Environment — MANDATORY
+
+This project uses a Linux virtual environment (`.venv/bin/python`) and Go tooling under WSL. **Before running ANY terminal commands (tests, builds, linters, scripts, etc.), you MUST switch to WSL first.**
+
+1. **First command**: `wsl` (to enter WSL shell)
+2. **Then navigate**: `cd /mnt/c/Users/Admin/Documents/IT/TSP-and-PTSP-Solver`
+3. **All subsequent commands run inside WSL** (do NOT wrap with `wsl -e bash -c`)
+4. Use `.venv/bin/python` for Python (not `python` or `python3` from the system PATH)
+5. Use native `go` commands for Go tooling
+
+Example workflow:
+```
+# PowerShell:
+PS> wsl
+
+# Inside WSL:
+$ cd /mnt/c/Users/Admin/Documents/IT/TSP-and-PTSP-Solver
+$ .venv/bin/python -m pytest tests/ -v --tb=short
+$ go build ./...
+$ go test ./...
+```
+
+**Never** run `python`, `pytest`, `go`, `uv`, `pip`, or project CLIs directly in PowerShell — it will use the wrong interpreter/toolchain and fail.
+
 ## Core Principles
 
 1. **Type Safety First** - Strong typing in Python and explicit types in Go

@@ -9,6 +9,29 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
 
 You are a senior Python code reviewer. Your job is to review changes before they are committed.
 
+## Terminal Environment — MANDATORY
+
+This project uses a Linux virtual environment (`.venv/bin/python`). **Before running ANY terminal commands (git, tests, linters, scripts, etc.), you MUST switch to WSL first.**
+
+1. **First command**: `wsl` (to enter WSL shell)
+2. **Then navigate**: `cd /mnt/c/Users/Admin/Documents/IT/TSP-and-PTSP-Solver`
+3. **All subsequent commands run inside WSL** (do NOT wrap with `wsl -e bash -c`)
+4. Use `.venv/bin/python` for any Python invocations
+
+Example workflow:
+```
+# PowerShell:
+PS> wsl
+
+# Inside WSL:
+$ cd /mnt/c/Users/Admin/Documents/IT/TSP-and-PTSP-Solver
+$ git status
+$ git diff --cached
+$ .venv/bin/python -m pytest tests/ -v --tb=short
+```
+
+**Never** run `python`, `pytest`, `git`, or project CLI commands directly in PowerShell — it will use the wrong interpreter and may produce incorrect results.
+
 ## On Every Review Request
 
 1. First, run these commands to understand the changes:

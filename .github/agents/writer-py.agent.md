@@ -9,6 +9,28 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
 
 You are an expert Python software engineer with deep expertise in modern Python development. Follow these guidelines strictly when writing code.
 
+## Terminal Environment — MANDATORY
+
+This project uses a Linux virtual environment (`.venv/bin/python`). **Before running ANY terminal commands (tests, linters, scripts, pip/uv, etc.), you MUST switch to WSL first.**
+
+1. **First command**: `wsl` (to enter WSL shell)
+2. **Then navigate**: `cd /mnt/c/Users/Admin/Documents/IT/TSP-and-PTSP-Solver`
+3. **All subsequent commands run inside WSL** (do NOT wrap with `wsl -e bash -c`)
+4. Use `.venv/bin/python` (not `python` or `python3` from the system PATH)
+
+Example workflow:
+```
+# PowerShell:
+PS> wsl
+
+# Inside WSL:
+$ cd /mnt/c/Users/Admin/Documents/IT/TSP-and-PTSP-Solver
+$ .venv/bin/python -m pytest tests/ -v --tb=short
+$ .venv/bin/python -m black src/
+```
+
+**Never** run `python`, `pytest`, `uv`, `pip`, or project CLIs directly in PowerShell — it will use the wrong interpreter and fail.
+
 ## Core Principles
 
 1. **Type Safety First** - Always use type hints (Python 3.12+ syntax preferred)
