@@ -10,7 +10,10 @@ services:
       - DEBUG=true
       - ENVIRONMENT=development
       - GO_WORKER_ENABLED=true
-      - GO_WORKER_URL=http://go-worker:8080
+      - GO_WORKER_URL=http://go-worker-random-hc:8080
+      - GO_WORKER_URL_RANDOM_HC=http://go-worker-random-hc:8080
+      - GO_WORKER_URL_GENETIC=http://go-worker-genetic:8080
+      - GO_WORKER_URL_MCTS=http://go-worker-mcts:8080
       - GO_WORKER_TIMEOUT_SECONDS=30
     volumes:
       - ./src:/app/src
@@ -18,7 +21,9 @@ services:
       - ./media:/app/media
       - ./results:/app/results
     depends_on:
-      - go-worker
+      - go-worker-random-hc
+      - go-worker-genetic
+      - go-worker-mcts
     command: uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/ptsp/health"]
@@ -27,13 +32,47 @@ services:
       retries: 3
       start_period: 5s
 
-  go-worker:
+  go-worker-random-hc:
     build:
       context: .
       dockerfile: go-worker/Dockerfile
-    container_name: tsp-go-worker
+    container_name: tsp-go-worker-random-hc
     ports:
       - "8080:8080"
+    environment:
+      - ALLOWED_METHODS=Random,HC
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  go-worker-genetic:
+    build:
+      context: .
+      dockerfile: go-worker/Dockerfile
+    container_name: tsp-go-worker-genetic
+    ports:
+      - "8081:8080"
+    environment:
+      - ALLOWED_METHODS=Genetic
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  go-worker-mcts:
+    build:
+      context: .
+      dockerfile: go-worker/Dockerfile
+    container_name: tsp-go-worker-mcts
+    ports:
+      - "8082:8080"
+    environment:
+      - ALLOWED_METHODS=MCTS
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/health"]
       interval: 30s

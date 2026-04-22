@@ -65,6 +65,9 @@ def get_tsp_service() -> TSPSolverService:
                 executor = build_executor(
                     go_worker_enabled=settings.go_worker_enabled,
                     go_worker_url=settings.go_worker_url,
+                    go_worker_url_random_hc=settings.go_worker_url_random_hc,
+                    go_worker_url_genetic=settings.go_worker_url_genetic,
+                    go_worker_url_mcts=settings.go_worker_url_mcts,
                     go_worker_timeout_seconds=settings.go_worker_timeout_seconds,
                 )
                 _tsp_service = TSPSolverService(
@@ -82,6 +85,9 @@ def get_tsp_job_coordinator() -> TSPJobCoordinator:
                 executor = build_executor(
                     go_worker_enabled=settings.go_worker_enabled,
                     go_worker_url=settings.go_worker_url,
+                    go_worker_url_random_hc=settings.go_worker_url_random_hc,
+                    go_worker_url_genetic=settings.go_worker_url_genetic,
+                    go_worker_url_mcts=settings.go_worker_url_mcts,
                     go_worker_timeout_seconds=settings.go_worker_timeout_seconds,
                 )
                 service = TSPSolverService(media_path=settings.media_path, executor=executor)

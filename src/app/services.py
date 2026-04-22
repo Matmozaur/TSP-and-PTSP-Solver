@@ -175,18 +175,27 @@ class LocalPythonExecutor:
 class RemoteGoExecutor:
     """Delegates selected methods to a Go worker with local Python fallback."""
 
-    _REMOTE_METHODS = {"Random", "HC"}
+    _REMOTE_METHODS = {"Random", "HC", "Genetic", "MCTS"}
 
     def __init__(
         self,
         base_url: str,
         timeout_seconds: float = 30.0,
         fallback: ExecutorProtocol | None = None,
+        method_urls: dict[str, str] | None = None,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._timeout_seconds = timeout_seconds
         self._fallback: ExecutorProtocol = fallback or LocalPythonExecutor()
+        self._method_urls = {
+            method: url.rstrip("/")
+            for method, url in (method_urls or {}).items()
+            if method in self._REMOTE_METHODS and url
+        }
         self._client = httpx.Client(base_url=self._base_url, timeout=self._timeout_seconds)
+        self._clients_by_base_url: dict[str, httpx.Client] = {
+            self._base_url: self._client,
+        }
         self._closed = False
 
     # -- Resource management ------------------------------------------------
@@ -194,7 +203,8 @@ class RemoteGoExecutor:
     def close(self) -> None:
         """Close the underlying HTTP client, releasing sockets."""
         if not self._closed:
-            self._client.close()
+            for client in self._clients_by_base_url.values():
+                client.close()
             self._closed = True
 
     def __enter__(self) -> RemoteGoExecutor:
@@ -217,10 +227,19 @@ class RemoteGoExecutor:
             "method": method,
             "matrix": matrix,
             "max_time": request["max_time"],
+            "population_size": request["population_size"],
+            "mutate": request["mutate"],
+            "simulation_type": request["simulation_type"],
         }
 
+        target_base_url = self._method_urls.get(method, self._base_url)
+        client = self._clients_by_base_url.get(target_base_url)
+        if client is None:
+            client = httpx.Client(base_url=target_base_url, timeout=self._timeout_seconds)
+            self._clients_by_base_url[target_base_url] = client
+
         try:
-            response = self._client.post("/solve", json=payload)
+            response = client.post("/solve", json=payload)
             response.raise_for_status()
             data = response.json()
 
@@ -234,7 +253,7 @@ class RemoteGoExecutor:
             _logger.warning(
                 "Go worker call failed for method=%s at %s, falling back to local executor",
                 method,
-                self._base_url,
+                target_base_url,
                 exc_info=True,
             )
             return self._fallback.execute(request)
@@ -244,6 +263,9 @@ def build_executor(
     *,
     go_worker_enabled: bool,
     go_worker_url: str,
+    go_worker_url_random_hc: str,
+    go_worker_url_genetic: str,
+    go_worker_url_mcts: str,
     go_worker_timeout_seconds: float,
 ) -> ExecutorProtocol:
     """Construct the algorithm executor based on runtime configuration."""
@@ -255,6 +277,12 @@ def build_executor(
         base_url=go_worker_url,
         timeout_seconds=go_worker_timeout_seconds,
         fallback=local_executor,
+        method_urls={
+            "Random": go_worker_url_random_hc,
+            "HC": go_worker_url_random_hc,
+            "Genetic": go_worker_url_genetic,
+            "MCTS": go_worker_url_mcts,
+        },
     )
 
 

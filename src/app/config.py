@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     # Go worker settings (Phase 2)
     go_worker_enabled: bool = False
     go_worker_url: str = "http://localhost:8080"
+    go_worker_url_random_hc: str = "http://localhost:8080"
+    go_worker_url_genetic: str = "http://localhost:8080"
+    go_worker_url_mcts: str = "http://localhost:8080"
     go_worker_timeout_seconds: float = 30.0
 
     # Phase 3 async job persistence
