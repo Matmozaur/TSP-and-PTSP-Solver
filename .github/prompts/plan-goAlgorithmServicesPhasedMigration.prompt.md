@@ -31,8 +31,8 @@ Working program after this phase:
 - A new async backend exists and can submit one or more runs, even if only `Random` and `HC` are in Go so far.
 
 **Phase 4 — Frontend phase 1: larger graphs + async job flow**
-- Raise the current frontend graph-size restrictions in [streamlit_app.py](streamlit_app.py#L112-L118) and [streamlit_app.py](streamlit_app.py#L157-L162), and add explicit large-graph UX safeguards instead of hard small limits.
-- Update [frontend/api_client.py](frontend/api_client.py#L37-L74) and [streamlit_app.py](streamlit_app.py#L208-L255) to submit async jobs and poll status/results.
+- Raise the current frontend graph-size restrictions in [services/frontend/streamlit_app.py](services/frontend/streamlit_app.py#L112-L118) and [services/frontend/streamlit_app.py](services/frontend/streamlit_app.py#L157-L162), and add explicit large-graph UX safeguards instead of hard small limits.
+- Update [frontend/api_client.py](frontend/api_client.py#L37-L74) and [services/frontend/streamlit_app.py](services/frontend/streamlit_app.py#L208-L255) to submit async jobs and poll status/results.
 - Keep graph rendering based on [frontend/visualizer.py](frontend/visualizer.py#L206-L458), including dense-graph edge thinning from [frontend/visualizer.py](frontend/visualizer.py#L90-L141).
 
 Working program after this phase:
@@ -67,9 +67,9 @@ Working program after this phase:
 - Historical and live-enough progress data is saved and queryable.
 
 **Phase 8 — Frontend phase 2: concurrent algorithms + progress dashboard**
-- Replace the single algorithm selector in [streamlit_app.py](streamlit_app.py#L208-L211) with multi-select or repeatable algorithm configuration cards.
-- Change frontend state from one `solution` object in [streamlit_app.py](streamlit_app.py#L61-L75) and [streamlit_app.py](streamlit_app.py#L257-L267) to one job containing multiple runs.
-- Add comparison views using existing Plotly integration in [streamlit_app.py](streamlit_app.py#L188) and [streamlit_app.py](streamlit_app.py#L292): best cost over time, CPU/memory over time, current statuses, and final route comparison using [frontend/visualizer.py](frontend/visualizer.py#L340-L458).
+- Replace the single algorithm selector in [services/frontend/streamlit_app.py](services/frontend/streamlit_app.py#L208-L211) with multi-select or repeatable algorithm configuration cards.
+- Change frontend state from one `solution` object in [services/frontend/streamlit_app.py](services/frontend/streamlit_app.py#L61-L75) and [services/frontend/streamlit_app.py](services/frontend/streamlit_app.py#L257-L267) to one job containing multiple runs.
+- Add comparison views using existing Plotly integration in [services/frontend/streamlit_app.py](services/frontend/streamlit_app.py#L188) and [services/frontend/streamlit_app.py](services/frontend/streamlit_app.py#L292): best cost over time, CPU/memory over time, current statuses, and final route comparison using [frontend/visualizer.py](frontend/visualizer.py#L340-L458).
 
 Working program after this phase:
 - Users can generate larger graphs, run several algorithms concurrently, and inspect progress/history from Timescale in the UI.

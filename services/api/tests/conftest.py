@@ -22,7 +22,7 @@ def reset_route_singletons():
     process-global singletons.  Resetting them ensures each test starts
     from a clean state and avoids cross-test thread / lock interactions.
     """
-    import src.app.routes_tsp as routes
+    import app.routes_tsp as routes
 
     _teardown_singleton(routes)
     yield
@@ -34,7 +34,7 @@ def client():
     """Create test client for FastAPI app."""
     from fastapi.testclient import TestClient
 
-    from src.app.main import app
+    from app.main import app
 
     with TestClient(app) as c:
         yield c

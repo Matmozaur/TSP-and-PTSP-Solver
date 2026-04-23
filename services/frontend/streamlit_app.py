@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING
 import streamlit as st
 import pandas as pd
 
-from frontend.api_client import APIClient
-from frontend.visualizer import (
+from helpers.api_client import APIClient
+from helpers.visualizer import (
     create_graph_from_matrix,
     visualize_graph,
     visualize_solution,
 )
-from frontend.graph_generator import (
+from helpers.graph_generator import (
     generate_random_matrix,
     generate_euclidean_matrix,
     generate_circle_matrix,

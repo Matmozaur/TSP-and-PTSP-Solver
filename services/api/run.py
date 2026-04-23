@@ -3,8 +3,8 @@
 import sys
 from pathlib import Path
 
-# Add src to path to allow imports
-sys.path.insert(0, str(Path(__file__).parent / "src"))
+# Add services/api to path to allow imports
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 if __name__ == "__main__":
     import uvicorn

@@ -2,7 +2,7 @@ services:
   tsp-solver:
     build:
       context: .
-      dockerfile: Dockerfile.python
+      dockerfile: services/api/Dockerfile.python
     container_name: tsp-ptsp-solver-api
     ports:
       - "8000:8000"
@@ -16,15 +16,15 @@ services:
       - GO_WORKER_URL_MCTS=http://go-worker-mcts:8080
       - GO_WORKER_TIMEOUT_SECONDS=30
     volumes:
-      - ./src:/app/src
-      - ./analytics:/app/analytics
+      - ./services/api/app:/app/app
+      - ./services/api/analytics:/app/analytics
       - ./media:/app/media
       - ./results:/app/results
     depends_on:
       - go-worker-random-hc
       - go-worker-genetic
       - go-worker-mcts
-    command: uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/ptsp/health"]
       interval: 30s
@@ -35,7 +35,7 @@ services:
   go-worker-random-hc:
     build:
       context: .
-      dockerfile: go-worker/Dockerfile
+      dockerfile: services/go-worker/go-worker/Dockerfile
     container_name: tsp-go-worker-random-hc
     ports:
       - "8080:8080"
@@ -51,7 +51,7 @@ services:
   go-worker-genetic:
     build:
       context: .
-      dockerfile: go-worker/Dockerfile
+      dockerfile: services/go-worker/go-worker/Dockerfile
     container_name: tsp-go-worker-genetic
     ports:
       - "8081:8080"
@@ -67,7 +67,7 @@ services:
   go-worker-mcts:
     build:
       context: .
-      dockerfile: go-worker/Dockerfile
+      dockerfile: services/go-worker/go-worker/Dockerfile
     container_name: tsp-go-worker-mcts
     ports:
       - "8082:8080"
@@ -83,7 +83,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.python
+      dockerfile: services/frontend/Dockerfile
     container_name: tsp-ptsp-solver-frontend
     ports:
       - "8501:8501"
@@ -93,11 +93,10 @@ services:
       - STREAMLIT_CLIENT_TOOLBAR_MODE=viewer
       - API_BASE_URL=http://tsp-solver:8000
     volumes:
-      - ./streamlit_app.py:/app/streamlit_app.py
-      - ./frontend:/app/frontend
+      - ./services/frontend/streamlit_app.py:/app/streamlit_app.py
+      - ./services/frontend/helpers:/app/helpers
       - ./media:/app/media
       - ./results:/app/results
-    command: streamlit run streamlit_app.py --server.port=8501 --server.address=0.0.0.0
     depends_on:
       - tsp-solver
     networks:

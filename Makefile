@@ -38,29 +38,29 @@ dev:
 
 # Development
 run:
-	$(UV) run python run.py
+	$(UV) run python services/api/run.py
 
 frontend:
-	$(UV) run streamlit run streamlit_app.py
+	$(UV) run streamlit run services/frontend/streamlit_app.py
 
 frontend-dev:
-	$(UV) run streamlit run streamlit_app.py --logger.level=debug --client.showErrorDetails=true
+	$(UV) run streamlit run services/frontend/streamlit_app.py --logger.level=debug --client.showErrorDetails=true
 
 test: dev
-	$(UV) run pytest tests/ -v
+	$(UV) run pytest services/api/tests/ -v
 
 test-cov: dev
-	$(UV) run pytest tests/ -v --cov=src --cov-report=html --cov-report=term-missing
+	$(UV) run pytest services/api/tests/ -v --cov=services/api/app --cov-report=html --cov-report=term-missing
 
 lint: dev
-	$(UV) run ruff check src/ tests/
+	$(UV) run ruff check services/api/app/ services/api/tests/ services/api/analytics/
 
 format: dev
-	$(UV) run black src/ tests/
-	$(UV) run isort src/ tests/
+	$(UV) run black services/api/app/ services/api/tests/ services/api/analytics/
+	$(UV) run isort services/api/app/ services/api/tests/ services/api/analytics/
 
 type-check: dev
-	$(UV) run mypy src/ --strict
+	$(UV) run mypy services/api/app/ --strict
 
 quality: lint type-check test
 

@@ -66,4 +66,12 @@ select = ["E", "F", "W", "I", "B", "C4", "UP", "ARG", "SIM"]
 ignore = ["E501", "B008"]
 
 [tool.ruff.isort]
-known-first-party = ["app", "analytics"]
+known-first-party = ["app", "analytics", "helpers"]
+
+[tool.setuptools.packages.find]
+where = ["services/api"]
+include = ["app*", "analytics*"]
+
+[tool.pytest.ini_options]
+testpaths = ["services/api/tests"]
+pythonpath = ["services/api"]

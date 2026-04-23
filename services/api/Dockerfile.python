@@ -9,9 +9,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY pyproject.toml .
+# Install API service dependencies directly
 RUN pip install --no-cache-dir --upgrade pip setuptools && \
-    pip install --no-cache-dir -e .
+    pip install --no-cache-dir \
+    "fastapi>=0.104.0" \
+    "uvicorn[standard]>=0.24.0" \
+    "pydantic>=2.0.0" \
+    "pydantic-settings>=2.0.0" \
+    "networkx>=3.0" \
+    "numpy>=1.24.0" \
+    "matplotlib>=3.8.0" \
+    "python-multipart>=0.0.6" \
+    "httpx>=0.25.0"
 
 FROM python:3.12-slim
 
@@ -26,11 +35,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY src/ ./src/
-COPY analytics/ ./analytics/
-COPY frontend/ ./frontend/
-COPY streamlit_app.py ./streamlit_app.py
+# Copy API service code
+COPY services/api/app/ ./app/
+COPY services/api/analytics/ ./analytics/
 
 RUN mkdir -p /app/media /app/results
 
-EXPOSE 8000 8501
+EXPOSE 8000
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

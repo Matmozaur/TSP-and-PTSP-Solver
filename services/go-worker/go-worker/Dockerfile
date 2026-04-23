@@ -1,8 +1,8 @@
 FROM golang:1.23-alpine AS builder
 
 WORKDIR /src
-COPY go-worker/go.mod ./go.mod
-COPY go-worker/main.go ./main.go
+COPY services/go-worker/go-worker/go.mod ./go.mod
+COPY services/go-worker/go-worker/main.go ./main.go
 RUN go build -o /out/tsp-go-worker ./main.go
 
 FROM alpine:3.20
