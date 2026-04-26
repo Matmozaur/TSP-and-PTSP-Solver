@@ -145,6 +145,34 @@ class JobCancelResponse(BaseModel):
     message: str = Field(..., description="Cancellation outcome")
 
 
+class ProgressSampleResponse(BaseModel):
+    """One telemetry sample recorded during a run."""
+
+    run_id: str = Field(..., description="Run identifier this sample belongs to")
+    sampled_at: str = Field(..., description="UTC timestamp of the sample")
+    elapsed_seconds: float | None = Field(None, description="Seconds since run started")
+    cpu_percent: float | None = Field(None, description="Process CPU usage %")
+    memory_mb: float | None = Field(None, description="Process RSS memory in MB")
+    best_cost: float | None = Field(None, description="Best tour cost at sample time")
+
+
+class RunProgressResponse(BaseModel):
+    """All telemetry samples for one algorithm run."""
+
+    run_id: str = Field(..., description="Run identifier")
+    method: str = Field(..., description="Algorithm used")
+    samples: list[ProgressSampleResponse] = Field(
+        ..., description="Time-ordered telemetry samples"
+    )
+
+
+class JobProgressResponse(BaseModel):
+    """Telemetry progress for all runs in a job."""
+
+    job_id: str = Field(..., description="Job identifier")
+    runs: list[RunProgressResponse] = Field(..., description="Per-run progress data")
+
+
 class GraphImageResponse(BaseModel):
     """Response containing graph visualization info."""
 

@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     # Phase 3 async job persistence
     database_url: str | None = None
 
+    # Phase 7 telemetry sampling
+    telemetry_sample_interval: float = 1.0
+
     model_config = {
         "env_file": ".env",
         "case_sensitive": False,

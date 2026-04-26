@@ -12,6 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from typing import Any, Protocol
 
+from .monitoring import InMemoryProgressStore, ProgressStoreProtocol, RunTelemetrySampler
 from .services import TSPSolverService
 
 _logger = logging.getLogger(__name__)
@@ -140,10 +141,16 @@ class TSPJobCoordinator:
         solver: TSPSolverService,
         repository: JobRepositoryProtocol,
         max_workers: int = _DEFAULT_MAX_WORKERS,
+        progress_store: ProgressStoreProtocol | None = None,
+        sample_interval: float = 1.0,
     ) -> None:
         self._solver = solver
         self._repository = repository
         self._pool = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="tsp-job")
+        self._progress_store: ProgressStoreProtocol = (
+            progress_store if progress_store is not None else InMemoryProgressStore()
+        )
+        self._sample_interval = sample_interval
 
     # -- Lifecycle ----------------------------------------------------------
 
@@ -204,6 +211,17 @@ class TSPJobCoordinator:
         job["updated_at"] = _utc_now()
         self._repository.upsert_job(job)
         return job
+
+    def get_progress(self, job_id: str) -> list[dict[str, Any]]:
+        """Return all telemetry samples collected for a job.
+
+        Args:
+            job_id: Job identifier.
+
+        Returns:
+            List of sample dicts in insertion order; empty if none exist.
+        """
+        return self._progress_store.get_samples(job_id)
 
     def _create_job(self, graph: dict[str, Any], runs: list[dict[str, Any]]) -> dict[str, Any]:
         """Build a fresh job record in QUEUED state without persisting it."""
@@ -293,6 +311,14 @@ class TSPJobCoordinator:
                 job["updated_at"] = _utc_now()
                 self._repository.upsert_job(job)
 
+                best_cost: float | None = None
+                sampler = RunTelemetrySampler(
+                    job["job_id"],
+                    current_run["run_id"],
+                    self._progress_store,
+                    self._sample_interval,
+                )
+                sampler.start()
                 try:
                     t0 = _time.monotonic()
                     result = self._solver.solve(
@@ -315,9 +341,13 @@ class TSPJobCoordinator:
                         )
                     current_run["result"] = result
                     current_run["status"] = "COMPLETED"
+                    best_cost = result.get("cost")
                 except Exception as exc:
                     current_run["error"] = str(exc)
                     current_run["status"] = "FAILED"
+                    best_cost = None
+                finally:
+                    sampler.stop(best_cost=best_cost)
 
                 current_run["finished_at"] = _utc_now()
                 job["updated_at"] = _utc_now()

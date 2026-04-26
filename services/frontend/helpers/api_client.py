@@ -218,6 +218,22 @@ class APIClient:
 
             time.sleep(poll_interval)
 
+    def get_job_progress(self, job_id: str) -> dict[str, Any]:
+        """Get telemetry progress samples for all runs in a job.
+
+        Args:
+            job_id: Job identifier.
+
+        Returns:
+            JobProgressResponse payload with per-run samples.
+
+        Raises:
+            httpx.HTTPError: If request fails.
+        """
+        response = self.client.get(f"/api/v1/tsp/jobs/{job_id}/progress")
+        response.raise_for_status()
+        return response.json()
+
     # ------------------------------------------------------------------
     # Graph utilities
     # ------------------------------------------------------------------

@@ -8,12 +8,16 @@ from fastapi.responses import FileResponse
 
 from .config import settings
 from .jobs import TSPJobCoordinator, build_job_repository
+from .monitoring import build_progress_store
 from .schemas import (
     FullGraphData,
     JobCancelResponse,
+    JobProgressResponse,
     JobResultResponse,
     JobStatusResponse,
     JobSubmitResponse,
+    ProgressSampleResponse,
+    RunProgressResponse,
     RunResultResponse,
     RunStatusResponse,
     SolutionResponse,
@@ -92,7 +96,13 @@ def get_tsp_job_coordinator() -> TSPJobCoordinator:
                 )
                 service = TSPSolverService(media_path=settings.media_path, executor=executor)
                 repository = build_job_repository(settings.database_url)
-                _job_coordinator = TSPJobCoordinator(solver=service, repository=repository)
+                progress_store = build_progress_store(settings.database_url)
+                _job_coordinator = TSPJobCoordinator(
+                    solver=service,
+                    repository=repository,
+                    progress_store=progress_store,
+                    sample_interval=settings.telemetry_sample_interval,
+                )
     return _job_coordinator
 
 
@@ -236,6 +246,51 @@ async def cancel_tsp_job(
         job_id=job["job_id"],
         status=job["status"],
         message="Cancellation requested",
+    )
+
+
+@router.get("/jobs/{job_id}/progress", response_model=JobProgressResponse)
+async def get_tsp_job_progress(
+    job_id: str,
+    coordinator: TSPJobCoordinator = Depends(get_tsp_job_coordinator),
+) -> JobProgressResponse:
+    """Return telemetry progress samples for all runs in a job.
+
+    Args:
+        job_id: Job identifier.
+        coordinator: Async job coordinator.
+
+    Returns:
+        Per-run telemetry samples grouped by run_id.
+
+    Raises:
+        HTTPException: If the job is not found.
+    """
+    from collections import defaultdict
+
+    job = coordinator.get_job(job_id)
+    if not job:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
+
+    samples = coordinator.get_progress(job_id)
+
+    samples_by_run: dict[str, list[dict]] = defaultdict(list)
+    for s in samples:
+        samples_by_run[s["run_id"]].append(s)
+
+    return JobProgressResponse(
+        job_id=job_id,
+        runs=[
+            RunProgressResponse(
+                run_id=run["run_id"],
+                method=run["method"],
+                samples=[
+                    ProgressSampleResponse(**s)
+                    for s in samples_by_run.get(run["run_id"], [])
+                ],
+            )
+            for run in job["runs"]
+        ],
     )
 
 
