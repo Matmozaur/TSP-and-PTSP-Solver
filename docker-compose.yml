@@ -10,6 +10,7 @@ services:
       - DEBUG=true
       - ENVIRONMENT=development
       - GO_WORKER_ENABLED=true
+      - GO_WORKER_MODE=strict
       - GO_WORKER_URL=http://go-worker-random-hc:8080
       - GO_WORKER_URL_RANDOM_HC=http://go-worker-random-hc:8080
       - GO_WORKER_URL_GENETIC=http://go-worker-genetic:8080
@@ -21,12 +22,15 @@ services:
       - ./media:/app/media
       - ./results:/app/results
     depends_on:
-      - go-worker-random-hc
-      - go-worker-genetic
-      - go-worker-mcts
+      go-worker-random-hc:
+        condition: service_healthy
+      go-worker-genetic:
+        condition: service_healthy
+      go-worker-mcts:
+        condition: service_healthy
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/ptsp/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/tsp/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -42,11 +46,11 @@ services:
     environment:
       - ALLOWED_METHODS=Random,HC
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/ready"]
+      interval: 10s
+      timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 2s
 
   go-worker-genetic:
     build:
@@ -58,11 +62,11 @@ services:
     environment:
       - ALLOWED_METHODS=Genetic
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/ready"]
+      interval: 10s
+      timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 2s
 
   go-worker-mcts:
     build:
@@ -74,11 +78,11 @@ services:
     environment:
       - ALLOWED_METHODS=MCTS
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/ready"]
+      interval: 10s
+      timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 2s
 
   frontend:
     build:

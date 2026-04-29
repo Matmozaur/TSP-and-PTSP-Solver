@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import pytest
 import networkx as nx
 
-from src.app.services import RemoteGoExecutor
+from app.services import GoWorkerError, RemoteGoExecutor
 
 
 class _FakeResponse:
@@ -61,7 +62,9 @@ def _build_graph() -> nx.Graph:
     return graph
 
 
+@pytest.mark.unit
 def test_remote_executor_routes_genetic_and_includes_params() -> None:
+    """Go worker receives correct payload when request succeeds (fallback mode)."""
     fallback = _FallbackExecutor(
         result={"tour": [0, 1, 2], "cost": 45.0, "method": "Genetic", "execution_time": 0.1}
     )
@@ -69,6 +72,7 @@ def test_remote_executor_routes_genetic_and_includes_params() -> None:
         base_url="http://example.invalid",
         timeout_seconds=5.0,
         fallback=fallback,
+        strict=False,
     )
     client = _CapturingClient(
         response_payload={"tour": [2, 1, 0], "cost": 42.0, "method": "Genetic", "execution_time": 0.05}
@@ -100,7 +104,9 @@ def test_remote_executor_routes_genetic_and_includes_params() -> None:
     assert payload["max_time"] == 1.5
 
 
+@pytest.mark.unit
 def test_remote_executor_falls_back_for_mcts_on_remote_error() -> None:
+    """In fallback mode, Python executor is used when Go worker fails."""
     fallback_result = {
         "tour": [0, 2, 1],
         "cost": 45.0,
@@ -112,6 +118,7 @@ def test_remote_executor_falls_back_for_mcts_on_remote_error() -> None:
         base_url="http://example.invalid",
         timeout_seconds=5.0,
         fallback=fallback,
+        strict=False,
     )
     executor._client = _FailingClient()
     executor._clients_by_base_url[executor._base_url] = executor._client
@@ -130,3 +137,62 @@ def test_remote_executor_falls_back_for_mcts_on_remote_error() -> None:
     assert result == fallback_result
     assert len(fallback.calls) == 1
     assert fallback.calls[0]["method"] == "MCTS"
+
+
+@pytest.mark.unit
+def test_strict_mode_raises_on_go_worker_error() -> None:
+    """In strict mode, Go worker failure raises GoWorkerError (no fallback)."""
+    executor = RemoteGoExecutor(
+        base_url="http://example.invalid",
+        timeout_seconds=5.0,
+        fallback=None,
+        strict=True,
+    )
+    executor._client = _FailingClient()
+    executor._clients_by_base_url[executor._base_url] = executor._client
+
+    with pytest.raises(GoWorkerError) as exc_info:
+        executor.execute(
+            {
+                "method": "Random",
+                "graph": _build_graph(),
+                "max_time": 1.0,
+                "population_size": 50,
+                "mutate": True,
+                "simulation_type": "nearest",
+            }
+        )
+
+    assert exc_info.value.method == "Random"
+    assert "example.invalid" in exc_info.value.url
+
+
+@pytest.mark.unit
+def test_strict_mode_succeeds_when_go_worker_responds() -> None:
+    """In strict mode, successful Go worker response is returned normally."""
+    executor = RemoteGoExecutor(
+        base_url="http://example.invalid",
+        timeout_seconds=5.0,
+        fallback=None,
+        strict=True,
+    )
+    client = _CapturingClient(
+        response_payload={"tour": [1, 0, 2], "cost": 35.0, "method": "HC", "execution_time": 0.1}
+    )
+    executor._client = client
+    executor._clients_by_base_url[executor._base_url] = client
+
+    result = executor.execute(
+        {
+            "method": "HC",
+            "graph": _build_graph(),
+            "max_time": 2.0,
+            "population_size": 50,
+            "mutate": True,
+            "simulation_type": "nearest",
+        }
+    )
+
+    assert result["method"] == "HC"
+    assert result["tour"] == [1, 0, 2]
+    assert result["cost"] == 35.0

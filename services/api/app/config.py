@@ -35,6 +35,8 @@ class Settings(BaseSettings):
     go_worker_url_genetic: str = "http://localhost:8080"
     go_worker_url_mcts: str = "http://localhost:8080"
     go_worker_timeout_seconds: float = 30.0
+    # Phase 9: "strict" = production (no fallback), "fallback" = development
+    go_worker_mode: str = "fallback"
 
     # Phase 3 async job persistence
     database_url: str | None = None

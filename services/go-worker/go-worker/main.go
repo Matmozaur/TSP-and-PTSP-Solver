@@ -46,6 +46,15 @@ func main() {
 		}
 		writeJSON(w, http.StatusOK, map[string]string{"status": "healthy", "service": "go-tsp-worker"})
 	})
+	mux.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		// Readiness check: verify the service can accept requests
+		// For now, if health passes, we're ready. In future, could check resource limits.
+		writeJSON(w, http.StatusOK, map[string]string{"status": "ready", "service": "go-tsp-worker"})
+	})
 	mux.HandleFunc("/solve", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

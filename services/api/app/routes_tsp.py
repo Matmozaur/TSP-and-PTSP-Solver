@@ -73,6 +73,7 @@ def get_tsp_service() -> TSPSolverService:
                     go_worker_url_genetic=settings.go_worker_url_genetic,
                     go_worker_url_mcts=settings.go_worker_url_mcts,
                     go_worker_timeout_seconds=settings.go_worker_timeout_seconds,
+                    go_worker_mode=settings.go_worker_mode,
                 )
                 _tsp_service = TSPSolverService(
                     media_path=settings.media_path, executor=executor
@@ -93,6 +94,7 @@ def get_tsp_job_coordinator() -> TSPJobCoordinator:
                     go_worker_url_genetic=settings.go_worker_url_genetic,
                     go_worker_url_mcts=settings.go_worker_url_mcts,
                     go_worker_timeout_seconds=settings.go_worker_timeout_seconds,
+                    go_worker_mode=settings.go_worker_mode,
                 )
                 service = TSPSolverService(media_path=settings.media_path, executor=executor)
                 repository = build_job_repository(settings.database_url)
@@ -401,3 +403,19 @@ async def health_check() -> dict:
     """
     return {"status": "healthy", "service": "TSP Solver"}
 
+
+@router.get("/ready")
+async def readiness_check(
+    coordinator: TSPJobCoordinator = Depends(get_tsp_job_coordinator),
+) -> dict:
+    """Readiness check endpoint.
+
+    Verifies that the service is ready to accept requests by checking
+    that the job coordinator is initialized and operational.
+
+    Returns:
+        Readiness status
+    """
+    # If we got here, the coordinator dependency was successfully resolved
+    # which means the executor and job infrastructure are ready
+    return {"status": "ready", "service": "TSP Solver"}

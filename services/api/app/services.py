@@ -1,12 +1,16 @@
 """TSP Solver Service - orchestrates algorithm execution.
 
-Architecture note (Phase 1 seam):
+Architecture note (Phase 9 - Go-only production):
   - ``ExecutorProtocol`` is the single interface that separates *what* to run from *how*
     to run it.  ``TSPSolverService`` only orchestrates; it never calls analytics code
     directly.
-  - ``LocalPythonExecutor`` is the concrete implementation that wraps the existing Python
-    algorithms.  It is the only executor right now; future Go workers will implement the
-    same protocol.
+  - **Production execution** uses Go workers exclusively via ``RemoteGoExecutor``.  The
+    executor mode is controlled by ``GO_WORKER_MODE`` environment variable:
+      * ``strict`` (default in production): Go worker failures raise exceptions; no fallback.
+      * ``fallback`` (for development/testing): Falls back to Python on Go worker errors.
+  - ``LocalPythonExecutor`` wraps the existing Python algorithms and is kept **only as a
+    reference implementation** for parity testing and research.  It is not used in the
+    production execution path.
   - ``TSPSolverService`` holds *no* mutable graph state of its own.  Graph state is
     confined to a single request: ``load_graph_from_matrix`` returns a ``GraphContext``
     that is passed explicitly into ``solve``.  This makes the service safe for concurrent
@@ -97,6 +101,10 @@ _analytics_graph_lock = threading.Lock()
 class LocalPythonExecutor:
     """Runs TSP algorithms in-process using the Python analytics package.
 
+    **This executor is kept as a REFERENCE IMPLEMENTATION only.**  Production
+    traffic should use Go workers via ``RemoteGoExecutor``.  This class exists
+    for parity testing, research comparison, and development fallback scenarios.
+
     This executor is intentionally stateless: all per-request data arrives
     via ``SolveRequest``.  The ``PartialSolution.set_graph`` call (which
     mutates class-level state in the analytics layer) is scoped inside each
@@ -172,8 +180,26 @@ class LocalPythonExecutor:
 # ---------------------------------------------------------------------------
 
 
+class GoWorkerError(Exception):
+    """Raised when a Go worker call fails and strict mode is enabled."""
+
+    def __init__(self, method: str, url: str, cause: Exception | None = None) -> None:
+        self.method = method
+        self.url = url
+        self.cause = cause
+        super().__init__(f"Go worker call failed for method={method} at {url}")
+
+
 class RemoteGoExecutor:
-    """Delegates selected methods to a Go worker with local Python fallback."""
+    """Delegates algorithm execution to Go workers.
+
+    **Production executor** — all TSP algorithms are executed by Go workers.
+    The ``strict`` parameter controls error handling:
+      - ``strict=True`` (default): Go worker failures raise ``GoWorkerError``.
+        This is the production mode; there is no fallback to Python.
+      - ``strict=False``: Falls back to the provided fallback executor on error.
+        This is for development and testing only.
+    """
 
     _REMOTE_METHODS = {"Random", "HC", "Genetic", "MCTS"}
 
@@ -183,10 +209,13 @@ class RemoteGoExecutor:
         timeout_seconds: float = 30.0,
         fallback: ExecutorProtocol | None = None,
         method_urls: dict[str, str] | None = None,
+        *,
+        strict: bool = True,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._timeout_seconds = timeout_seconds
-        self._fallback: ExecutorProtocol = fallback or LocalPythonExecutor()
+        self._fallback: ExecutorProtocol | None = fallback if not strict else None
+        self._strict = strict
         self._method_urls = {
             method: url.rstrip("/")
             for method, url in (method_urls or {}).items()
@@ -218,7 +247,10 @@ class RemoteGoExecutor:
     def execute(self, request: SolveRequest) -> SolveResult:
         method = request["method"]
         if method not in self._REMOTE_METHODS:
-            return self._fallback.execute(request)
+            # Non-remote methods (future expansion) — use fallback if available
+            if self._fallback is not None:
+                return self._fallback.execute(request)
+            raise ValueError(f"Method {method!r} is not supported by Go workers")
 
         graph = request["graph"]
         matrix = nx.to_numpy_array(graph, dtype=float).tolist()
@@ -249,13 +281,23 @@ class RemoteGoExecutor:
                 method=str(data.get("method", method)),
                 execution_time=float(data["execution_time"]),
             )
-        except Exception:
+        except Exception as exc:
+            if self._strict:
+                _logger.error(
+                    "Go worker call failed for method=%s at %s (strict mode, no fallback)",
+                    method,
+                    target_base_url,
+                    exc_info=True,
+                )
+                raise GoWorkerError(method, target_base_url, exc) from exc
+
             _logger.warning(
                 "Go worker call failed for method=%s at %s, falling back to local executor",
                 method,
                 target_base_url,
                 exc_info=True,
             )
+            assert self._fallback is not None  # guaranteed by __init__ when strict=False
             return self._fallback.execute(request)
 
 
@@ -267,22 +309,40 @@ def build_executor(
     go_worker_url_genetic: str,
     go_worker_url_mcts: str,
     go_worker_timeout_seconds: float,
+    go_worker_mode: str = "strict",
 ) -> ExecutorProtocol:
-    """Construct the algorithm executor based on runtime configuration."""
+    """Construct the algorithm executor based on runtime configuration.
+
+    Args:
+        go_worker_enabled: Whether to use Go workers at all.
+        go_worker_url: Default Go worker URL.
+        go_worker_url_random_hc: URL for Random/HC worker.
+        go_worker_url_genetic: URL for Genetic worker.
+        go_worker_url_mcts: URL for MCTS worker.
+        go_worker_timeout_seconds: HTTP timeout for Go worker calls.
+        go_worker_mode: Execution mode — ``"strict"`` (production, no fallback)
+            or ``"fallback"`` (development, uses Python on Go errors).
+
+    Returns:
+        Configured executor implementing :class:`ExecutorProtocol`.
+    """
     local_executor = LocalPythonExecutor()
     if not go_worker_enabled:
         return local_executor
 
+    strict = go_worker_mode.lower() == "strict"
+
     return RemoteGoExecutor(
         base_url=go_worker_url,
         timeout_seconds=go_worker_timeout_seconds,
-        fallback=local_executor,
+        fallback=local_executor if not strict else None,
         method_urls={
             "Random": go_worker_url_random_hc,
             "HC": go_worker_url_random_hc,
             "Genetic": go_worker_url_genetic,
             "MCTS": go_worker_url_mcts,
         },
+        strict=strict,
     )
 
 

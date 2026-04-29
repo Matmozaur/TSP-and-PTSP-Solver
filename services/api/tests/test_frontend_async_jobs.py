@@ -7,7 +7,7 @@ import time
 import pytest
 from fastapi.testclient import TestClient
 
-from frontend.api_client import APIClient
+from api_client import APIClient
 
 
 _SMALL_MATRIX = [

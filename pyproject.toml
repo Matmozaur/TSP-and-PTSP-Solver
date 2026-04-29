@@ -75,4 +75,11 @@ include = ["app*", "analytics*"]
 
 [tool.pytest.ini_options]
 testpaths = ["services/api/tests"]
-pythonpath = ["services/api"]
+pythonpath = ["services/api", "services/frontend/helpers"]
+markers = [
+    "unit: Unit tests that run without external dependencies",
+    "integration: Integration tests requiring Go workers to be running",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]

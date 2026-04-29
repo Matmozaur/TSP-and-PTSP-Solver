@@ -182,7 +182,7 @@ class TestSchemaValidation:
     """Test Pydantic schema rules that gate the API."""
 
     def test_valid_method_names_are_accepted(self) -> None:
-        from src.app.schemas import TSPSolutionRequest
+        from app.schemas import TSPSolutionRequest
 
         for method in ["Random", "HC", "Genetic", "MCTS"]:
             req = TSPSolutionRequest(
@@ -195,7 +195,7 @@ class TestSchemaValidation:
     def test_invalid_method_name_raises(self) -> None:
         from pydantic import ValidationError
 
-        from src.app.schemas import TSPSolutionRequest
+        from app.schemas import TSPSolutionRequest
 
         with pytest.raises(ValidationError):
             TSPSolutionRequest(
@@ -207,7 +207,7 @@ class TestSchemaValidation:
     def test_non_square_matrix_raises(self) -> None:
         from pydantic import ValidationError
 
-        from src.app.schemas import FullGraphData
+        from app.schemas import FullGraphData
 
         with pytest.raises(ValidationError):
             FullGraphData(matrix=[[0, 1], [1, 0], [0, 0]])
@@ -215,31 +215,31 @@ class TestSchemaValidation:
     def test_empty_matrix_raises(self) -> None:
         from pydantic import ValidationError
 
-        from src.app.schemas import FullGraphData
+        from app.schemas import FullGraphData
 
         with pytest.raises(ValidationError):
             FullGraphData(matrix=[])
 
     def test_default_time_limit_is_five_seconds(self) -> None:
-        from src.app.schemas import TSPSolutionRequest
+        from app.schemas import TSPSolutionRequest
 
         req = TSPSolutionRequest(graph={"matrix": MATRIX_4}, method="Random")
         assert req.time_limit == 5.0
 
     def test_default_population_is_fifty(self) -> None:
-        from src.app.schemas import TSPSolutionRequest
+        from app.schemas import TSPSolutionRequest
 
         req = TSPSolutionRequest(graph={"matrix": MATRIX_4}, method="Genetic")
         assert req.population == 50
 
     def test_default_mutate_is_true(self) -> None:
-        from src.app.schemas import TSPSolutionRequest
+        from app.schemas import TSPSolutionRequest
 
         req = TSPSolutionRequest(graph={"matrix": MATRIX_4}, method="Genetic")
         assert req.mutate is True
 
     def test_default_simulation_type_is_nearest(self) -> None:
-        from src.app.schemas import TSPSolutionRequest
+        from app.schemas import TSPSolutionRequest
 
         req = TSPSolutionRequest(graph={"matrix": MATRIX_4}, method="MCTS")
         assert req.simulation_type == "nearest"
