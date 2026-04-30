@@ -27,10 +27,10 @@ docker-compose up --build
 uv install -e ".[dev]"
 
 # terminal 1: backend
-python run.py
+python services/api/run.py
 
 # terminal 2: frontend
-streamlit run streamlit_app.py
+streamlit run services/frontend/streamlit_app.py
 ```
 
 ## Development Commands
@@ -46,12 +46,21 @@ make docker-down
 ## Structure Overview
 
 ```text
-src/app/          FastAPI app (routes, schemas, services)
-analytics/        TSP/PTSP algorithms (domain, genetic, mcts)
-frontend/         Streamlit helpers (api client, graph rendering)
-streamlit_app.py  Streamlit UI entry point
-tests/            Test suite
-docker-compose.yml Multi-service run (API + frontend)
+services/
+  api/              API service (FastAPI backend)
+    app/            Routes, schemas, services
+    analytics/      TSP/PTSP algorithms (domain, genetic, mcts)
+    tests/          API test suite
+    Dockerfile.python
+    run.py
+  frontend/         Frontend service (Streamlit UI)
+    helpers/        API client, graph rendering, generators
+    streamlit_app.py
+    Dockerfile
+  go-worker/        Go algorithm worker service
+    go-worker/      Go source code
+    Dockerfile
+docker-compose.yml  Multi-service orchestration
 ```
 
 ## Main Endpoints

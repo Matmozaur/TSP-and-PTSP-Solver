@@ -2,7 +2,7 @@ services:
   tsp-solver:
     build:
       context: .
-      dockerfile: Dockerfile.python
+      dockerfile: services/api/Dockerfile.python
     container_name: tsp-ptsp-solver-api
     ports:
       - "8000:8000"
@@ -10,41 +10,84 @@ services:
       - DEBUG=true
       - ENVIRONMENT=development
       - GO_WORKER_ENABLED=true
-      - GO_WORKER_URL=http://go-worker:8080
+      - GO_WORKER_MODE=strict
+      - GO_WORKER_URL=http://go-worker-random-hc:8080
+      - GO_WORKER_URL_RANDOM_HC=http://go-worker-random-hc:8080
+      - GO_WORKER_URL_GENETIC=http://go-worker-genetic:8080
+      - GO_WORKER_URL_MCTS=http://go-worker-mcts:8080
       - GO_WORKER_TIMEOUT_SECONDS=30
     volumes:
-      - ./src:/app/src
-      - ./analytics:/app/analytics
+      - ./services/api/app:/app/app
+      - ./services/api/analytics:/app/analytics
       - ./media:/app/media
       - ./results:/app/results
     depends_on:
-      - go-worker
-    command: uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload
+      go-worker-random-hc:
+        condition: service_healthy
+      go-worker-genetic:
+        condition: service_healthy
+      go-worker-mcts:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/ptsp/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/tsp/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 5s
 
-  go-worker:
+  go-worker-random-hc:
     build:
       context: .
-      dockerfile: go-worker/Dockerfile
-    container_name: tsp-go-worker
+      dockerfile: services/go-worker/go-worker/Dockerfile
+    container_name: tsp-go-worker-random-hc
     ports:
       - "8080:8080"
+    environment:
+      - ALLOWED_METHODS=Random,HC
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/ready"]
+      interval: 10s
+      timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 2s
+
+  go-worker-genetic:
+    build:
+      context: .
+      dockerfile: services/go-worker/go-worker/Dockerfile
+    container_name: tsp-go-worker-genetic
+    ports:
+      - "8081:8080"
+    environment:
+      - ALLOWED_METHODS=Genetic
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 2s
+
+  go-worker-mcts:
+    build:
+      context: .
+      dockerfile: services/go-worker/go-worker/Dockerfile
+    container_name: tsp-go-worker-mcts
+    ports:
+      - "8082:8080"
+    environment:
+      - ALLOWED_METHODS=MCTS
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 2s
 
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.python
+      dockerfile: services/frontend/Dockerfile
     container_name: tsp-ptsp-solver-frontend
     ports:
       - "8501:8501"
@@ -54,11 +97,10 @@ services:
       - STREAMLIT_CLIENT_TOOLBAR_MODE=viewer
       - API_BASE_URL=http://tsp-solver:8000
     volumes:
-      - ./streamlit_app.py:/app/streamlit_app.py
-      - ./frontend:/app/frontend
+      - ./services/frontend/streamlit_app.py:/app/streamlit_app.py
+      - ./services/frontend/helpers:/app/helpers
       - ./media:/app/media
       - ./results:/app/results
-    command: streamlit run streamlit_app.py --server.port=8501 --server.address=0.0.0.0
     depends_on:
       - tsp-solver
     networks:

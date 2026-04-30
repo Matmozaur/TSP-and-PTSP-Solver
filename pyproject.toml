@@ -36,6 +36,7 @@ dependencies = [
     "streamlit>=1.28.0",
     "plotly>=5.17.0",
     "httpx>=0.25.0",
+    "psutil>=5.9.0",
 ]
 
 [project.optional-dependencies]
@@ -66,4 +67,19 @@ select = ["E", "F", "W", "I", "B", "C4", "UP", "ARG", "SIM"]
 ignore = ["E501", "B008"]
 
 [tool.ruff.isort]
-known-first-party = ["app", "analytics"]
+known-first-party = ["app", "analytics", "helpers"]
+
+[tool.setuptools.packages.find]
+where = ["services/api"]
+include = ["app*", "analytics*"]
+
+[tool.pytest.ini_options]
+testpaths = ["services/api/tests"]
+pythonpath = ["services/api", "services/frontend/helpers"]
+markers = [
+    "unit: Unit tests that run without external dependencies",
+    "integration: Integration tests requiring Go workers to be running",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
