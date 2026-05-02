@@ -1,6 +1,14 @@
 """Pytest configuration."""
 
+import os
+
 import pytest
+
+# Disable observability features in tests to avoid side effects
+os.environ.setdefault("OTEL_ENABLED", "false")
+os.environ.setdefault("PROMETHEUS_ENABLED", "true")
+os.environ.setdefault("LOG_FORMAT", "console")
+os.environ.setdefault("LOG_LEVEL", "WARNING")
 
 
 def _teardown_singleton(routes) -> None:  # type: ignore[no-untyped-def]

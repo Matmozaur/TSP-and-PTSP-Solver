@@ -44,6 +44,14 @@ class Settings(BaseSettings):
     # Phase 7 telemetry sampling
     telemetry_sample_interval: float = 1.0
 
+    # Observability
+    log_level: str = "INFO"
+    log_format: str = "json"  # "json" or "console"
+    otel_enabled: bool = False
+    otel_exporter_endpoint: str = "http://localhost:4317"
+    otel_service_name: str = "tsp-solver"
+    prometheus_enabled: bool = True
+
     model_config = {
         "env_file": ".env",
         "case_sensitive": False,

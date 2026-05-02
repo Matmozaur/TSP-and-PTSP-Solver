@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import copy
-import logging
 import threading
 from datetime import datetime, timezone
 from typing import Any, Protocol, runtime_checkable
 
-_logger = logging.getLogger(__name__)
+import structlog
+
+_logger = structlog.stdlib.get_logger(__name__)
 
 # ---------------------------------------------------------------------------
 # Optional psutil dependency

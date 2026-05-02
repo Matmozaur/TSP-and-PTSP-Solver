@@ -1,8 +1,13 @@
-"""Tests for Phase 7 monitoring / progress endpoint."""
+"""Tests for monitoring, observability, and progress endpoints."""
 
 from __future__ import annotations
 
 import time
+
+
+# ---------------------------------------------------------------------------
+# Existing Phase 7 progress tests
+# ---------------------------------------------------------------------------
 
 
 def test_job_progress_not_found(client) -> None:
@@ -23,8 +28,6 @@ def test_job_progress_returns_samples_after_completion(client) -> None:
     assert resp.status_code == 202
     job_id = resp.json()["job_id"]
 
-    # Wait long enough for the run to complete and for at least one sample to
-    # be captured by the background sampler thread.
     time.sleep(1.5)
 
     progress_resp = client.get(f"/api/v1/tsp/jobs/{job_id}/progress")
@@ -37,11 +40,8 @@ def test_job_progress_returns_samples_after_completion(client) -> None:
     run = body["runs"][0]
     assert run["method"] == "Random"
 
-    # The stop() call always records a final sample, so there must be at least
-    # one entry even if the run finishes before the periodic loop fires.
     assert len(run["samples"]) >= 1
 
-    # The final sample must carry the best_cost from the completed solve.
     final_sample = run["samples"][-1]
     assert "elapsed_seconds" in final_sample
     assert final_sample["best_cost"] is not None
@@ -69,7 +69,6 @@ def test_job_progress_sample_fields(client) -> None:
         for sample in run["samples"]:
             assert "run_id" in sample
             assert "sampled_at" in sample
-            # elapsed_seconds may be None for edge cases but key must exist
             assert "elapsed_seconds" in sample
             assert "cpu_percent" in sample
             assert "memory_mb" in sample
@@ -109,6 +108,62 @@ def test_multi_run_progress(client) -> None:
     methods = {r["method"] for r in body["runs"]}
     assert methods == {"Random", "HC"}
 
-    # Each run should have at least the final stop() sample.
     for run in body["runs"]:
         assert len(run["samples"]) >= 1
+
+
+# ---------------------------------------------------------------------------
+# Prometheus metrics tests
+# ---------------------------------------------------------------------------
+
+
+def test_metrics_endpoint_available(client) -> None:
+    """Prometheus /metrics endpoint should be reachable."""
+    resp = client.get("/metrics/")
+    assert resp.status_code == 200
+    body = resp.text
+    # Verify Prometheus text format
+    assert "http_requests_total" in body or "tsp_solver_info" in body
+
+
+def test_metrics_include_app_info(client) -> None:
+    """App info metric should be present after startup."""
+    resp = client.get("/metrics/")
+    assert resp.status_code == 200
+    assert "tsp_solver_info" in resp.text
+
+
+# ---------------------------------------------------------------------------
+# Observability module unit tests
+# ---------------------------------------------------------------------------
+
+
+def test_observability_init_does_not_crash() -> None:
+    """init_observability should be safe to call with default settings."""
+    from app.config import Settings
+    from app.observability import init_observability
+
+    test_settings = Settings(
+        otel_enabled=False,
+        prometheus_enabled=True,
+        log_format="console",
+        log_level="WARNING",
+    )
+    # Should not raise
+    init_observability(test_settings)
+
+
+def test_normalize_path_collapses_uuids() -> None:
+    """UUID segments in paths should be collapsed to {id}."""
+    from app.middleware import _normalize_path
+
+    path = "/api/v1/tsp/jobs/550e8400-e29b-41d4-a716-446655440000/progress"
+    assert _normalize_path(path) == "/api/v1/tsp/jobs/{id}/progress"
+
+
+def test_normalize_path_preserves_non_uuid() -> None:
+    """Paths without UUIDs should be unchanged."""
+    from app.middleware import _normalize_path
+
+    path = "/api/v1/tsp/health"
+    assert _normalize_path(path) == "/api/v1/tsp/health"

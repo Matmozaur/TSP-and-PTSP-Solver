@@ -16,6 +16,13 @@ services:
       - GO_WORKER_URL_GENETIC=http://go-worker-genetic:8080
       - GO_WORKER_URL_MCTS=http://go-worker-mcts:8080
       - GO_WORKER_TIMEOUT_SECONDS=30
+      # Observability
+      - LOG_LEVEL=INFO
+      - LOG_FORMAT=json
+      - OTEL_ENABLED=true
+      - OTEL_EXPORTER_ENDPOINT=http://jaeger:4317
+      - OTEL_SERVICE_NAME=tsp-solver
+      - PROMETHEUS_ENABLED=true
     volumes:
       - ./services/api/app:/app/app
       - ./services/api/analytics:/app/analytics
@@ -103,8 +110,55 @@ services:
       - ./results:/app/results
     depends_on:
       - tsp-solver
-    networks:
-      - default
+
+  # --- Observability stack ---
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: tsp-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=7d"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:9090/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: tsp-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.55
+    container_name: tsp-jaeger
+    ports:
+      - "16686:16686"       # Jaeger UI
+      - "127.0.0.1:4317:4317"  # OTLP gRPC (localhost only)
+      - "127.0.0.1:4318:4318"  # OTLP HTTP (localhost only)
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+
+volumes:
+  prometheus-data:
+  grafana-data:
 
 networks:
   default:

@@ -1,0 +1,12 @@
+apiVersion: 1
+
+providers:
+  - name: "TSP Solver"
+    orgId: 1
+    folder: "TSP Solver"
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

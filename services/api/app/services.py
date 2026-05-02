@@ -25,13 +25,13 @@ import time
 from pathlib import Path
 from typing import Protocol, TypedDict
 
-import logging
+import structlog
 
 import httpx
 import networkx as nx
 import numpy as np
 
-_logger = logging.getLogger(__name__)
+_logger = structlog.stdlib.get_logger(__name__)
 
 
 # ---------------------------------------------------------------------------

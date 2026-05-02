@@ -5,21 +5,36 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from prometheus_client import make_asgi_app
 
 from . import __version__
 from .config import settings
+from .middleware import ObservabilityMiddleware
+from .observability import init_observability
 from .routes_ptsp import router as ptsp_router
 from .routes_tsp import close_tsp_resources, router as tsp_router
+
+logger = structlog.stdlib.get_logger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Application lifespan: clean up singletons on shutdown."""
+    """Application lifespan: init observability on startup, clean up on shutdown."""
+    init_observability(settings)
+    logger.info(
+        "app_started",
+        version=settings.app_version,
+        environment=settings.environment,
+        otel_enabled=settings.otel_enabled,
+        prometheus_enabled=settings.prometheus_enabled,
+    )
     yield
     close_tsp_resources()
+    logger.info("app_shutdown")
 
 
 def create_app() -> FastAPI:
@@ -36,7 +51,10 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    # Add CORS middleware
+    # Observability middleware (runs after CORS)
+    app.add_middleware(ObservabilityMiddleware)
+
+    # CORS middleware
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
@@ -44,6 +62,20 @@ def create_app() -> FastAPI:
         allow_methods=settings.cors_methods,
         allow_headers=settings.cors_headers,
     )
+
+    # OpenTelemetry FastAPI auto-instrumentation
+    if settings.otel_enabled:
+        try:
+            from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+            FastAPIInstrumentor.instrument_app(app)
+        except Exception:
+            logger.warning("otel_fastapi_instrumentation_failed", exc_info=True)
+
+    # Prometheus /metrics endpoint
+    if settings.prometheus_enabled:
+        metrics_app = make_asgi_app()
+        app.mount("/metrics", metrics_app)
 
     # Root endpoint
     @app.get("/")

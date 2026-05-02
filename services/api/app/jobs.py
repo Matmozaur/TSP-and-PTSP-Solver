@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
-import logging
+import structlog
 import threading
 import time as _time
 import uuid
@@ -13,9 +13,10 @@ from datetime import datetime, timezone
 from typing import Any, Protocol
 
 from .monitoring import InMemoryProgressStore, ProgressStoreProtocol, RunTelemetrySampler
+from .observability import TSP_JOBS_SUBMITTED, TSP_RUNS_COMPLETED, TSP_SOLVE_DURATION_SECONDS
 from .services import TSPSolverService
 
-_logger = logging.getLogger(__name__)
+_logger = structlog.stdlib.get_logger(__name__)
 
 
 def _utc_now() -> str:
@@ -164,6 +165,7 @@ class TSPJobCoordinator:
         """Persist and enqueue an async batch job."""
         job = self._create_job(graph=graph, runs=runs)
         self._repository.upsert_job(job)
+        TSP_JOBS_SUBMITTED.labels(status="submitted").inc()
 
         self._pool.submit(self._run_job, job["job_id"])
 
@@ -342,10 +344,13 @@ class TSPJobCoordinator:
                     current_run["result"] = result
                     current_run["status"] = "COMPLETED"
                     best_cost = result.get("cost")
+                    TSP_RUNS_COMPLETED.labels(method=current_run["method"], status="completed").inc()
+                    TSP_SOLVE_DURATION_SECONDS.labels(method=current_run["method"]).observe(elapsed)
                 except Exception as exc:
                     current_run["error"] = str(exc)
                     current_run["status"] = "FAILED"
                     best_cost = None
+                    TSP_RUNS_COMPLETED.labels(method=current_run["method"], status="failed").inc()
                 finally:
                     sampler.stop(best_cost=best_cost)
 
